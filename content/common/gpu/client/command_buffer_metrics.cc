@@ -95,6 +95,12 @@ void RecordContextLost(CommandBufferContextType type,
       UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.VideoAccelerator", reason,
                                 CONTEXT_LOST_REASON_MAX_ENUM);
       break;
+#if defined(USE_GSTREAMER)
+    case MEDIA_GSTREAMER_CONTEXT:
+      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.MediaGStreamer", reason,
+                                CONTEXT_LOST_REASON_MAX_ENUM);
+      break;
+#endif
     case OFFSCREEN_VIDEO_CAPTURE_CONTEXT:
       UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.VideoCapture", reason,
                                 CONTEXT_LOST_REASON_MAX_ENUM);
@@ -132,6 +138,10 @@ std::string CommandBufferContextTypeToString(CommandBufferContextType type) {
       return "Offscreen-CaptureThread";
     case OFFSCREEN_CONTEXT_FOR_WEBGL:
       return "Offscreen-For-WebGL";
+#if defined(USE_GSTREAMER)
+    case MEDIA_GSTREAMER_CONTEXT:
+      return "Offscreen-For-Media-GStreamer";
+#endif
     default:
       NOTREACHED();
       return "unknown";
