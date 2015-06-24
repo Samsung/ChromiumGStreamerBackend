@@ -18,6 +18,11 @@
 #include "media/blink/buffered_resource_loader.h"
 #include "url/gurl.h"
 
+#if defined(USE_GSTREAMER)
+#include "third_party/WebKit/public/platform/WebReferrerPolicy.h"
+#include "third_party/WebKit/public/platform/WebURLLoader.h"
+#endif
+
 namespace base {
 class SingleThreadTaskRunner;
 }
@@ -77,7 +82,16 @@ class MEDIA_EXPORT BufferedDataSource : public DataSource {
   //
   // Method called on the render thread.
   typedef base::Callback<void(bool)> InitializeCB;
+
+#if defined(USE_GSTREAMER)
+  void Initialize(const InitializeCB& init_cb,
+                  blink::WebURLLoader* url_loader = nullptr,
+                  const blink::WebString& referrer = blink::WebString(),
+                  blink::WebReferrerPolicy referrer_policy =
+                      blink::WebReferrerPolicyDefault);
+#else
   void Initialize(const InitializeCB& init_cb);
+#endif
 
   // Adjusts the buffering algorithm based on the given preload value.
   void SetPreload(Preload preload);
@@ -247,6 +261,12 @@ class MEDIA_EXPORT BufferedDataSource : public DataSource {
   // URL of each successive response. If the origin URL of it is different from
   // the original URL of the first response, it is treated as an error.
   GURL response_original_url_;
+
+#if defined(USE_GSTREAMER)
+  blink::WebURLLoader* url_loader_;
+  blink::WebString referrer_;
+  blink::WebReferrerPolicy referrer_policy_;
+#endif
 
   // Disallow rebinding WeakReference ownership to a different thread by keeping
   // a persistent reference. This avoids problems with the thread-safety of
