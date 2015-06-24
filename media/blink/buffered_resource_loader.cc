@@ -19,6 +19,12 @@
 #include "third_party/WebKit/public/web/WebKit.h"
 #include "third_party/WebKit/public/web/WebURLLoaderOptions.h"
 
+#if defined(USE_GSTREAMER)
+#include "content/child/web_url_loader_impl.h"
+#include "content/public/child/child_thread.h"
+#include "public/platform/Platform.h"
+#endif
+
 using blink::WebFrame;
 using blink::WebString;
 using blink::WebURLError;
@@ -134,11 +140,18 @@ BufferedResourceLoader::BufferedResourceLoader(
 
 BufferedResourceLoader::~BufferedResourceLoader() {}
 
-void BufferedResourceLoader::Start(
-    const StartCB& start_cb,
-    const LoadingStateChangedCB& loading_cb,
-    const ProgressCB& progress_cb,
-    WebFrame* frame) {
+void BufferedResourceLoader::Start(const StartCB& start_cb,
+                                   const LoadingStateChangedCB& loading_cb,
+                                   const ProgressCB& progress_cb,
+                                   WebFrame* frame
+#if defined(USE_GSTREAMER)
+                                   ,
+                                   WebURLLoader* url_loader,
+                                   const WebString& referrer,
+                                   blink::WebReferrerPolicy referrer_policy) {
+#else
+                                   ) {
+#endif
   // Make sure we have not started.
   DCHECK(start_cb_.is_null());
   DCHECK(loading_cb_.is_null());
@@ -146,7 +159,9 @@ void BufferedResourceLoader::Start(
   DCHECK(!start_cb.is_null());
   DCHECK(!loading_cb.is_null());
   DCHECK(!progress_cb.is_null());
+#if !defined(USE_GSTREAMER)
   CHECK(frame);
+#endif
 
   start_cb_ = start_cb;
   loading_cb_ = loading_cb;
@@ -170,7 +185,20 @@ void BufferedResourceLoader::Start(
             first_byte_position_, last_byte_position_).GetHeaderValue()));
   }
 
+#if defined(USE_GSTREAMER)
+  if (url_loader) {
+    // TODO: Add API to BufferedDataSource to allow to set
+    // extra headers and referrer on the request.
+    // Depends if we keep using BufferedDataSource.
+    request.setHTTPReferrer(referrer, referrer_policy);
+    if (url_.host() == "movies.apple.com" ||
+        url_.host() == "trailers.apple.com")
+      request.setHTTPHeaderField("User-Agent", "Quicktime/7.6.6");
+  } else
+    frame->setReferrerForRequest(request, blink::WebURL());
+#else
   frame->setReferrerForRequest(request, blink::WebURL());
+#endif
 
   // Disable compression, compression for audio/video doesn't make sense...
   request.setHTTPHeaderField(
@@ -196,7 +224,16 @@ void BufferedResourceLoader::Start(
       if (cors_mode_ == kUseCredentials)
         options.allowCredentials = true;
     }
+
+#if defined(USE_GSTREAMER)
+    // TODO: improve this depending if we keep using BufferedDataSource.
+    if (url_loader)
+      loader.reset(url_loader);
+    else
+      loader.reset(frame->createAssociatedURLLoader(options));
+#else
     loader.reset(frame->createAssociatedURLLoader(options));
+#endif
   }
 
   // Start the resource loading.

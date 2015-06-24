@@ -18,6 +18,10 @@
 #include "third_party/WebKit/public/web/WebFrame.h"
 #include "url/gurl.h"
 
+#if defined(USE_GSTREAMER)
+#include "third_party/WebKit/public/platform/WebReferrerPolicy.h"
+#endif
+
 namespace media {
 class MediaLog;
 class SeekableBuffer;
@@ -99,7 +103,15 @@ class MEDIA_EXPORT BufferedResourceLoader
   void Start(const StartCB& start_cb,
              const LoadingStateChangedCB& loading_cb,
              const ProgressCB& progress_cb,
-             blink::WebFrame* frame);
+             blink::WebFrame* frame
+#if defined(USE_GSTREAMER)
+             ,
+             blink::WebURLLoader* url_loader,
+             const blink::WebString& referrer,
+             blink::WebReferrerPolicy referrer_policy);
+#else
+             );
+#endif
 
   // Stops everything associated with this loader, including active URL loads
   // and pending callbacks.

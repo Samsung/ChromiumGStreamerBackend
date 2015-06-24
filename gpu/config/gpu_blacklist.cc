@@ -20,8 +20,11 @@ GpuBlacklist* GpuBlacklist::Create() {
   GpuBlacklist* list = new GpuBlacklist();
   list->AddSupportedFeature("accelerated_2d_canvas",
                             GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS);
+#if !defined(USE_GSTREAMER)
+  // Do not black list gpu compositing for GStreamer backend (GstGL).
   list->AddSupportedFeature("gpu_compositing",
                             GPU_FEATURE_TYPE_GPU_COMPOSITING);
+#endif
   list->AddSupportedFeature("webgl",
                             GPU_FEATURE_TYPE_WEBGL);
   list->AddSupportedFeature("flash_3d",
