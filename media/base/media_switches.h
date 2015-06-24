@@ -50,6 +50,11 @@ MEDIA_EXPORT extern const char kWaveOutBuffers[];
 MEDIA_EXPORT extern const char kUseCras[];
 #endif
 
+#if defined(USE_GSTREAMER)
+MEDIA_EXPORT extern const char* kMediaSwitches[];
+MEDIA_EXPORT extern const int kNumMediaSwitches;
+#endif
+
 MEDIA_EXPORT extern const char kUseFakeDeviceForMediaStream[];
 MEDIA_EXPORT extern const char kUseFileForFakeVideoCapture[];
 MEDIA_EXPORT extern const char kUseFileForFakeAudioCapture[];

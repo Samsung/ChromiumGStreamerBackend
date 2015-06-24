@@ -29,6 +29,9 @@ extern const uint32_t kMaxPluginSize;
 extern const size_t kMaxLengthOfDataURLString;
 
 // Constants used to organize content processes in about:tracing.
+#if defined(USE_GSTREAMER)
+CONTENT_EXPORT extern const int kTraceEventMediaProcessSortIndex;
+#endif
 CONTENT_EXPORT extern const int kTraceEventBrowserProcessSortIndex;
 CONTENT_EXPORT extern const int kTraceEventRendererProcessSortIndex;
 CONTENT_EXPORT extern const int kTraceEventPluginProcessSortIndex;

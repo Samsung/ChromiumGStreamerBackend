@@ -25,6 +25,9 @@ const uint32_t kMaxPluginSize = 8 << 20;
 // 20MiB
 const size_t kMaxLengthOfDataURLString = 1024 * 1024 * 20;
 
+#if defined(USE_GSTREAMER)
+const int kTraceEventMediaProcessSortIndex = -7;
+#endif
 const int kTraceEventBrowserProcessSortIndex = -6;
 const int kTraceEventRendererProcessSortIndex = -5;
 const int kTraceEventPluginProcessSortIndex = -4;
