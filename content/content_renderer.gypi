@@ -278,6 +278,8 @@
       'renderer/media/crypto/ppapi_decryptor.h',
       'renderer/media/crypto/render_cdm_factory.cc',
       'renderer/media/crypto/render_cdm_factory.h',
+      'renderer/media/gstreamer/webmediaplayer_gstreamer.cc',
+      'renderer/media/gstreamer/webmediaplayer_gstreamer.h',
       'renderer/media/media_permission_dispatcher.cc',
       'renderer/media/media_permission_dispatcher.h',
       'renderer/media/media_stream_audio_level_calculator.cc',
@@ -740,6 +742,39 @@
     ['OS=="win" and win_use_allocator_shim==1', {
       'dependencies': [
           '../base/allocator/allocator.gyp:allocator',
+      ],
+    }],
+    ['use_gstreamer==1', {
+      'sources': [
+          '../media/blink/cdm_result_promise.h',
+          '../media/blink/cdm_result_promise_helper.cc',
+          '../media/blink/cdm_result_promise_helper.h',
+          '../media/blink/cdm_session_adapter.cc',
+          '../media/blink/cdm_session_adapter.h',
+          '../media/blink/webcontentdecryptionmodule_impl.cc',
+          '../media/blink/webcontentdecryptionmodule_impl.h',
+          '../media/blink/webcontentdecryptionmoduleaccess_impl.cc',
+          '../media/blink/webcontentdecryptionmoduleaccess_impl.h',
+          '../media/blink/webcontentdecryptionmodulesession_impl.cc',
+          '../media/blink/webcontentdecryptionmodulesession_impl.h',
+          '../media/blink/webencryptedmediaclient_impl.cc',
+          '../media/blink/webencryptedmediaclient_impl.h',
+          '../media/blink/encrypted_media_player_support.cc',
+          '../media/blink/encrypted_media_player_support.h',
+          '../media/blink/new_session_cdm_result_promise.cc',
+          '../media/blink/new_session_cdm_result_promise.h',
+          '../media/blink/texttrack_impl.cc',
+          '../media/blink/texttrack_impl.h',
+          '../media/blink/webinbandtexttrack_impl.cc',
+          '../media/blink/webinbandtexttrack_impl.h',
+      ],
+      'defines': [
+        'MEDIA_IMPLEMENTATION',
+      ],
+    }, {
+      'sources!': [
+        'renderer/media/gstreamer/webmediaplayer_gstreamer.cc',
+        'renderer/media/gstreamer/webmediaplayer_gstreamer.h',
       ],
     }],
     ['OS=="android"', {

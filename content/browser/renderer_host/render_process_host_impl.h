@@ -52,6 +52,9 @@ class BrowserCdmManager;
 class BrowserDemuxerAndroid;
 class GpuMessageFilter;
 class InProcessChildThreadParams;
+#if defined(USE_GSTREAMER)
+class MediaMessageFilter;
+#endif
 class MessagePortMessageFilter;
 class MojoApplicationHost;
 class NotificationMessageFilter;
@@ -369,6 +372,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // away, it posts a task to the IO thread to destroy it there, so we know that
   // it's valid if non-NULL.
   GpuMessageFilter* gpu_message_filter_;
+
+#if defined(USE_GSTREAMER)
+  // The filter for media related messages coming from the renderer.
+  MediaMessageFilter* media_message_filter_;
+#endif
 
   // The filter for MessagePort messages coming from the renderer.
   scoped_refptr<MessagePortMessageFilter> message_port_message_filter_;

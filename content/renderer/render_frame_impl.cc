@@ -191,6 +191,10 @@
 #include "media/renderers/default_renderer_factory.h"
 #endif
 
+#if defined(USE_GSTREAMER)
+#include "media/gstreamer/webmediaplayer_gstreamer.h"
+#endif
+
 #if defined(ENABLE_WEBVR)
 #include "content/renderer/vr/vr_dispatcher.h"
 #endif
@@ -2024,6 +2028,21 @@ blink::WebMediaPlayer* RenderFrameImpl::createMediaPlayer(
     contains_media_player_ = true;
   }
 #endif  // defined(VIDEO_HOLE)
+
+#if defined(USE_GSTREAMER)
+  // TODO: Fix kEnableGStreamerMediaBackend.
+  if (1 ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableGStreamerMediaBackend)) {
+    DVLOG(1) << __FUNCTION__ << "(Create WebMediaPlayerGStreamer)";
+    if (content::RenderThreadImpl::current()->GetMediaChannel())
+      return new media::WebMediaPlayerGStreamer(
+          frame, client, weak_factory_.GetWeakPtr(), GetCdmFactory(),
+          GetMediaPermission(), initial_cdm, new RenderMediaLog());
+  }
+
+  DVLOG(1) << __FUNCTION__ << "(Cannot create WebMediaPlayerGStreamer)";
+#endif  // defined(USE_GSTREAMER)
 
   blink::WebMediaStream web_stream(
       blink::WebMediaStreamRegistry::lookupMediaStreamDescriptor(url));

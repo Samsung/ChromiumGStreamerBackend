@@ -1015,6 +1015,7 @@ void ResourceDispatcherHostImpl::OnRequestResource(
           "477117 ResourceDispatcherHostImpl::OnRequestResource"));
   // When logging time-to-network only care about main frame and non-transfer
   // navigations.
+
   if (request_data.resource_type == RESOURCE_TYPE_MAIN_FRAME &&
       request_data.transferred_request_request_id == -1 &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
