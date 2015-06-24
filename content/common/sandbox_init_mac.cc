@@ -57,6 +57,12 @@ bool GetSandboxTypeFromCommandLine(int* sandbox_type,
     return false;
   } else if (process_type == switches::kPpapiPluginProcess) {
     *sandbox_type = SANDBOX_TYPE_PPAPI;
+#if defined(USE_GSTREAMER)
+  } else if (process_type == switches::kMediaProcess) {
+    if (command_line.HasSwitch(switches::kDisableMediaSandbox))
+      return false;
+    *sandbox_type = SANDBOX_TYPE_MEDIA;
+#endif
   } else {
     // This is a process which we don't know about, i.e. an embedder-defined
     // process. If the embedder wants it sandboxed, they have a chance to return

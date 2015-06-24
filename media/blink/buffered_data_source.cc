@@ -136,12 +136,27 @@ BufferedResourceLoader* BufferedDataSource::CreateResourceLoader(
                                     media_log_.get());
 }
 
+#if defined(USE_GSTREAMER)
+void BufferedDataSource::Initialize(const InitializeCB& init_cb,
+                                    blink::WebURLLoader* url_loader,
+                                    const blink::WebString& referrer,
+                                    blink::WebReferrerPolicy referrer_policy) {
+#else
 void BufferedDataSource::Initialize(const InitializeCB& init_cb) {
+#endif
+
   DCHECK(render_task_runner_->BelongsToCurrentThread());
   DCHECK(!init_cb.is_null());
   DCHECK(!loader_.get());
 
   init_cb_ = init_cb;
+
+#if defined(USE_GSTREAMER)
+  // TODO: improve this depending if we keep using BufferedDataSource.
+  url_loader_ = url_loader;
+  referrer_ = referrer;
+  referrer_policy_ = referrer_policy;
+#endif
 
   if (url_.SchemeIsHTTPOrHTTPS()) {
     // Do an unbounded range request starting at the beginning.  If the server
@@ -159,8 +174,14 @@ void BufferedDataSource::Initialize(const InitializeCB& init_cb) {
   loader_->Start(
       base::Bind(&BufferedDataSource::StartCallback, weak_this),
       base::Bind(&BufferedDataSource::LoadingStateChangedCallback, weak_this),
-      base::Bind(&BufferedDataSource::ProgressCallback, weak_this),
+      base::Bind(&BufferedDataSource::ProgressCallback, weak_this)
+#if defined(USE_GSTREAMER)
+          ,
+      frame_, url_loader_, referrer_, referrer_policy_);
+#else
+          ,
       frame_);
+#endif
 }
 
 void BufferedDataSource::SetPreload(Preload preload) {
@@ -476,7 +497,11 @@ void BufferedDataSource::ReadCallback(
           base::Bind(&BufferedDataSource::LoadingStateChangedCallback,
                      weak_this),
           base::Bind(&BufferedDataSource::ProgressCallback, weak_this),
+#if defined(USE_GSTREAMER)
+          frame_, url_loader_, referrer_, referrer_policy_);
+#else
           frame_);
+#endif
       return;
     }
 

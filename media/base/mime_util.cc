@@ -154,7 +154,7 @@ static const char* const common_media_types[] = {
   "audio/wav",
   "audio/x-wav",
 
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(USE_GSTREAMER)
   // HLS.
   "application/vnd.apple.mpegurl",
   "application/x-mpegurl",
