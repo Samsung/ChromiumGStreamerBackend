@@ -268,6 +268,10 @@
 #include "media/remoting/remoting_sink_observer.h"        // nogncheck
 #endif
 
+#if defined(USE_GSTREAMER)
+#include "media/gstreamer/webmediaplayer_gstreamer.h"
+#endif
+
 using base::Time;
 using base::TimeDelta;
 using blink::WebCachePolicy;
@@ -2743,8 +2747,25 @@ blink::WebMediaPlayer* RenderFrameImpl::createMediaPlayer(
     WebMediaPlayerEncryptedMediaClient* encrypted_client,
     WebContentDecryptionModule* initial_cdm,
     const blink::WebString& sink_id) {
+
+#if defined(USE_GSTREAMER)
+  // TODO: Fix kEnableGStreamerMediaBackend.
+  if (1 ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableGStreamerMediaBackend)) {
+    DVLOG(1) << __FUNCTION__ << "(Create WebMediaPlayerGStreamer)";
+    if (content::RenderThreadImpl::current()->GetMediaChannel())
+      return new media::WebMediaPlayerGStreamer(
+          frame, client, weak_factory_.GetWeakPtr(), GetCdmFactory(),
+          GetMediaPermission(), initial_cdm, new RenderMediaLog());
+  }
+
+  DVLOG(1) << __FUNCTION__ << "(Cannot create WebMediaPlayerGStreamer)";
+#endif  // defined(USE_GSTREAMER)
+
   blink::WebMediaStream web_stream =
       GetWebMediaStreamFromWebMediaPlayerSource(source);
+
   if (!web_stream.isNull())
     return CreateWebMediaPlayerForMediaStream(client, sink_id,
                                               frame_->getSecurityOrigin());

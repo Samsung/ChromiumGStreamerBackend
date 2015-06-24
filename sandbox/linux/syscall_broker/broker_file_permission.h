@@ -49,6 +49,17 @@ class SANDBOX_EXPORT BrokerFilePermission {
     return BrokerFilePermission(path, false, true, true, true, true);
   }
 
+#if defined(USE_GSTREAMER)
+  static BrokerFilePermission ReadWriteRecursive(const std::string& path) {
+    return BrokerFilePermission(path, true, false, true, true, false);
+  }
+
+  static BrokerFilePermission ReadWriteCreateRecursive(
+      const std::string& path) {
+    return BrokerFilePermission(path, true, false, true, true, true);
+  }
+#endif
+
   static BrokerFilePermission ReadWriteCreateUnlinkRecursive(
       const std::string& path) {
     return BrokerFilePermission(path, true, true, true, true, true);

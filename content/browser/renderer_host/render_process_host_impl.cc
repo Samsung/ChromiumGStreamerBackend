@@ -194,6 +194,11 @@
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/native_theme/native_theme_switches.h"
 
+#if defined(USE_GSTREAMER)
+#include "content/browser/media/media_process_host.h"
+#include "content/browser/renderer_host/media_message_filter.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "content/browser/android/child_process_launcher_android.h"
 #include "content/browser/screen_orientation/screen_orientation_message_filter_android.h"
@@ -1084,6 +1089,11 @@ void RenderProcessHostImpl::CreateMessageFilters() {
       storage_partition_impl_->GetIndexedDBContext(),
       blob_storage_context.get()));
 
+#if defined(USE_GSTREAMER)
+  media_message_filter_ = new MediaMessageFilter(GetID());
+  AddFilter(media_message_filter_);
+#endif
+
 #if BUILDFLAG(ENABLE_WEBRTC)
   peer_connection_tracker_host_ = new PeerConnectionTrackerHost(
       GetID(), webrtc_eventlog_host_.GetWeakPtr());
@@ -1798,6 +1808,9 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kEnableContentIntentDetection,
     switches::kRendererWaitForJavaDebugger,
 #endif
+#if defined(USE_GSTREAMER)
+    switches::kEnableGStreamerMediaBackend,
+#endif
 #if defined(OS_MACOSX)
     // Allow this to be set when invoking the browser and relayed along.
     switches::kEnableSandboxLogging,
@@ -2177,6 +2190,10 @@ void RenderProcessHostImpl::Cleanup() {
 
   // The following members should be cleared in ProcessDied() as well!
   message_port_message_filter_ = NULL;
+
+#if defined(USE_GSTREAMER)
+  media_message_filter_ = NULL;
+#endif
 
   // Its important to remove the kSessionStorageHolder after the channel
   // has been reset to avoid deleting the underlying namespaces prior

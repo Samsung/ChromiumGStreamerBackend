@@ -39,6 +39,8 @@ package_exists() {
 do_inst_arm=1
 do_inst_nacl=1
 
+do_inst_gstreamer=1
+
 while test "$1" != ""
 do
   case "$1" in
@@ -51,6 +53,7 @@ do
   --no-chromeos-fonts)      do_inst_chromeos_fonts=0;;
   --nacl)                   do_inst_nacl=1;;
   --no-nacl)                do_inst_nacl=0;;
+  --gstreamer)              do_inst_gstreamer=1;;
   --no-prompt)              do_default=1
                             do_quietly="-qq --assume-yes"
     ;;
@@ -362,6 +365,20 @@ if test "$do_inst_nacl" = "1"; then
 else
   echo "Skipping NaCl, NaCl toolchain, NaCl ports dependencies."
   nacl_list=
+fi
+
+if test "$do_inst_gstreamer" = "1"; then
+  echo "Including GStreamer."
+  lib_list="${lib_list} libgstreamer1.0-0 libgstreamer-plugins-base1.0-0
+           libgstreamer-plugins-good1.0-0 libgstreamer-plugins-bad1.0-0
+           gstreamer1.0-plugins-ugly gstreamer1.0-libav"
+
+  dev_list="${dev_list} libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+           libgstreamer-plugins-bad1.0-dev"
+
+  dbg_list="${dbg_list} libgstreamer1.0-0-dbg gstreamer1.0-plugins-base-dbg
+           gstreamer1.0-plugins-good-dbg gstreamer1.0-plugins-bad-dbg
+           gstreamer1.0-libav-dbg"
 fi
 
 # The `sort -r -s -t: -k2` sorts all the :i386 packages to the front, to avoid

@@ -33,6 +33,10 @@
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/storage_partition_service.mojom.h"
+#if defined(USE_GSTREAMER)
+#include "content/common/media/media_channel_host.h"
+#include "content/common/media/media_process_launch_causes.h"
+#endif
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/gpu/compositor_dependencies.h"
 #include "content/renderer/layout_test_dependencies.h"
@@ -112,9 +116,9 @@ class DBMessageFilter;
 class DevToolsAgentFilter;
 class DomStorageDispatcher;
 class EmbeddedWorkerDispatcher;
-class FrameSwapMessageQueue;
 class IndexedDBDispatcher;
 class InputHandlerManager;
+class MediaChannelHost;
 class MediaStreamCenter;
 class MemoryObserver;
 class MidiMessageFilter;
@@ -249,6 +253,13 @@ class CONTENT_EXPORT RenderThreadImpl
       const GURL& url);
 
   AssociatedInterfaceRegistry* GetAssociatedInterfaceRegistry();
+
+#if defined(USE_GSTREAMER)
+  // Synchronously establish a channel to the media process if not previously
+  // established or if it has been lost or get the current channel.
+  MediaChannelHost* GetMediaChannel(
+      CauseForMediaLaunch = CAUSE_FOR_MEDIA_LAUNCH_RENDERER);
+#endif
 
   std::unique_ptr<cc::SwapPromise> RequestCopyOfOutputForLayoutTest(
       int32_t routing_id,
@@ -610,6 +621,11 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // The channel from the renderer process to the GPU process.
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
+
+#if defined(USE_GSTREAMER)
+  // The channel from the renderer process to the media process.
+  scoped_refptr<content::MediaChannelHost> media_channel_;
+#endif
 
   // Cache of variables that are needed on the compositor thread by
   // GpuChannelHostFactory methods.

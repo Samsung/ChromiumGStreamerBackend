@@ -51,6 +51,11 @@
 #include "content/common/worker_messages.h"
 #include "media/media_features.h"
 
+#if defined(USE_GSTREAMER)
+#include "content/common/media/media_messages.h"
+#include "content/common/media/media_player_messages_gstreamer.h"
+#endif
+
 #if BUILDFLAG(ENABLE_WEBRTC)
 #include "content/common/p2p_messages.h"
 #endif

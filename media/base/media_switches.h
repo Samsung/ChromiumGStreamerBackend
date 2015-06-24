@@ -52,6 +52,11 @@ MEDIA_EXPORT extern const char kEnableDefaultMediaSession[];
 MEDIA_EXPORT extern const char kEnableDefaultMediaSessionDuckFlash[];
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
+#if defined(USE_GSTREAMER)
+MEDIA_EXPORT extern const char* kMediaSwitches[];
+MEDIA_EXPORT extern const int kNumMediaSwitches;
+#endif
+
 MEDIA_EXPORT extern const char kUseFakeDeviceForMediaStream[];
 MEDIA_EXPORT extern const char kUseFileForFakeVideoCapture[];
 MEDIA_EXPORT extern const char kUseFileForFakeAudioCapture[];

@@ -25,6 +25,9 @@
 #include "base/posix/eintr_wrapper.h"
 #include "content/common/sandbox_linux/bpf_cros_arm_gpu_policy_linux.h"
 #include "content/common/sandbox_linux/bpf_gpu_policy_linux.h"
+#if defined(USE_GSTREAMER)
+#include "content/common/sandbox_linux/bpf_media_policy_linux.h"
+#endif
 #include "content/common/sandbox_linux/bpf_ppapi_policy_linux.h"
 #include "content/common/sandbox_linux/bpf_renderer_policy_linux.h"
 #include "content/common/sandbox_linux/bpf_utility_policy_linux.h"
@@ -136,6 +139,9 @@ inline bool IsArchitectureArm() {
 void RunSandboxSanityChecks(const std::string& process_type) {
   if (process_type == switches::kRendererProcess ||
       process_type == switches::kGpuProcess ||
+#if defined(USE_GSTREAMER)
+      process_type == switches::kMediaProcess ||
+#endif
       process_type == switches::kPpapiPluginProcess) {
     int syscall_ret;
     errno = 0;
@@ -157,6 +163,7 @@ void RunSandboxSanityChecks(const std::string& process_type) {
     syscall_ret = socket(AF_NETLINK, SOCK_DGRAM, 0);
     CHECK_EQ(-1, syscall_ret);
     CHECK_EQ(EPERM, errno);
+
 #endif  // !defined(NDEBUG)
   }
 }
@@ -192,6 +199,10 @@ bool StartBPFSandbox(const base::CommandLine& command_line,
     policy.reset(new PpapiProcessPolicy);
   } else if (process_type == switches::kUtilityProcess) {
     policy.reset(new UtilityProcessPolicy);
+#if defined(USE_GSTREAMER)
+  } else if (process_type == switches::kMediaProcess) {
+    policy.reset(new MediaProcessPolicy);
+#endif
   } else {
     NOTREACHED();
     policy.reset(new AllowAllPolicy);
@@ -236,6 +247,10 @@ bool SandboxSeccompBPF::ShouldEnableSeccompBPF(
       *base::CommandLine::ForCurrentProcess();
   if (process_type == switches::kGpuProcess)
     return !command_line.HasSwitch(switches::kDisableGpuSandbox);
+#if defined(USE_GSTREAMER)
+  else if (process_type == switches::kMediaProcess)
+    return !command_line.HasSwitch(switches::kDisableMediaSandbox);
+#endif
 
   return true;
 #endif  // USE_SECCOMP_BPF

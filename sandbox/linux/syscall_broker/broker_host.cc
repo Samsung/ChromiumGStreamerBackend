@@ -48,6 +48,16 @@ int sys_open(const char* pathname, int flags) {
   } else {
     mode = 0;
   }
+
+#if defined(USE_GSTREAMER)
+  // FIXME: once media sandbox works with pulseaudio we will be able to check
+  // if the following lines are necessary. Pulseaudio calls shm_open with 0700.
+  // If required we will have to improve broker process 's IPC-COMMAND_OPEN.
+  if (std::string(pathname).find("/dev/shm/pulse-shm-") != std::string::npos) {
+    mode = 0700;
+  }
+#endif
+
   if (IsRunningOnValgrind()) {
     // Valgrind does not support AT_FDCWD, just use libc's open() in this case.
     return open(pathname, flags, mode);

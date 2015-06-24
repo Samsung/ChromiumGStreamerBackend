@@ -54,6 +54,9 @@ class AudioInputRendererHost;
 class AudioRendererHost;
 class ChildConnection;
 class InProcessChildThreadParams;
+#if defined(USE_GSTREAMER)
+class MediaMessageFilter;
+#endif
 class MessagePortMessageFilter;
 class NotificationMessageFilter;
 #if BUILDFLAG(ENABLE_WEBRTC)
@@ -460,6 +463,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // The filter for Web Notification messages coming from the renderer. Holds a
   // closure per notification that must be freed when the notification closes.
   scoped_refptr<NotificationMessageFilter> notification_message_filter_;
+
+#if defined(USE_GSTREAMER)
+  // The filter for media related messages coming from the renderer.
+  MediaMessageFilter* media_message_filter_;
+#endif
 
 #if defined(OS_ANDROID)
   scoped_refptr<SynchronousCompositorBrowserFilter>
