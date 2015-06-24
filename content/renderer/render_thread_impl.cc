@@ -191,6 +191,11 @@
 #include "v8/src/third_party/vtune/v8-vtune.h"
 #endif
 
+#if defined(USE_GSTREAMER)
+#include "content/common/media/media_channel_host.h"
+#include "content/common/media/media_messages.h"
+#endif
+
 using base::ThreadRestrictions;
 using blink::WebDocument;
 using blink::WebFrame;
@@ -1696,7 +1701,39 @@ GpuChannelHost* RenderThreadImpl::EstablishGpuChannelSync(
                              gpu_memory_buffer_manager());
   return gpu_channel_.get();
 }
+#if defined(USE_GSTREAMER)
+MediaChannelHost* RenderThreadImpl::GetMediaChannel(
+    CauseForMediaLaunch cause_for_media_launch) {
+  if (media_channel_.get()) {
+    // Do nothing if we already have a Media channel or are already
+    // establishing one.
+    if (!media_channel_->IsLost())
+      return media_channel_.get();
 
+    // Recreate the channel if it has been lost.
+    media_channel_ = NULL;
+  }
+
+  // Ask the browser for the channel name.
+  int client_id = 0;
+  IPC::ChannelHandle channel_handle;
+
+  if (!Send(new MediaHostMsg_EstablishMediaChannel(
+          cause_for_media_launch, &client_id, &channel_handle)) ||
+#if defined(OS_POSIX)
+      channel_handle.socket.fd == -1 ||
+#endif
+      channel_handle.name.empty()) {
+    // Otherwise cancel the connection.
+    return NULL;
+  }
+
+  media_channel_ = content::MediaChannelHost::Create(
+      channel_handle, content::ChildProcess::current()->GetShutDownEvent());
+
+  return media_channel_.get();
+}
+#endif
 blink::WebMediaStreamCenter* RenderThreadImpl::CreateMediaStreamCenter(
     blink::WebMediaStreamCenterClient* client) {
 #if defined(OS_ANDROID)

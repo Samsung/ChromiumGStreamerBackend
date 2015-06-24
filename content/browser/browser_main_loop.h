@@ -156,6 +156,9 @@ class CONTENT_EXPORT BrowserMainLoop {
   void EndStartupTracing();
 
   bool UsingInProcessGpu() const;
+#if defined(USE_GSTREAMER)
+  bool UsingInProcessMedia() const;
+#endif
 
   // Quick reference for initialization order:
   // Constructor

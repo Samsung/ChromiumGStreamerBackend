@@ -76,6 +76,7 @@
               'dependencies': [
                 'content_child',
                 'content_gpu',
+                'content_media',
                 'content_plugin',
                 'content_ppapi_plugin',
                 'content_renderer',
@@ -229,6 +230,19 @@
               ],
             },
             {
+              # GN version: //content/media
+              'target_name': 'content_media',
+              'type': 'static_library',
+              'variables': { 'enable_wexit_time_destructors': 1, },
+              'includes': [
+                'content_media.gypi',
+              ],
+              'dependencies': [
+                'content_child',
+                'content_common',
+              ],
+            },
+            {
               # GN version: //content/plugin and //content/public/plugin
               'target_name': 'content_plugin',
               'type': 'static_library',
@@ -317,6 +331,7 @@
             'content_child.gypi',
             'content_common.gypi',
             'content_gpu.gypi',
+            'content_media.gypi',
             'content_plugin.gypi',
             'content_ppapi_plugin.gypi',
             'content_renderer.gypi',
@@ -376,6 +391,12 @@
         {
           # GN version: //content/gpu
           'target_name': 'content_gpu',
+          'type': 'none',
+          'dependencies': ['content'],
+        },
+        {
+          # GN version: //content/media
+          'target_name': 'content_media',
           'type': 'none',
           'dependencies': ['content'],
         },

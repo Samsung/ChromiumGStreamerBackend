@@ -776,6 +776,13 @@
           'use_cairo%': 1,
         }],
 
+        # Flags to use gstreamer.
+        ['OS=="linux"', {
+          'use_gstreamer%': 1,
+        }, {
+          'use_gstreamer%': 0,
+        }],
+
         # DBus usage.
         ['OS=="linux" and embedded==0', {
           'use_dbus%': 1,
@@ -1129,6 +1136,7 @@
     'use_glib%': '<(use_glib)',
     'use_pango%': '<(use_pango)',
     'use_cairo%': '<(use_cairo)',
+    'use_gstreamer%': '<(use_gstreamer)',
     'use_ozone%': '<(use_ozone)',
     'use_ozone_evdev%': '<(use_ozone_evdev)',
     'use_xkbcommon%': '<(use_xkbcommon)',
@@ -2730,6 +2738,9 @@
       }],
       ['use_cairo==1', {
         'defines': ['USE_CAIRO=1'],
+      }],
+      ['use_gstreamer==1', {
+        'defines': ['USE_GSTREAMER=1'],
       }],
       ['use_cras==1', {
         'defines': ['USE_CRAS=1'],
