@@ -27,6 +27,10 @@
 #include "content/common/frame_replication_state.h"
 #include "content/common/gpu_process_launch_causes.h"
 #include "content/common/storage_partition_service.mojom.h"
+#if defined(USE_GSTREAMER)
+#include "content/common/media/media_channel_host.h"
+#include "content/common/media/media_process_launch_causes.h"
+#endif
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/gpu/compositor_dependencies.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -100,6 +104,7 @@ class DBMessageFilter;
 class DevToolsAgentFilter;
 class DomStorageDispatcher;
 class EmbeddedWorkerDispatcher;
+class MediaChannelHost;
 class IndexedDBDispatcher;
 class InputHandlerManager;
 class MediaStreamCenter;
@@ -222,6 +227,13 @@ class CONTENT_EXPORT RenderThreadImpl
   // If there is a pending asynchronous request, it will be completed by the
   // time this routine returns.
   scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync(CauseForGpuLaunch);
+
+#if defined(USE_GSTREAMER)
+  // Synchronously establish a channel to the media process if not previously
+  // established or if it has been lost or get the current channel.
+  MediaChannelHost* GetMediaChannel(
+      CauseForMediaLaunch = CAUSE_FOR_MEDIA_LAUNCH_RENDERER);
+#endif
 
   // True if we are running layout tests. This currently disables forwarding
   // various status messages to the console, skips network error pages, and
@@ -583,6 +595,11 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // The channel from the renderer process to the GPU process.
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
+
+#if defined(USE_GSTREAMER)
+  // The channel from the renderer process to the media process.
+  scoped_refptr<content::MediaChannelHost> media_channel_;
+#endif
 
   // Cache of variables that are needed on the compositor thread by
   // GpuChannelHostFactory methods.

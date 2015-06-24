@@ -28,6 +28,11 @@ enum SandboxType {
   // The PPAPI plugin process.
   SANDBOX_TYPE_PPAPI,
 
+#if defined(USE_GSTREAMER)
+  // media process.
+  SANDBOX_TYPE_MEDIA,
+#endif
+
   SANDBOX_TYPE_AFTER_LAST_TYPE,  // Placeholder to ease iteration.
 };
 

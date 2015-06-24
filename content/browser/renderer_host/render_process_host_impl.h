@@ -51,6 +51,9 @@ class AudioRendererHost;
 class BrowserCdmManager;
 class BrowserDemuxerAndroid;
 class InProcessChildThreadParams;
+#if defined(USE_GSTREAMER)
+class MediaMessageFilter;
+#endif
 class MessagePortMessageFilter;
 class MojoApplicationHost;
 class MojoChildConnection;
@@ -394,6 +397,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Used to allow a RenderWidgetHost to intercept various messages on the
   // IO thread.
   scoped_refptr<RenderWidgetHelper> widget_helper_;
+
+#if defined(USE_GSTREAMER)
+  // The filter for media related messages coming from the renderer.
+  MediaMessageFilter* media_message_filter_;
+#endif
 
   // The filter for MessagePort messages coming from the renderer.
   scoped_refptr<MessagePortMessageFilter> message_port_message_filter_;
