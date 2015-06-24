@@ -27,6 +27,9 @@ enum ProcessType {
   PROCESS_TYPE_GPU,
   PROCESS_TYPE_PPAPI_PLUGIN,
   PROCESS_TYPE_PPAPI_BROKER,
+#if defined(USE_GSTREAMER)
+  PROCESS_TYPE_MEDIA,
+#endif
   // Custom process types used by the embedder should start from here.
   PROCESS_TYPE_CONTENT_END,
   // If any embedder has more than 10 custom process types, update this.

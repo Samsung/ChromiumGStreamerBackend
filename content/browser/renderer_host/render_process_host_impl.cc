@@ -174,6 +174,11 @@
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/native_theme/native_theme_switches.h"
 
+#if defined(USE_GSTREAMER)
+#include "content/browser/media/media_process_host.h"
+#include "content/browser/renderer_host/media_message_filter.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "content/browser/android/child_process_launcher_android.h"
 #include "content/browser/media/android/browser_demuxer_android.h"
@@ -882,6 +887,12 @@ void RenderProcessHostImpl::CreateMessageFilters() {
 
   gpu_message_filter_ = new GpuMessageFilter(GetID());
   AddFilter(gpu_message_filter_);
+
+#if defined(USE_GSTREAMER)
+  media_message_filter_ = new MediaMessageFilter(GetID());
+  AddFilter(media_message_filter_);
+#endif
+
 #if defined(ENABLE_WEBRTC)
   AddFilter(new WebRTCIdentityServiceHost(
       GetID(), storage_partition_impl_->GetWebRTCIdentityStore(),
@@ -1463,6 +1474,9 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kIPCSyncCompositing,
     switches::kRendererWaitForJavaDebugger,
 #endif
+#if defined(USE_GSTREAMER)
+    switches::kEnableGStreamerMediaBackend,
+#endif
 #if defined(OS_MACOSX)
     // Allow this to be set when invoking the browser and relayed along.
     switches::kEnableSandboxLogging,
@@ -1817,6 +1831,9 @@ void RenderProcessHostImpl::Cleanup() {
 
     // The following members should be cleared in ProcessDied() as well!
     gpu_message_filter_ = NULL;
+#if defined(USE_GSTREAMER)
+    media_message_filter_ = NULL;
+#endif
     message_port_message_filter_ = NULL;
 
     RemoveUserData(kSessionStorageHolderKey);

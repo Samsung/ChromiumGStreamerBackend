@@ -181,7 +181,13 @@ struct MessagePumpGlib::RunState {
 
 MessagePumpGlib::MessagePumpGlib()
     : state_(NULL),
+#if defined(USE_GSTREAMER)
+      context_(g_main_context_get_thread_default()
+                   ? g_main_context_get_thread_default()
+                   : g_main_context_default()),
+#else
       context_(g_main_context_default()),
+#endif
       wakeup_gpollfd_(new GPollFD) {
   // Create our wakeup pipe, which is used to flag when work was scheduled.
   int fds[2];
