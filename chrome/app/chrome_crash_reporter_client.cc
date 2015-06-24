@@ -350,5 +350,10 @@ bool ChromeCrashReporterClient::EnableBreakpadForProcess(
          process_type == switches::kPluginProcess ||
          process_type == switches::kPpapiPluginProcess ||
          process_type == switches::kZygoteProcess ||
+#if defined(USE_GSTREAMER)
+         process_type == switches::kGpuProcess ||
+         process_type == switches::kMediaProcess;
+#else
          process_type == switches::kGpuProcess;
+#endif
 }
