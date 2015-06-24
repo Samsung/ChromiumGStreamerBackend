@@ -28,6 +28,10 @@
 #include "content/common/frame_replication_state.h"
 #include "content/common/gpu_process_launch_causes.h"
 #include "content/common/storage_partition_service.mojom.h"
+#if defined(USE_GSTREAMER)
+#include "content/common/media/media_channel_host.h"
+#include "content/common/media/media_process_launch_causes.h"
+#endif
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/gpu/compositor_dependencies.h"
 #include "content/renderer/layout_test_dependencies.h"
@@ -103,9 +107,9 @@ class DBMessageFilter;
 class DevToolsAgentFilter;
 class DomStorageDispatcher;
 class EmbeddedWorkerDispatcher;
-class FrameSwapMessageQueue;
 class IndexedDBDispatcher;
 class InputHandlerManager;
+class MediaChannelHost;
 class MediaStreamCenter;
 class MemoryObserver;
 class MidiMessageFilter;
@@ -228,11 +232,20 @@ class CONTENT_EXPORT RenderThreadImpl
   // time this routine returns.
   scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync(CauseForGpuLaunch);
 
+<<<<<<< HEAD
   std::unique_ptr<cc::OutputSurface> CreateCompositorOutputSurface(
       bool use_software,
       int routing_id,
       scoped_refptr<FrameSwapMessageQueue> frame_swap_message_queue,
       const GURL& url);
+=======
+#if defined(USE_GSTREAMER)
+  // Synchronously establish a channel to the media process if not previously
+  // established or if it has been lost or get the current channel.
+  MediaChannelHost* GetMediaChannel(
+      CauseForMediaLaunch = CAUSE_FOR_MEDIA_LAUNCH_RENDERER);
+#endif
+>>>>>>> Add GStreamer backend for media playback in Chromium.
 
   // True if we are running layout tests. This currently disables forwarding
   // various status messages to the console, skips network error pages, and
@@ -592,6 +605,11 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // The channel from the renderer process to the GPU process.
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
+
+#if defined(USE_GSTREAMER)
+  // The channel from the renderer process to the media process.
+  scoped_refptr<content::MediaChannelHost> media_channel_;
+#endif
 
   // Cache of variables that are needed on the compositor thread by
   // GpuChannelHostFactory methods.
