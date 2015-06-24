@@ -277,6 +277,15 @@ CONTENT_EXPORT extern const char kWebRtcStunProbeTrialParameter[];
 extern const char kWebRtcMaxCaptureFramerate[];
 #endif
 
+#if defined(USE_GSTREAMER)
+CONTENT_EXPORT extern const char kEnableGStreamerMediaBackend[];
+CONTENT_EXPORT extern const char kDisableMediaSandbox[];
+extern const char kMediaLauncher[];
+CONTENT_EXPORT extern const char kMediaProcess[];
+CONTENT_EXPORT extern const char kMediaStartupDialog[];
+extern const char kInProcessMedia[];
+#endif
+
 #if defined(OS_ANDROID)
 CONTENT_EXPORT extern const char kDisableOverscrollEdgeEffect[];
 CONTENT_EXPORT extern const char kDisablePullToRefreshEffect[];

@@ -399,6 +399,7 @@
             'content_child.gypi',
             'content_common.gypi',
             'content_gpu.gypi',
+            'content_media.gypi',
             'content_ppapi_plugin.gypi',
             'content_renderer.gypi',
             'content_utility.gypi',
@@ -461,6 +462,12 @@
         {
           # GN version: //content/gpu
           'target_name': 'content_gpu',
+          'type': 'none',
+          'dependencies': ['content'],
+        },
+        {
+          # GN version: //content/media
+          'target_name': 'content_media',
           'type': 'none',
           'dependencies': ['content'],
         },

@@ -161,6 +161,11 @@
 #include "media/device_monitors/device_monitor_mac.h"
 #endif
 
+#if defined(USE_GSTREAMER)
+#include "content/browser/media/media_data_manager_impl.h"
+#include "content/browser/media/media_process_host.h"
+#endif
+
 #if defined(OS_POSIX) && !defined(OS_MACOSX)
 #include "content/browser/renderer_host/render_sandbox_host_linux.h"
 #include "content/browser/zygote_host/zygote_host_impl_linux.h"
@@ -1361,6 +1366,20 @@ int BrowserMainLoop::BrowserThreadsStarted() {
                    true /* force_create */));
   }
 
+#if defined(USE_GSTREAMER)
+  MediaDataManagerImpl::GetInstance()->Initialize();
+
+  if (!UsingInProcessMedia()) {
+    TRACE_EVENT_INSTANT0("media", "Post task to launch media process",
+                         TRACE_EVENT_SCOPE_THREAD);
+    BrowserThread::PostTask(
+        BrowserThread::IO, FROM_HERE,
+        base::Bind(base::IgnoreResult(&MediaProcessHost::Get),
+                   MediaProcessHost::MEDIA_PROCESS_KIND_SANDBOXED,
+                   CAUSE_FOR_MEDIA_LAUNCH_BROWSER_STARTUP));
+  }
+#endif
+
 #if defined(OS_MACOSX)
   ThemeHelperMac::GetInstance();
   SystemHotkeyHelperMac::GetInstance()->DeferredLoadSystemHotkeys();
@@ -1377,6 +1396,13 @@ bool BrowserMainLoop::UsingInProcessGpu() const {
   return parsed_command_line_.HasSwitch(switches::kSingleProcess) ||
          parsed_command_line_.HasSwitch(switches::kInProcessGPU);
 }
+
+#if defined(USE_GSTREAMER)
+bool BrowserMainLoop::UsingInProcessMedia() const {
+  return parsed_command_line_.HasSwitch(switches::kSingleProcess) ||
+         parsed_command_line_.HasSwitch(switches::kInProcessMedia);
+}
+#endif
 
 bool BrowserMainLoop::InitializeToolkit() {
   TRACE_EVENT0("startup", "BrowserMainLoop::InitializeToolkit");

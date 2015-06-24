@@ -33,6 +33,9 @@ class BrowserGpuMemoryBufferManager;
 class BrowserShutdownProfileDumper;
 class BrowserSurfaceViewManager;
 class BrowserTestBase;
+#if defined(USE_GSTREAMER)
+class MediaChannelHost;
+#endif
 class NestedMessagePumpAndroid;
 class ScopedAllowWaitForAndroidLayoutTests;
 class ScopedAllowWaitForDebugURL;
@@ -219,6 +222,9 @@ class BASE_EXPORT ThreadRestrictions {
       content::BrowserGpuChannelHostFactory;      // http://crbug.com/125248
   friend class
       content::BrowserGpuMemoryBufferManager;     // http://crbug.com/420368
+#if defined(USE_GSTREAMER)
+  friend class content::MediaChannelHost;
+#endif
   friend class content::TextInputClientMac;       // http://crbug.com/121917
   friend class dbus::Bus;                         // http://crbug.com/125222
   friend class disk_cache::BackendImpl;           // http://crbug.com/74623

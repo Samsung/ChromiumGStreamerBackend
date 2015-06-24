@@ -5,6 +5,10 @@
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 
+#if defined(USE_GSTREAMER)
+#include "base/basictypes.h"
+#endif
+
 namespace switches {
 
 // Allow users to specify a custom buffer size for debugging purpose.
@@ -100,6 +104,16 @@ const char kEnableInbandTextTracks[] = "enable-inband-text-tracks";
 // this flag will cause the tests to fail. Otherwise, they silently succeed.
 const char kRequireAudioHardwareForTesting[] =
     "require-audio-hardware-for-testing";
+
+#if defined(USE_GSTREAMER)
+const char kEnableMediaDebugging[] = "enable-media-debugging";
+
+const char* kMediaSwitches[] = {
+    kEnableMediaDebugging,
+};
+
+const int kNumMediaSwitches = arraysize(kMediaSwitches);
+#endif
 
 // Allows clients to override the threshold for when the media renderer will
 // declare the underflow state for the video stream when audio is present.

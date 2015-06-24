@@ -668,6 +668,13 @@ const FeatureEntry::Choice kSSLVersionMaxChoices[] = {
 //
 // When adding a new choice, add it to the end of the list.
 const FeatureEntry kFeatureEntries[] = {
+#if defined(USE_GSTREAMER)
+    {"enable-gstreamer-media-backend",
+     IDS_FLAGS_ENABLE_GSTREAMER_MEDIA_BACKEND_NAME,
+     IDS_FLAGS_ENABLE_GSTREAMER_MEDIA_BACKEND_DESCRIPTION,
+     kOsLinux,
+     SINGLE_VALUE_TYPE(switches::kEnableGStreamerMediaBackend)},
+#endif
     {"ignore-gpu-blacklist", IDS_FLAGS_IGNORE_GPU_BLACKLIST_NAME,
      IDS_FLAGS_IGNORE_GPU_BLACKLIST_DESCRIPTION, kOsAll,
      SINGLE_VALUE_TYPE(switches::kIgnoreGpuBlacklist)},

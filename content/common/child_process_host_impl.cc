@@ -126,8 +126,25 @@ ChildProcessHostImpl::~ChildProcessHostImpl() {
 void ChildProcessHostImpl::AddFilter(IPC::MessageFilter* filter) {
   filters_.push_back(filter);
 
+// TODO: Remove.
+// This is a temporary solution to allow adding ResourceMessageFilter
+// dynamically after the channel is created.
+// It will be removed when we find the way to use the resource storage in media
+// process.
+// See MediaProcessHost::CreateResourceMessageFilter for more details.
+#if defined(USE_GSTREAMER)
+  if (channel_) {
+    filter->OnFilterAdded(channel_.get());
+
+    // Adding filter after being connected.
+    if (peer_process_.IsValid()) {
+      filter->OnChannelConnected(peer_process_.Pid());
+    }
+  }
+#else
   if (channel_)
     filter->OnFilterAdded(channel_.get());
+#endif
 }
 
 shell::InterfaceProvider* ChildProcessHostImpl::GetRemoteInterfaces() {

@@ -915,6 +915,27 @@ const char kZygoteCmdPrefix[]               = "zygote-cmd-prefix";
 // Causes the process to run as a renderer zygote.
 const char kZygoteProcess[]                 = "zygote";
 
+#if defined(USE_GSTREAMER)
+// Enable GStreamer media backend.
+const char kEnableGStreamerMediaBackend[]   = "enable-gstreamer-media-backend";
+
+// Disable the media process sandbox.
+const char kDisableMediaSandbox[]           = "disable-media-sandbox";
+
+// Extra command line options for launching the media process (normally used
+// for debugging). Use like renderer-cmd-prefix.
+const char kMediaLauncher[]                 = "media-launcher";
+
+// Makes this process a GPU sub-process.
+const char kMediaProcess[]                  = "media-process";
+
+// Causes the media process to display a dialog on launch.
+const char kMediaStartupDialog[]            = "media-startup-dialog";
+
+// Run the GPU process as a thread in the browser process.
+const char kInProcessMedia[]                = "in-process-media";
+#endif
+
 #if defined(ENABLE_WEBRTC)
 // Disables HW decode acceleration for WebRTC.
 const char kDisableWebRtcHWDecoding[]       = "disable-webrtc-hw-decoding";

@@ -248,6 +248,9 @@ static void AdjustLinuxOOMScore(const std::string& process_type) {
     score = kPluginScore + kScoreBump;
   } else if (process_type == switches::kUtilityProcess ||
              process_type == switches::kGpuProcess ||
+#if defined(USE_GSTREAMER)
+             process_type == switches::kMediaProcess ||
+#endif
              process_type == switches::kServiceProcess) {
     score = kMiscScore;
 #ifndef DISABLE_NACL
@@ -790,6 +793,9 @@ void ChromeMainDelegate::PreSandboxStartup() {
     DCHECK(command_line.HasSwitch(switches::kLang) ||
            process_type == switches::kZygoteProcess ||
            process_type == switches::kGpuProcess ||
+#if defined(USE_GSTREAMER)
+           process_type == switches::kMediaProcess ||
+#endif
            process_type == switches::kNaClLoaderProcess ||
            process_type == switches::kPpapiBrokerProcess ||
            process_type == switches::kPpapiPluginProcess);

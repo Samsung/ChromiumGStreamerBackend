@@ -59,6 +59,9 @@ class AudioRendererHost;
 class BrowserCdmManager;
 class BrowserDemuxerAndroid;
 class InProcessChildThreadParams;
+#if defined(USE_GSTREAMER)
+class MediaMessageFilter;
+#endif
 class MessagePortMessageFilter;
 class MojoChildConnection;
 class NotificationMessageFilter;
@@ -451,6 +454,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // The filter for Web Notification messages coming from the renderer. Holds a
   // closure per notification that must be freed when the notification closes.
   scoped_refptr<NotificationMessageFilter> notification_message_filter_;
+
+#if defined(USE_GSTREAMER)
+  // The filter for media related messages coming from the renderer.
+  MediaMessageFilter* media_message_filter_;
+#endif
 
   // Used in single-process mode.
   std::unique_ptr<base::Thread> in_process_renderer_;

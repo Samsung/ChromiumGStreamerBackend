@@ -327,6 +327,7 @@ bool LinuxSandbox::InitializeSandboxImpl() {
 
     // The GPU process is allowed to call InitializeSandbox() with threads.
     bool sandbox_failure_fatal = process_type != switches::kGpuProcess;
+
     // This can be disabled with the '--gpu-sandbox-failures-fatal' flag.
     // Setting the flag with no value or any value different than 'yes' or 'no'
     // is equal to setting '--gpu-sandbox-failures-fatal=yes'.
