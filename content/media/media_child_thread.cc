@@ -104,6 +104,9 @@ void MediaChildThread::Shutdown() {
   logging::SetLogMessageHandler(NULL);
 
   gl_thread_.reset();
+
+  if (gpu_channel_.get())
+    gpu_channel_->DestroyChannel();
 }
 
 void MediaChildThread::Init(const base::Time& process_start_time) {
