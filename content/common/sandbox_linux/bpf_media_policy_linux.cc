@@ -265,6 +265,12 @@ ResultExpr MediaProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_uname:
       return Allow();
 
+    // Pulse audio, see pulsecore/core-utils.c::pa_make_secure_dir
+    case __NR_lstat:
+    case __NR_mkdir:
+    case __NR_fchown:
+      return Allow();
+
 // SECCOMP_RET_TRAP:
 // Send a catchable SIGSYS, giving a chance to emulate the
 // syscall. Emulation is done in the media broker process.
@@ -387,6 +393,8 @@ void MediaProcessPolicy::InitMediaBrokerProcess(
   static const char kDevShmPath[] = "/dev/shm/";
   static const char kUsrLibPulseModulesPath[] = "/usr/lib/pulse-4.0/modules/";
   static const char kEtcPulsePath[] = "/etc/pulse/";
+  static const std::string kDevRunUserPulse =
+      std::string(getenv("XDG_RUNTIME_DIR")) + "/pulse";
   static const std::string kDevRunUserPulsePath =
       std::string(getenv("XDG_RUNTIME_DIR")) + "/pulse/";
   static const std::string kHomePulsePath =
@@ -434,6 +442,8 @@ void MediaProcessPolicy::InitMediaBrokerProcess(
   permissions.push_back(
       BrokerFilePermission::ReadOnlyRecursive(kUsrLibPulseModulesPath));
   permissions.push_back(BrokerFilePermission::ReadOnlyRecursive(kEtcPulsePath));
+  permissions.push_back(BrokerFilePermission::ReadWriteCreate(
+      kDevRunUserPulse));
   permissions.push_back(BrokerFilePermission::ReadWriteCreateUnlinkRecursive(
       kDevRunUserPulsePath));
 
