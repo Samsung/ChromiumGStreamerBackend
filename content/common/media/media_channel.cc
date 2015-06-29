@@ -80,8 +80,6 @@ bool MediaChannel::OnMessageReceived(const IPC::Message& message) {
 }
 
 void MediaChannel::OnChannelError() {
-  channel_filter_->RemoveChannel(client_id_);
-
   for (MediaPlayerMap::iterator iter = media_players_.begin();
        iter != media_players_.end(); ++iter) {
     MediaPlayerGStreamer* player = iter->second;
@@ -91,6 +89,8 @@ void MediaChannel::OnChannelError() {
   }
 
   media_players_.clear();
+
+  channel_filter_->RemoveChannel(client_id_);
 }
 
 MediaPlayerGStreamer* MediaChannel::GetMediaPlayer(int player_id) {
