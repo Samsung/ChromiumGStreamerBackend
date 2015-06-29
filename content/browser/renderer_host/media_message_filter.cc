@@ -18,7 +18,7 @@ MediaMessageFilter::MediaMessageFilter(int render_process_id)
       render_process_id_(render_process_id),
       weak_ptr_factory_(this) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  printf("%s:%d\n", __PRETTY_FUNCTION__, __LINE__);
+  DVLOG(1) << __FUNCTION__ << "(Create MediaMessageFilter)";
 }
 
 MediaMessageFilter::~MediaMessageFilter() {
@@ -38,12 +38,12 @@ bool MediaMessageFilter::OnMessageReceived(const IPC::Message& message) {
 void MediaMessageFilter::OnEstablishMediaChannel(
     CauseForMediaLaunch cause_for_media_launch,
     IPC::Message* reply_ptr) {
-  printf("%s:%d\n", __PRETTY_FUNCTION__, __LINE__);
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   scoped_ptr<IPC::Message> reply(reply_ptr);
 
   MediaProcessHost* host = MediaProcessHost::FromID(media_process_id_);
   if (!host) {
+    DVLOG(1) << __FUNCTION__ << "(Launching Media Process)";
     host = MediaProcessHost::Get(MediaProcessHost::MEDIA_PROCESS_KIND_SANDBOXED,
                                  cause_for_media_launch);
     if (!host) {
@@ -55,7 +55,7 @@ void MediaMessageFilter::OnEstablishMediaChannel(
     media_process_id_ = host->host_id();
   }
 
-  printf("%s:%d(%d)\n", __PRETTY_FUNCTION__, __LINE__, media_process_id_);
+  DVLOG(1) << __FUNCTION__ << "(Establishing channel)";
 
   host->EstablishMediaChannel(
       render_process_id_,
@@ -67,11 +67,10 @@ void MediaMessageFilter::EstablishChannelCallback(
     scoped_ptr<IPC::Message> reply,
     const IPC::ChannelHandle& channel) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  printf("%s:%d\n", __PRETTY_FUNCTION__, __LINE__);
+  DVLOG(1) << __FUNCTION__ << "(Media channel established)";
   MediaHostMsg_EstablishMediaChannel::WriteReplyParams(
       reply.get(), render_process_id_, channel);
   Send(reply.release());
-  printf("%s:%d\n", __PRETTY_FUNCTION__, __LINE__);
 }
 
 }  // namespace content
