@@ -246,10 +246,12 @@ void MediaPlayerGStreamer::SetupContextProvider() {
   provider_ = static_cast<MediaChildThread*>(MediaChildThread::current())
                   ->CreateSharedContextProvider();
 
-  gl_task_runner_->PostTask(FROM_HERE,
+  if (provider_) {
+    gl_task_runner_->PostTask(FROM_HERE,
                             base::Bind(&MediaPlayerGStreamer::SetupGLContext,
                                        weak_factory_.GetWeakPtr()));
-  gl_thread_condition_.wait(lock);
+    gl_thread_condition_.wait(lock);
+  }
 }
 
 void MediaPlayerGStreamer::SetupGLContext() {
@@ -331,7 +333,7 @@ gboolean MediaPlayerGStreamer::SyncMessage(GstBus* bus, GstMessage* msg) {
 
       DVLOG(1) << __FUNCTION__ << "(Need context: " << context_type << ")";
 
-      if (g_strcmp0(context_type, GST_GL_DISPLAY_CONTEXT_TYPE) == 0) {
+      if (gst_gl_display_ && g_strcmp0(context_type, GST_GL_DISPLAY_CONTEXT_TYPE) == 0) {
         GstContext* display_context =
             gst_context_new(GST_GL_DISPLAY_CONTEXT_TYPE, TRUE);
         gst_context_set_gl_display(display_context, gst_gl_display_);
@@ -471,10 +473,14 @@ void MediaPlayerGStreamer::Seek(const base::TimeDelta& delta) {
 }
 
 void MediaPlayerGStreamer::Stop() {
-  std::unique_lock<std::mutex> lock(stop_mutex_);
-  main_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&MediaPlayerGStreamer::DoStop, AsWeakPtr()));
-  stop_condition_.wait(lock);
+  if (MediaChildThread::current()) {
+    DoStop();
+  } else {
+    std::unique_lock<std::mutex> lock(stop_mutex_);
+    main_task_runner_->PostTask(
+        FROM_HERE, base::Bind(&MediaPlayerGStreamer::DoStop, AsWeakPtr()));
+    stop_condition_.wait(lock);
+  }
 }
 
 void MediaPlayerGStreamer::ReleaseTexture(unsigned texture_id) {
