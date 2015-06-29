@@ -1,0 +1,69 @@
+/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.cast-mode {
+  -webkit-padding-start: 5px;
+  cursor: pointer;
+  font-size: 1.0em;
+}
+
+.cast-mode:hover {
+  background-color: rgb(187, 206, 236);
+  border: 0;
+}
+
+#cast-mode-list {
+  -webkit-user-select: none;
+  color: rgb(44, 44, 44);
+  margin: 0;
+}
+
+#container-header.cast-mode {
+  /* TODO(kdresner): Update this when we get a real color. */
+  background-color: rgb(244, 67, 54);
+}
+
+#container-header.filter {
+  background-color: rgb(57, 73, 171);
+}
+
+#container-header.route-details {
+  display: none;
+}
+
+#container-header.sink-list {
+  background-color: rgb(33, 150, 243);
+}
+
+#header-text {
+  -webkit-padding-start: 5px;
+  flex-grow: 1;
+  font-size: 1.4em;
+  margin: 0;
+}
+
+.sink {
+  -webkit-user-select: none;
+  cursor: pointer;
+  font-size: 1.0em;
+}
+
+.sink:hover {
+  background-color: rgb(187, 206, 236);
+  border: 0;
+}
+
+.sink-icon {
+  -webkit-padding-end: 10px;
+}
+
+#sink-list {
+  margin: 0;
+  max-height: 275px;
+  overflow-y: scroll;
+}
+
+.route {
+  color: rgb(119, 119, 119);
+}

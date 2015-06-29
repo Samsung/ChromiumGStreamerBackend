@@ -1,0 +1,10 @@
+include_rules = [
+  # Needed for P2PInvalidationService construction.
+  "+jingle/notifier",
+
+  # Needed for InvalidationController JNI methods.
+  "+chrome/jni/InvalidationController_jni.h",
+
+  "+components/gcm_driver",
+  "+components/invalidation",
+]

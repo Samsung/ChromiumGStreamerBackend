@@ -1,0 +1,102 @@
+// Copyright 2011 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CC_SCHEDULER_DELAY_BASED_TIME_SOURCE_H_
+#define CC_SCHEDULER_DELAY_BASED_TIME_SOURCE_H_
+
+#include <string>
+
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
+#include "cc/base/cc_export.h"
+
+namespace base {
+namespace trace_event {
+class TracedValue;
+}
+class SingleThreadTaskRunner;
+}
+
+namespace cc {
+
+class CC_EXPORT TimeSourceClient {
+ public:
+  virtual void OnTimerTick() = 0;
+
+ protected:
+  virtual ~TimeSourceClient() {}
+};
+
+// This timer implements a time source that achieves the specified interval
+// in face of millisecond-precision delayed callbacks and random queueing
+// delays. DelayBasedTimeSource uses base::TimeTicks::Now as its timebase.
+class CC_EXPORT DelayBasedTimeSource {
+ public:
+  static scoped_ptr<DelayBasedTimeSource> Create(
+      base::TimeDelta interval,
+      base::SingleThreadTaskRunner* task_runner) {
+    return make_scoped_ptr(new DelayBasedTimeSource(interval, task_runner));
+  }
+
+  virtual ~DelayBasedTimeSource();
+
+  virtual void SetClient(TimeSourceClient* client);
+
+  // TimeSource implementation
+  virtual void SetTimebaseAndInterval(base::TimeTicks timebase,
+                                      base::TimeDelta interval);
+  base::TimeDelta Interval() const { return next_parameters_.interval; }
+
+  virtual base::TimeTicks SetActive(bool active);
+  virtual bool Active() const;
+
+  // Get the last and next tick times. NextTickTime() returns null when
+  // inactive.
+  virtual base::TimeTicks LastTickTime() const;
+  virtual base::TimeTicks NextTickTime() const;
+
+  // Virtual for testing.
+  virtual base::TimeTicks Now() const;
+
+  virtual void AsValueInto(base::trace_event::TracedValue* dict) const;
+
+ protected:
+  DelayBasedTimeSource(base::TimeDelta interval,
+                       base::SingleThreadTaskRunner* task_runner);
+
+  virtual std::string TypeString() const;
+
+  base::TimeTicks NextTickTarget(base::TimeTicks now);
+  void PostNextTickTask(base::TimeTicks now);
+  void OnTimerFired();
+
+  struct Parameters {
+    Parameters(base::TimeDelta interval, base::TimeTicks tick_target)
+        : interval(interval), tick_target(tick_target) {}
+    base::TimeDelta interval;
+    base::TimeTicks tick_target;
+  };
+
+  TimeSourceClient* client_;
+  base::TimeTicks last_tick_time_;
+
+  // current_parameters_ should only be written by PostNextTickTask.
+  // next_parameters_ will take effect on the next call to PostNextTickTask.
+  // Maintaining a pending set of parameters allows NextTickTime() to always
+  // reflect the actual time we expect OnTimerFired to be called.
+  Parameters current_parameters_;
+  Parameters next_parameters_;
+
+  bool active_;
+
+  base::SingleThreadTaskRunner* task_runner_;
+  base::WeakPtrFactory<DelayBasedTimeSource> weak_factory_;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(DelayBasedTimeSource);
+};
+
+}  // namespace cc
+
+#endif  // CC_SCHEDULER_DELAY_BASED_TIME_SOURCE_H_

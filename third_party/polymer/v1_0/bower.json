@@ -1,0 +1,13 @@
+{
+  "name": "chromium",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#~v1.0.0",
+    "polymer-externs": "PolymerLabs/polymer-externs#~1.0.0",
+
+    "iron-elements": "PolymerElements/iron-elements#~1.0.0",
+    "paper-elements": "PolymerElements/paper-elements#~1.0.0",
+    "more-routing": "PolymerLabs/more-routing#^1.0.0",
+    "web-animations-js": "web-animations/web-animations-js#^2.0.0"
+  }
+}

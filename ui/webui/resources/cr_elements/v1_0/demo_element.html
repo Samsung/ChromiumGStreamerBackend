@@ -1,0 +1,71 @@
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+<link rel="import" href="chrome://resources/cr_elements/v1_0/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/v1_0/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/cr_elements/v1_0/cr_collapse/cr_collapse.html">
+<link rel="import" href="chrome://resources/cr_elements/v1_0/cr_expand_button/cr_expand_button.html">
+<link rel="import" href="chrome://resources/cr_elements/v1_0/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/cr_elements/v1_0/cr_network_icon/cr_network_icon.html">
+<link rel="import" href="chrome://resources/cr_elements/v1_0/cr_onc/cr_onc_types.html">
+<link rel="import" href="chrome://resources/cr_elements/v1_0/cr_toggle_button/cr_toggle_button.html">
+
+<dom-module id="cr-demo-element">
+  <template>
+    <div class="layout vertical">
+      <h3>cr-button</h3>
+      <cr-button>Button</cr-button>
+      <cr-button raised>Raised Button</cr-button>
+      <cr-button toggles>Toggle Button</cr-button>
+    </div>
+    <div>
+      <h3>cr-checkbox</h3>
+      <cr-checkbox checked="{{checkboxChecked}}">Checkbox</cr-checkbox>
+      <cr-checkbox checked="{{checkboxChecked}}">
+        <span>{{label}}</span>&nbsp;
+        <span>{{subLabel}}</span>
+      </cr-checkbox>
+    </div>
+    <div>
+      <h3>cr-collapse</h3>
+      <div class="layout horizontal center">
+        <span>Collapse 1</span>
+        <cr-expand-button expanded="{{collapseOpened}}"></cr-expand-button>
+      </div>
+      <cr-collapse opened="[[collapseOpened]]">
+        <div class="layout vertical">
+          <span>Collapsable Section 1</span>
+          <cr-checkbox>Advanced option 1</cr-checkbox>
+          <cr-checkbox>Advanced option 2</cr-checkbox>
+        </div>
+      </cr-collapse>
+      <cr-button toggles active="{{collapseOpened2}}">
+        Collapse 2
+      </cr-button>
+      <cr-collapse opened="[[collapseOpened2]]">
+        <div class="layout vertical">
+          <span>Collapsable Section 2</span>
+        </div>
+      </cr-collapse>
+    </div>
+    <div>
+      <h3>cr-input</h3>
+      <cr-input label="Input" value="{{inputValue}}"></cr-input>
+      <span>Input.value=</span><span>{{inputValue}}</span>
+    </div>
+    <div>
+      <h3>cr-network-icon</h3>
+      <cr-network-icon network-type="WiFi"></cr-network-icon>
+    </div>
+    <div>
+      <h3>cr-toggle-button</h3>
+      <div>
+        <cr-toggle-button checked="{{toggleButtonChecked}}"></cr-toggle-button>
+        <span>Toggle Button</span>
+      </div>
+      <div>
+        <span>Bound Checkbox</span>
+        <cr-checkbox checked="{{toggleButtonChecked}}"></cr-checkbox>
+      </div>
+    </div>
+  </template>
+  <script src="demo_element.js"></script>
+</dom-module>

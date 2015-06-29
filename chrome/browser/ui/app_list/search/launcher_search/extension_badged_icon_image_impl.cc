@@ -1,0 +1,71 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/app_list/search/launcher_search/extension_badged_icon_image_impl.h"
+
+#include "chrome/browser/extensions/extension_util.h"
+#include "extensions/browser/image_loader.h"
+#include "extensions/common/file_util.h"
+#include "extensions/common/manifest_handlers/icons_handler.h"
+
+namespace app_list {
+
+ExtensionBadgedIconImageImpl::ExtensionBadgedIconImageImpl(
+    const GURL& custom_icon_url,
+    Profile* profile,
+    const extensions::Extension* extension,
+    const int icon_dimension,
+    scoped_ptr<chromeos::launcher_search_provider::ErrorReporter>
+        error_reporter)
+    : ExtensionBadgedIconImage(custom_icon_url,
+                               profile,
+                               extension,
+                               icon_dimension,
+                               error_reporter.Pass()),
+      weak_ptr_factory_(this) {
+}
+
+ExtensionBadgedIconImageImpl::~ExtensionBadgedIconImageImpl() {
+}
+
+const gfx::ImageSkia& ExtensionBadgedIconImageImpl::LoadExtensionIcon() {
+  extension_icon_image_.reset(new extensions::IconImage(
+      profile_, extension_, extensions::IconsInfo::GetIcons(extension_),
+      icon_size_.width(), extensions::util::GetDefaultExtensionIcon(), this));
+
+  return extension_icon_image_->image_skia();
+}
+
+void ExtensionBadgedIconImageImpl::LoadIconResourceFromExtension() {
+  const base::FilePath& file_path =
+      extensions::file_util::ExtensionURLToRelativeFilePath(icon_url_);
+  const extensions::ExtensionResource& resource =
+      extension_->GetResource(file_path);
+
+  // Load image as scale factor 2.0. Resizing image to proper size depending on
+  // DPI is done in BadgedIconSource.
+  std::vector<extensions::ImageLoader::ImageRepresentation> info_list;
+  info_list.push_back(extensions::ImageLoader::ImageRepresentation(
+      resource,
+      extensions::ImageLoader::ImageRepresentation::RESIZE_WHEN_LARGER,
+      gfx::Size(icon_size_.width() * 2, icon_size_.height() * 2),
+      ui::SCALE_FACTOR_200P));
+  extensions::ImageLoader::Get(profile_)->LoadImagesAsync(
+      extension_, info_list,
+      base::Bind(&ExtensionBadgedIconImageImpl::OnCustomIconImageLoaded,
+                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ExtensionBadgedIconImageImpl::OnExtensionIconImageChanged(
+    extensions::IconImage* image) {
+  DCHECK_EQ(extension_icon_image_, image);
+  OnExtensionIconChanged(extension_icon_image_->image_skia());
+}
+
+void ExtensionBadgedIconImageImpl::OnCustomIconImageLoaded(
+    const gfx::Image& image) {
+  OnCustomIconLoaded(image.AsImageSkia());
+}
+
+}  // namespace app_list

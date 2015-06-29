@@ -1,0 +1,15 @@
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-item/paper-item.html">
+
+<dom-module id="viewer-bookmark" attributes="bookmark">
+  <link rel="import" type="css" href="viewer-bookmark.css">
+  <template>
+    <paper-item on-click="onClick">{{bookmark.title}}</paper-item>
+      <div class="sub-bookmark">
+        <template is="dom-repeat" items="{{bookmark.children}}">
+          <viewer-bookmark bookmark="{{item}}"></viewer-bookmark>
+        </template>
+      </div>
+  </template>
+</dom-module>
+<script src="viewer-bookmark.js"></script>

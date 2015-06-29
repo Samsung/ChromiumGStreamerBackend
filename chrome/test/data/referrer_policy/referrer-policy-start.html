@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function run() {
+  var kPolicy = 1;
+  var kPort = 2;
+  var kSslPort = 3;
+  var kRedirect = 4;
+  var kLink = 5;
+  var kTarget = 6;
+  var re = new RegExp("policy=(.*)&port=(.*)&ssl_port=(.*)&redirect=(.*)&" +
+                      "link=(.*)&target=(.*)");
+  var matches = re.exec(document.location.search);
+
+  if (matches == null) {
+    document.body.innerText = "Could not parse parameters!";
+    return;
+  }
+
+  if (matches[kPolicy] != "no-meta") {
+    var meta = document.createElement("meta");
+    meta.name = "referrer";
+    meta.content = matches[kPolicy];
+    document.head.appendChild(meta);
+  }
+
+  var destination;
+
+  if (matches[kRedirect] == "none") {
+    destination = "http://127.0.0.1:" + matches[kPort] +
+                  "/files/referrer-policy-log.html";
+  } else if (matches[kRedirect] == "http2http") {
+    destination = "http://127.0.0.1:" + matches[kPort] +
+                  "/server-redirect?http://127.0.0.1:" + matches[kPort] +
+                  "/files/referrer-policy-log.html";
+  } else if (matches[kRedirect] == "http2https") {
+    destination = "http://127.0.0.1:" + matches[kPort] +
+                  "/server-redirect?https://127.0.0.1:" + matches[kSslPort] +
+                  "/files/referrer-policy-log.html";
+  } else if (matches[kRedirect] == "https2http") {
+    destination = "https://127.0.0.1:" + matches[kSslPort] +
+                  "/server-redirect?http://127.0.0.1:" + matches[kPort] +
+                  "/files/referrer-policy-log.html";
+  } else if (matches[kRedirect] == "echoheader") {
+    destination = "http://127.0.0.1:" + matches[kPort] + "/echoheader?Referer";
+  }
+
+  if (matches[kLink] == "true") {
+    var link = document.createElement("a");
+    link.innerText = "link";
+    link.target = matches[kTarget];
+    link.href = destination;
+    document.body.appendChild(link);
+  } else {
+    document.location = destination;
+  }
+}
+</script>
+</head>
+<body onload="run()">
+</body>
+</html>
