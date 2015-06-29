@@ -86,8 +86,6 @@ void MediaChannelFilter::OnEstablishChannel(int client_id) {
 
 void MediaChannelFilter::OnCloseChannel(
     const IPC::ChannelHandle& channel_handle) {
-  printf("[%p, %d, %p]%s:%d\n", this, (int)pthread_self(),
-         base::MessageLoop::current(), __PRETTY_FUNCTION__, __LINE__);
   for (MediaChannelMap::iterator iter = media_channels_.begin();
        iter != media_channels_.end(); ++iter) {
     if (iter->second->GetChannelName() == channel_handle.name) {
