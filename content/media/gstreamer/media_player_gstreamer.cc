@@ -186,6 +186,7 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
       gst_gl_context_(nullptr),
       seek_time_(GST_CLOCK_TIME_NONE),
       weak_factory_(this) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
   GstElementFactory* srcFactory = gst_element_factory_find("chromiumhttpsrc");
   if (!srcFactory) {
     gst_element_register(0, "chromiumhttpsrc", GST_RANK_PRIMARY + 200,
@@ -228,9 +229,11 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
   gst_object_unref(bus);
   gst_object_unref(pipeline);
 
-  main_task_runner_->PostTask(
-      FROM_HERE,
-      base::Bind(&MediaPlayerGStreamer::SetupContextProvider, AsWeakPtr()));
+  provider_ = static_cast<MediaChildThread*>(MediaChildThread::current())
+                  ->CreateSharedContextProvider();
+
+  if (provider_)
+    SetupContextProvider();
 }
 
 MediaPlayerGStreamer::~MediaPlayerGStreamer() {
@@ -243,15 +246,11 @@ MediaPlayerGStreamer::~MediaPlayerGStreamer() {
 
 void MediaPlayerGStreamer::SetupContextProvider() {
   std::unique_lock<std::mutex> lock(gl_thread_mutex_);
-  provider_ = static_cast<MediaChildThread*>(MediaChildThread::current())
-                  ->CreateSharedContextProvider();
 
-  if (provider_) {
-    gl_task_runner_->PostTask(FROM_HERE,
-                            base::Bind(&MediaPlayerGStreamer::SetupGLContext,
-                                       weak_factory_.GetWeakPtr()));
-    gl_thread_condition_.wait(lock);
-  }
+  gl_task_runner_->PostTask(FROM_HERE,
+      base::Bind(&MediaPlayerGStreamer::SetupGLContext, weak_factory_.GetWeakPtr()));
+
+  gl_thread_condition_.wait(lock);
 }
 
 void MediaPlayerGStreamer::SetupGLContext() {
