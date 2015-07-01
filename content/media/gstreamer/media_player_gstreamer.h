@@ -102,6 +102,8 @@ class MediaPlayerGStreamer
   void OnBufferingUpdated(int percent);
   void OnError(int error);
 
+  void DoReleaseTexture(unsigned texture_id);
+
   GstGLContext* GstgldisplayCreateContextCallback(GstGLDisplay* display,
                                                   GstGLContext* other_context);
   bool GlimagesinkDrawCallback(GstElement* sink,
