@@ -453,6 +453,8 @@ void WebMediaPlayerGStreamer::OnMediaError(int error) {
   }
 
   // TODO: Convert error SetNetworkState(error);
+  // but for now at least notify client_ there is an error.
+  SetNetworkState(WebMediaPlayer::NetworkStateFormatError);
 }
 
 void WebMediaPlayerGStreamer::OnVideoSizeChanged(int width, int height) {
