@@ -349,19 +349,6 @@ gboolean MediaPlayerGStreamer::SyncMessage(GstBus* bus, GstMessage* msg) {
   return FALSE;
 }
 
-void MediaPlayerGStreamer::DoReleaseTexture(unsigned texture_id) {
-  GstSampleMap::iterator iter = samples_.find(texture_id);
-  if (iter != samples_.end()) {
-    GstSample* sample = iter->second;
-    if (sample) {
-      DVLOG(1) << __FUNCTION__ << "(Releasing texture id: " << texture_id
-               << ")";
-      iter->second = nullptr;
-      gst_sample_unref(sample);
-    }
-  }
-}
-
 GstGLContext* MediaPlayerGStreamer::GstgldisplayCreateContextCallback(
     GstGLDisplay* display,
     GstGLContext* other_context) {
@@ -416,24 +403,27 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
   return true;
 }
 
-void MediaPlayerGStreamer::DoLoad() {
+void MediaPlayerGStreamer::Load(GURL url) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  url_ = url;
   gst_player_set_uri(player_, url_.spec().c_str());
   gst_player_pause(player_);
 }
 
-void MediaPlayerGStreamer::DoPlay() {
+void MediaPlayerGStreamer::Play() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   gst_player_play(player_);
 }
 
-void MediaPlayerGStreamer::DoPause() {
+void MediaPlayerGStreamer::Pause() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   gst_player_pause(player_);
 }
 
-void MediaPlayerGStreamer::DoSeek(const base::TimeDelta& delta) {
+void MediaPlayerGStreamer::Seek(const base::TimeDelta& delta) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   GstClockTime seek_time = delta.InMicroseconds() * 1000;
@@ -443,49 +433,26 @@ void MediaPlayerGStreamer::DoSeek(const base::TimeDelta& delta) {
   }
 }
 
-void MediaPlayerGStreamer::DoStop() {
+void MediaPlayerGStreamer::Stop() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   std::unique_lock<std::mutex> lock(stop_mutex_);
 
   gst_player_stop(player_);
-}
-
-void MediaPlayerGStreamer::Load(GURL url) {
-  url_ = url;
-  main_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&MediaPlayerGStreamer::DoLoad, AsWeakPtr()));
-}
-
-void MediaPlayerGStreamer::Play() {
-  main_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&MediaPlayerGStreamer::DoPlay, AsWeakPtr()));
-}
-
-void MediaPlayerGStreamer::Pause() {
-  main_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&MediaPlayerGStreamer::DoPause, AsWeakPtr()));
-}
-
-void MediaPlayerGStreamer::Seek(const base::TimeDelta& delta) {
-  main_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&MediaPlayerGStreamer::DoSeek, AsWeakPtr(), delta));
-}
-
-void MediaPlayerGStreamer::Stop() {
-  if (MediaChildThread::current()) {
-    DoStop();
-  } else {
-    std::unique_lock<std::mutex> lock(stop_mutex_);
-    main_task_runner_->PostTask(
-        FROM_HERE, base::Bind(&MediaPlayerGStreamer::DoStop, AsWeakPtr()));
-    stop_condition_.wait(lock);
-  }
+  stop_condition_.wait(lock);
 }
 
 void MediaPlayerGStreamer::ReleaseTexture(unsigned texture_id) {
-  main_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&MediaPlayerGStreamer::DoReleaseTexture,
-                            AsWeakPtr(), texture_id));
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  GstSampleMap::iterator iter = samples_.find(texture_id);
+  if (iter != samples_.end()) {
+    GstSample* sample = iter->second;
+    if (sample) {
+      DVLOG(1) << __FUNCTION__ << "(Releasing texture id: " << texture_id << ")";
+      iter->second = nullptr;
+      gst_sample_unref(sample);
+    }
+  }
 }
 
 void MediaPlayerGStreamer::DidLoad() {
