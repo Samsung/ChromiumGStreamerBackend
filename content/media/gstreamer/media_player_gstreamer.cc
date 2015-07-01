@@ -359,6 +359,19 @@ gboolean MediaPlayerGStreamer::SyncMessage(GstBus* bus, GstMessage* msg) {
   return FALSE;
 }
 
+void MediaPlayerGStreamer::DoReleaseTexture(unsigned texture_id) {
+  GstSampleMap::iterator iter = samples_.find(texture_id);
+  if (iter != samples_.end()) {
+    GstSample* sample = iter->second;
+    if (sample) {
+      DVLOG(1) << __FUNCTION__ << "(Releasing texture id: " << texture_id
+               << ")";
+      iter->second = nullptr;
+      gst_sample_unref(sample);
+    }
+  }
+}
+
 GstGLContext* MediaPlayerGStreamer::GstgldisplayCreateContextCallback(
     GstGLDisplay* display,
     GstGLContext* other_context) {
@@ -454,15 +467,9 @@ void MediaPlayerGStreamer::Stop() {
 void MediaPlayerGStreamer::ReleaseTexture(unsigned texture_id) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  GstSampleMap::iterator iter = samples_.find(texture_id);
-  if (iter != samples_.end()) {
-    GstSample* sample = iter->second;
-    if (sample) {
-      DVLOG(1) << __FUNCTION__ << "(Releasing texture id: " << texture_id << ")";
-      iter->second = nullptr;
-      gst_sample_unref(sample);
-    }
-  }
+  gl_task_runner_->PostTask(
+      FROM_HERE, base::Bind(&MediaPlayerGStreamer::DoReleaseTexture,
+                            AsWeakPtr(), texture_id));
 }
 
 void MediaPlayerGStreamer::DidLoad() {
