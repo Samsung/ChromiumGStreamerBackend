@@ -232,8 +232,18 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
   provider_ = static_cast<MediaChildThread*>(MediaChildThread::current())
                   ->CreateSharedContextProvider();
 
-  if (provider_)
-    SetupContextProvider();
+  if (!provider_) {
+    DVLOG(1) << __FUNCTION__ << "(Failed to create context provider)";
+    OnError(0);
+    return;
+  }
+
+  SetupContextProvider();
+
+  if (!gst_gl_context_) {
+    DVLOG(1) << __FUNCTION__ << "(Failed to create GstGL context)";
+    OnError(0);
+  }
 }
 
 MediaPlayerGStreamer::~MediaPlayerGStreamer() {
