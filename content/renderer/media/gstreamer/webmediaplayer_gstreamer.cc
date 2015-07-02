@@ -554,11 +554,10 @@ void WebMediaPlayerGStreamer::play() {
 
   media_log_->AddEvent(media_log_->CreateEvent(MediaLogEvent::PLAY));
 
-  if (delegate_ && playback_rate_ > 0)
-    delegate_->DidPlay(this);
-
-  message_dispatcher_.SendStart();
-  UpdatePlayingState(true);
+  if (playback_rate_ > 0) {
+    message_dispatcher_.SendStart();
+    UpdatePlayingState(true);
+  }
 }
 
 void WebMediaPlayerGStreamer::pause() {
