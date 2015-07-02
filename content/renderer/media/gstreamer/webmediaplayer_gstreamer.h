@@ -254,6 +254,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   // Accessed on main thread and on compositor thread when main thread is
   // blocked.
   cc::VideoFrameProvider::Client* video_frame_provider_client_;
+  const scoped_refptr<base::SingleThreadTaskRunner> compositor_loop_;
   scoped_ptr<cc_blink::WebLayerImpl> video_weblayer_;
   scoped_refptr<media::VideoFrame> current_frame_;
   base::Lock current_frame_lock_;
