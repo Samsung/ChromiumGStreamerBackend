@@ -96,6 +96,8 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* src,
                                          guint length,
                                          GstBuffer* buf);
 
+static void onResetDataSource(GstBaseSrc* basesrc);
+
 #define chromium_http_src_parent_class parent_class
 #define CHROMIUM_HTTP_SRC_CATEGORY_INIT                                  \
   GST_DEBUG_CATEGORY_INIT(chromium_http_src_debug, "chromiumhttpsrc", 0, \
@@ -218,7 +220,7 @@ static void chromium_http_src_init(ChromiumHttpSrc* src) {
   ChromiumHttpSrcPrivate* priv = CHROMIUM_HTTP_SRC_GET_PRIVATE(src);
   src->priv = priv;
 
-  priv->data_source_ = 0;
+  priv->data_source_ = nullptr;
   priv->data_source_initialized_ = false;
 
   priv->aborted_ = new base::WaitableEvent{true, false};
@@ -236,7 +238,7 @@ static void chromiumHttpSrcDispose(GObject* object) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(object);
   ChromiumHttpSrcPrivate* priv = src->priv;
 
-  priv->data_source_ = 0;
+  priv->data_source_ = nullptr;
   priv->data_source_initialized_ = false;
 
   GST_CALL_PARENT(G_OBJECT_CLASS, dispose, (object));
@@ -453,22 +455,34 @@ static gboolean chromiumHttpSrcStop(GstBaseSrc* basesrc) {
 
   GST_OBJECT_LOCK(src);
 
-  priv->data_source_initialized_ = false;
+  {
+    std::unique_lock<std::mutex> lock(priv->mutex_data_source_);
 
-  if (priv->data_source_)
+    if (priv->data_source_)
+    // Can be called in any thread.
     priv->data_source_->Stop();
 
-  g_free(priv->iradioName);
-  priv->iradioName = 0;
+    if (priv->data_source_initialized_) {
+      // media::BufferedDataSource has to be released where it has been attached.
+      priv->main_task_runner_->PostTask(FROM_HERE,
+                                            base::Bind(&onResetDataSource, basesrc));
+      priv->condition_data_source_.wait(lock);
 
-  g_free(priv->iradioGenre);
-  priv->iradioGenre = 0;
+      DCHECK(priv->data_source_ == nullptr);
+    }
 
-  g_free(priv->iradioUrl);
-  priv->iradioUrl = 0;
+    g_free(priv->iradioName);
+    priv->iradioName = 0;
 
-  g_free(priv->iradioTitle);
-  priv->iradioTitle = 0;
+    g_free(priv->iradioGenre);
+    priv->iradioGenre = 0;
+
+    g_free(priv->iradioUrl);
+    priv->iradioUrl = 0;
+
+    g_free(priv->iradioTitle);
+    priv->iradioTitle = 0;
+  }
 
   GST_OBJECT_UNLOCK(src);
   return TRUE;
@@ -560,6 +574,14 @@ static void onNotifyDownloading(GstBaseSrc* basesrc, bool is_downloading) {
 static void onResetDataSource(GstBaseSrc* basesrc) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
+
+  if (priv->data_source_initialized_) {
+    // The callback has been spwan to released the data source.
+    priv->data_source_ = nullptr;
+    priv->data_source_initialized_ = false;
+    priv->condition_data_source_.notify_one();
+    return;
+  }
 
   GST_DEBUG("Preparing data source for uri: %s", priv->uri);
 
