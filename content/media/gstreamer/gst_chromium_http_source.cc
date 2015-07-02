@@ -25,10 +25,33 @@ static scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 #define CHROMIUM_HTTP_SRC_GET_PRIVATE(obj)                    \
   (G_TYPE_INSTANCE_GET_PRIVATE((obj), CHROMIUM_TYPE_HTTP_SRC, \
                                ChromiumHttpSrcPrivate))
+
+// Inspired from WTF/wtf/glib/GUniquePtr.h
+// TODO: move this in a separate header and handle all types.
+template<typename T>
+struct GPtrDeleter {
+  void operator()(T* ptr) const { g_free(ptr); }
+};
+
+template<typename T>
+using GUniquePtr = std::unique_ptr<T, GPtrDeleter<T>>;
+
+#define WTF_DEFINE_GPTR_DELETER(typeName, deleterFunc) \
+  template<> struct GPtrDeleter<typeName> \
+  { \
+    void operator() (typeName* ptr) const \
+    { \
+      if (ptr) \
+      deleterFunc(ptr); \
+    } \
+  };
+
+WTF_DEFINE_GPTR_DELETER(GstStructure, gst_structure_free)
+
 struct _ChromiumHttpSrcPrivate {
   gchar* uri;
   bool keepAlive;
-  std::unique_ptr<GstStructure> extraHeaders;
+  GUniquePtr<GstStructure> extraHeaders;
   bool compress;
 
   bool data_source_initialized_;
@@ -491,7 +514,7 @@ static gboolean chromiumHttpSrcStop(GstBaseSrc* basesrc) {
 static bool chromiumHttpSrcSetExtraHeader(GQuark fieldId,
                                           const GValue* value,
                                           gpointer userData) {
-  std::unique_ptr<gchar> fieldContent;
+  GUniquePtr<gchar> fieldContent;
 
   if (G_VALUE_HOLDS_STRING(value))
     fieldContent.reset(g_value_dup_string(value));
