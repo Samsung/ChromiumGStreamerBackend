@@ -220,6 +220,11 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
     blink::WebContentDecryptionModule* initial_cdm,
     MediaLog* media_log)
     : video_frame_provider_client_(nullptr),
+      // Compositor thread does not exist in layout tests.
+      compositor_loop_(
+          content::RenderThreadImpl::current()->compositor_task_runner().get()
+              ? content::RenderThreadImpl::current()->compositor_task_runner()
+              : base::ThreadTaskRunnerHandle::Get()),
       current_frame_(nullptr),
       frame_(frame),
       network_state_(WebMediaPlayer::NetworkStateEmpty),
@@ -303,7 +308,9 @@ void WebMediaPlayerGStreamer::SetCurrentFrameInternal(
   base::AutoLock auto_lock(current_frame_lock_);
   current_frame_ = video_frame;
   if (video_frame_provider_client_)
-    video_frame_provider_client_->DidReceiveFrame();
+    compositor_loop_->PostTask(FROM_HERE,
+                   base::Bind(&cc::VideoFrameProvider::Client::DidReceiveFrame,
+                              base::Unretained(video_frame_provider_client_)));
 }
 
 bool WebMediaPlayerGStreamer::UpdateCurrentFrame(base::TimeTicks deadline_min,
