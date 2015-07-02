@@ -392,10 +392,19 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
   if (!gst_video_frame_map(&v_frame, &v_info, buf,
                            (GstMapFlags)(GST_MAP_READ | GST_MAP_GL))) {
     DVLOG(1) << __FUNCTION__ << "(Failed to map GstGL buffer)";
-    return false;
+    OnError(0);
+    // Here the return value means that the callback has been processed.
+    return true;
   }
 
   texture_id = *(guint*)v_frame.data[0];
+
+  if (texture_id == 0) {
+      DVLOG(1) << __FUNCTION__ << "(Wrong texture id: 0)";
+      OnError(0);
+      // Here the return value means that the callback has been processed.
+      return true;
+  }
 
   DCHECK(samples_[texture_id] == 0);
 
