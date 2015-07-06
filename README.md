@@ -4,7 +4,7 @@ Chromium GStreamer Backend
 [Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [GstPlayer](https://github.com/sdroege/gst-player/commits/master), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Issues](#issues), [Roadmap](#roadmap)
 
 ### Current branching point from official chromium/src  ###
-2553ff05b802a94ef281e647874d37941eefd154 (Mon Jun 29)  
+d903850ee3b13ee59aadea96cea7e52f0d4bd8c4 (Sun Jul 5)
 It will be rebased every week.
 
 ### Project description ###
