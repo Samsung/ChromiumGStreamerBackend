@@ -66,6 +66,30 @@ class MediaChannel : public IPC::Listener, public IPC::Sender {
   void OnMediaPlayerSeek(int player_id, base::TimeDelta delta);
   void OnMediaPlayerRelease(int player_id);
   void OnMediaPlayerReleaseTexture(int player_id, unsigned texture_id);
+  void OnMediaPlayerAddSourceId(int player_id,
+                                const std::string& source_id,
+                                const std::string& type,
+                                const std::vector<std::string>& codecs);
+  void OnMediaPlayerRemoveSourceId(int player_id, const std::string& source_id);
+  void OnMediaPlayerSetDuration(int player_id, const base::TimeDelta& duration);
+  void OnMediaPlayerMarkEndOfStream(int player_id);
+  void OnMediaPlayerUnmarkEndOfStream(int player_id);
+  void OnMediaPlayerSetSequenceMode(int player_id,
+                                    const std::string& source_id,
+                                    bool sequence_mode);
+  void OnMediaPlayerAppendData(int player_id,
+                               const std::string& source_id,
+                               const std::vector<unsigned char>& data,
+                               const std::vector<base::TimeDelta>& times);
+  void OnMediaPlayerAbort(int player_id, const std::string& source_id);
+  void OnMediaPlayerSetGroupStartTimestampIfInSequenceMode(
+      int player_id,
+      const std::string& source_id,
+      const base::TimeDelta& timestamp_offset);
+  void OnMediaPlayerRemoveSegment(int player_id,
+                                  const std::string& source_id,
+                                  const base::TimeDelta& start,
+                                  const base::TimeDelta& end);
 
   // IPC::Sender implementation:
   bool Send(IPC::Message* msg) override;
@@ -87,6 +111,16 @@ class MediaChannel : public IPC::Listener, public IPC::Sender {
                            int height,
                            unsigned texture_id,
                            const std::vector<int32_t>& name);
+  void SendSourceSelected(int player_id);
+  void SendDidAddSourceId(int player_id, const std::string& source_id);
+  void SendDidRemoveSourceId(int player_id, const std::string& source_id);
+  void SendInitSegmentReceived(int player_id, const std::string& source_id);
+  void SendBufferedRangeUpdate(int player_id,
+                               const std::string& source_id,
+                               const std::vector<base::TimeDelta>& ranges);
+  void SendTimestampOffsetUpdate(int player_id,
+                                 const std::string& source_id,
+                                 const base::TimeDelta& timestamp_offset);
 
  private:
   scoped_ptr<IPC::SyncChannel> channel_;
