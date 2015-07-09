@@ -25,6 +25,7 @@
 #include "media/base/cdm_factory.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline.h"
+#include "media/base/ranges.h"
 #include "media/base/renderer_factory.h"
 #include "media/base/text_track.h"
 #include "media/base/time_delta_interpolator.h"
@@ -55,6 +56,7 @@ namespace media {
 class MediaLog;
 class WebMediaPlayerDelegate;
 class WebMediaPlayerGStreamer;
+class WebMediaSourceGStreamer;
 
 class WebMediaPlayerMessageDispatcher
     : public IPC::Listener,
@@ -71,6 +73,29 @@ class WebMediaPlayerMessageDispatcher
   void SendSeek(base::TimeDelta);
   void SendRelease();
   void SendRealeaseTexture(unsigned texture_id);
+
+  // MSE
+  bool SendAddSourceId(const std::string& id,
+                       const std::string& type,
+                       const std::vector<std::string>& codecs);
+  void SendRemoveSourceId(const std::string& id);
+  void SendSetDuration(const base::TimeDelta& duration);
+  void SendMarkEndOfStream();
+  void SendUnmarkEndOfStream();
+  void SendSetSequenceMode(const std::string& id, bool sequence_mode);
+  void SendAppendData(const std::string& id,
+                      const unsigned char* data,
+                      unsigned length,
+                      const base::TimeDelta& append_window_start,
+                      const base::TimeDelta& append_window_end,
+                      const base::TimeDelta& timestamp_offset);
+  void SendAbort(const std::string& id);
+  void SendSetGroupStartTimestampIfInSequenceMode(
+      const std::string& id,
+      const base::TimeDelta& timestamp_offset);
+  void SendRemoveSegment(const std::string& id,
+                         const base::TimeDelta& start,
+                         const base::TimeDelta& end);
 
   bool OnMessageReceived(const IPC::Message& message) override;
 
@@ -219,6 +244,15 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   void OnPlayerPlay();
   void OnPlayerPause();
 
+  void OnSourceSelected();
+  void OnAddSourceId(const std::string& id);
+  void OnRemoveSourceId(const std::string& id);
+  void OnInitSegmentReceived(const std::string& id);
+  void OnBufferedRangeUpdate(const std::string& id,
+                             const std::vector<base::TimeDelta>& raw_ranges);
+  void OnTimestampOffsetUpdate(const std::string& id,
+                               const base::TimeDelta& timestamp_offset);
+
  private:
   void SetupGLContext();
   void SetCurrentFrameInternal(scoped_refptr<media::VideoFrame>& frame);
@@ -325,6 +359,8 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   media::TimeDeltaInterpolator interpolator_;
 
   base::WeakPtr<WebMediaPlayerDelegate> delegate_;
+
+  WebMediaSourceGStreamer* media_source_;
 
   bool supports_save_;
 

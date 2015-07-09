@@ -24,6 +24,7 @@
 #include "content/common/gpu/client/gl_helper.h"
 #include "content/common/media/media_channel.h"
 #include "content/media/gstreamer/gst_chromium_http_source.h"
+#include "content/media/gstreamer/gst_chromium_media_src.h"
 #include "content/media/gstreamer/gpuprocess/gstglcontext_gpu_process.h"
 #include "content/media/gstreamer/gpuprocess/gstgldisplay_gpu_process.h"
 #include "content/media/media_child_thread.h"
@@ -99,6 +100,12 @@ static void video_dimensions_changed_cb(GstPlayer* player,
              << height << ")";
     media_player->OnVideoSizeChanged(width, height);
   }
+}
+
+static void media_info_updated_cb(GstPlayer* player,
+                                  GstPlayerMediaInfo* info,
+                                  MediaPlayerGStreamer* media_player) {
+  media_player->OnMediaInfoUpdated(info);
 }
 
 static void buffering_cb(GstPlayer* player,
@@ -180,16 +187,26 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
       main_task_runner_(main_task_runner),
       gl_task_runner_(gl_task_runner),
       player_(gst_player_new()),  // It calls gst_init.
+      media_source_(nullptr),
       gst_gl_display_(nullptr),
       gst_gl_context_(nullptr),
       seek_time_(GST_CLOCK_TIME_NONE),
       was_preroll_(false),
       weak_factory_(this) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  GstElementFactory* srcFactory = gst_element_factory_find("chromiumhttpsrc");
-  if (!srcFactory) {
-    gst_element_register(0, "chromiumhttpsrc", GST_RANK_PRIMARY + 200,
+
+  GstElementFactory* httpSrcFactory =
+      gst_element_factory_find("chromiumhttpsrc");
+  if (!httpSrcFactory) {
+    gst_element_register(0, "chromiumhttpsrc", GST_RANK_PRIMARY + 100,
                          CHROMIUM_TYPE_HTTP_SRC);
+  }
+
+  GstElementFactory* mediaSrcFactory =
+      gst_element_factory_find("chromiummediasrc");
+  if (!mediaSrcFactory) {
+    gst_element_register(0, "chromiummediasrc", GST_RANK_PRIMARY + 100,
+                         CHROMIUM_TYPE_MEDIA_SRC);
   }
 
   g_signal_connect(player_, "duration-changed", G_CALLBACK(duration_changed_cb),
@@ -200,6 +217,8 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
                    this);
   g_signal_connect(player_, "video-dimensions-changed",
                    G_CALLBACK(video_dimensions_changed_cb), this);
+  g_signal_connect(player_, "media-info-updated",
+                   G_CALLBACK(media_info_updated_cb), this);
   g_signal_connect(player_, "buffering", G_CALLBACK(buffering_cb), this);
   g_signal_connect(player_, "end-of-stream", G_CALLBACK(end_of_stream_cb),
                    this);
@@ -252,6 +271,11 @@ MediaPlayerGStreamer::~MediaPlayerGStreamer() {
 
   gst_player_stop(player_);
 
+  if (media_source_) {
+    gst_object_unref(media_source_);
+    media_source_ = nullptr;
+  }
+
   std::unique_lock<std::mutex> gl_thread_lock(gl_thread_mutex_);
   gl_task_runner_->PostTask(FROM_HERE,
                             base::Bind(&MediaPlayerGStreamer::CleanupGLContext,
@@ -259,6 +283,7 @@ MediaPlayerGStreamer::~MediaPlayerGStreamer() {
   gl_thread_condition_.wait(gl_thread_lock);
 
   gst_object_unref(player_);
+
   DVLOG(1) << __FUNCTION__ << "(GstPlayer release)";
 }
 
@@ -327,9 +352,23 @@ void MediaPlayerGStreamer::CleanupGLContext() {
 
 void MediaPlayerGStreamer::GstSourceSetup(GstElement* playbin,
                                           GstElement* src) {
-  chromiumHttpSrcSetup(CHROMIUM_HTTP_SRC(src), media_log_,
-                       &buffered_data_source_host_, resource_dispatcher_,
-                       main_task_runner_);
+  if (url_.SchemeIs("mediasourceblob")) {
+    DCHECK(!media_source_);
+    media_source_ = GST_ELEMENT(gst_object_ref(src));
+    media_channel_->SendSourceSelected(player_id_);
+  } else if (url_.SchemeIs(url::kDataScheme)) {
+    DVLOG(1) << __FUNCTION__ << "data url: " << url_.spec().c_str();
+    // nothing todo
+  } else if (url_.SchemeIsHTTPOrHTTPS() || url_.SchemeIsBlob() ||
+             url_.SchemeIsFile()) {
+    chromiumHttpSrcSetup(CHROMIUM_HTTP_SRC(src), media_log_,
+                         &buffered_data_source_host_, resource_dispatcher_,
+                         main_task_runner_);
+  } else {
+    DVLOG(1) << __FUNCTION__ << "(Restricted protocol: << " << url_.spec()
+             << ")";
+    OnError(0);
+  }
 }
 
 void MediaPlayerGStreamer::GstAsyncDone(GstBus* bus, GstMessage* msg) {
@@ -490,7 +529,85 @@ void MediaPlayerGStreamer::ReleaseTexture(unsigned texture_id) {
                                        AsWeakPtr(), texture_id));
 }
 
-void MediaPlayerGStreamer::DidLoad() {}
+void MediaPlayerGStreamer::AddSourceId(const std::string& source_id,
+                                       const std::string& type,
+                                       const std::vector<std::string>& codecs) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  blink::WebMediaSource::AddStatus ret = chromiumMediaSrcAddSourceBufferId(
+      CHROMIUM_MEDIA_SRC(media_source_), source_id, type, codecs);
+
+  if (ret == blink::WebMediaSource::AddStatusOk)
+    media_channel_->SendDidAddSourceId(player_id_, source_id);
+  else
+    media_channel_->SendDidAddSourceId(player_id_, "");
+}
+
+void MediaPlayerGStreamer::RemoveSourceId(const std::string& source_id) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_source_);
+
+  chromiumMediaSrcRemoveSourceBufferId(CHROMIUM_MEDIA_SRC(media_source_),
+                                       source_id);
+
+  media_channel_->SendDidRemoveSourceId(player_id_, source_id);
+}
+
+void MediaPlayerGStreamer::SetDuration(const base::TimeDelta& duration) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  chromiumMediaSrcSetDuration(CHROMIUM_MEDIA_SRC(media_source_), duration);
+}
+
+void MediaPlayerGStreamer::MarkEndOfStream() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  chromiumMediaSrcMarkEndOfStream(CHROMIUM_MEDIA_SRC(media_source_));
+}
+
+void MediaPlayerGStreamer::UnmarkEndOfStream() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  chromiumMediaSrcUnmarkEndOfStream(CHROMIUM_MEDIA_SRC(media_source_));
+}
+
+void MediaPlayerGStreamer::SetSequenceMode(const std::string& source_id,
+                                           bool sequence_mode) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  chromiumMediaSrcSetSequenceMode(CHROMIUM_MEDIA_SRC(media_source_), source_id,
+                                  sequence_mode);
+}
+
+void MediaPlayerGStreamer::AppendData(
+    const std::string& source_id,
+    const std::vector<unsigned char>& data,
+    const std::vector<base::TimeDelta>& times) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  base::TimeDelta timestamp_offset;
+  chromiumMediaSrcAppendData(CHROMIUM_MEDIA_SRC(media_source_), source_id, data,
+                             times, timestamp_offset);
+
+  media_channel_->SendTimestampOffsetUpdate(player_id_, source_id,
+                                            timestamp_offset);
+}
+
+void MediaPlayerGStreamer::Abort(const std::string& source_id) {
+  chromiumMediaSrcAbort(CHROMIUM_MEDIA_SRC(media_source_), source_id);
+}
+
+void MediaPlayerGStreamer::SetGroupStartTimestampIfInSequenceMode(
+    const std::string& source_id,
+    const base::TimeDelta& timestamp_offset) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  chromiumMediaSrcSetGroupStartTimestampIfInSequenceMode(
+      CHROMIUM_MEDIA_SRC(media_source_), source_id, timestamp_offset);
+}
+
+void MediaPlayerGStreamer::RemoveSegment(const std::string& source_id,
+                                         const base::TimeDelta& start,
+                                         const base::TimeDelta& end) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  chromiumMediaSrcRemoveSegment(CHROMIUM_MEDIA_SRC(media_source_), source_id,
+                                start, end);
+}
 
 void MediaPlayerGStreamer::OnDurationChanged(const base::TimeDelta& duration) {
   media_channel_->SendMediaDurationChanged(player_id_, duration);
@@ -499,6 +616,23 @@ void MediaPlayerGStreamer::OnDurationChanged(const base::TimeDelta& duration) {
 void MediaPlayerGStreamer::OnVideoSizeChanged(int width, int height) {
   media_channel_->SendMediaVideoSizeChanged(player_id_, width, height);
 }
+
+void MediaPlayerGStreamer::OnMediaInfoUpdated(GstPlayerMediaInfo* media_info) {
+  for (GList* list = gst_player_media_info_get_stream_list(media_info);
+       list != NULL; list = list->next) {
+    GstPlayerStreamInfo* stream = (GstPlayerStreamInfo*)list->data;
+    const gchar* codec = gst_player_stream_info_get_codec(stream);
+    if (media_source_) {
+      std::string source_id = chromiumMediaSrcIsMatchingSourceId(
+          CHROMIUM_MEDIA_SRC(media_source_),
+          gst_player_stream_info_get_stream_type(stream), codec);
+      if (!source_id.empty())
+        InitSegmentReceived(source_id);
+    }
+  }
+}
+
+void MediaPlayerGStreamer::DidLoad() {}
 
 void MediaPlayerGStreamer::DidPlay() {
   VLOG(1) << __FUNCTION__ << "Media player GStreamer did play";
@@ -521,6 +655,18 @@ void MediaPlayerGStreamer::DidEOS() {
 
 void MediaPlayerGStreamer::DidStop() {
   DVLOG(1) << "Media player GStreamer stopped";
+}
+
+void MediaPlayerGStreamer::InitSegmentReceived(const std::string& source_id) {
+  media_channel_->SendInitSegmentReceived(player_id_, source_id);
+}
+
+// TODO: ranges is the duration of the data that had been append.
+// We should have a GstMessage each time a new chunck is parsed.
+void MediaPlayerGStreamer::BufferedRangeUpdate(
+    const std::string& source_id,
+    const std::vector<base::TimeDelta>& ranges) {
+  media_channel_->SendBufferedRangeUpdate(player_id_, source_id, ranges);
 }
 
 void MediaPlayerGStreamer::OnPositionUpdated(base::TimeDelta position) {

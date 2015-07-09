@@ -1270,7 +1270,7 @@
       'target_name': 'gstreamer',
       'type': 'none',
       'variables': {
-        'gstreamer_packages': 'gstreamer-1.0 gstreamer-base-1.0 gstreamer-audio-1.0 gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-player-0.0',
+        'gstreamer_packages': 'gstreamer-1.0 gstreamer-base-1.0 gstreamer-audio-1.0 gstreamer-video-1.0 gstreamer-app-1.0 gstreamer-gl-1.0 gstreamer-player-0.0',
       },
       'conditions': [
         ['use_gstreamer==1', {
