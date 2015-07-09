@@ -319,6 +319,10 @@
       'renderer/media/external_media_stream_audio_source.h',
       'renderer/media/gstreamer/webmediaplayer_gstreamer.cc',
       'renderer/media/gstreamer/webmediaplayer_gstreamer.h',
+      'renderer/media/gstreamer/webmediasource_gstreamer.cc',
+      'renderer/media/gstreamer/webmediasource_gstreamer.h',
+      'renderer/media/gstreamer/websourcebuffer_gstreamer.cc',
+      'renderer/media/gstreamer/websourcebuffer_gstreamer.h',
       'renderer/media/media_permission_dispatcher.cc',
       'renderer/media/media_permission_dispatcher.h',
       'renderer/media/media_stream_audio_deliverer.h',
@@ -837,6 +841,10 @@
       'sources!': [
         'renderer/media/gstreamer/webmediaplayer_gstreamer.cc',
         'renderer/media/gstreamer/webmediaplayer_gstreamer.h',
+        'renderer/media/gstreamer/webmediasource_gstreamer.cc',
+        'renderer/media/gstreamer/webmediasource_gstreamer.h',
+        'renderer/media/gstreamer/websourcebuffer_gstreamer.cc',
+        'renderer/media/gstreamer/websourcebuffer_gstreamer.h',
       ],
     }],
     ['OS=="android"', {
