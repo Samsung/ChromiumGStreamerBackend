@@ -72,6 +72,22 @@ bool MediaChannel::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_HANDLER(MediaPlayerMsg_Release, OnMediaPlayerRelease)
     IPC_MESSAGE_HANDLER(MediaPlayerMsg_ReleaseTexture,
                         OnMediaPlayerReleaseTexture)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_AddSourceId, OnMediaPlayerAddSourceId)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_RemoveSourceId,
+                        OnMediaPlayerRemoveSourceId)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_SetDuration, OnMediaPlayerSetDuration)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_MarkEndOfStream,
+                        OnMediaPlayerMarkEndOfStream)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_UnmarkEndOfStream,
+                        OnMediaPlayerUnmarkEndOfStream)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_SetSequenceMode,
+                        OnMediaPlayerSetSequenceMode)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_AppendData, OnMediaPlayerAppendData)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_Abort, OnMediaPlayerAbort)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_SetGroupStartTimestampIfInSequenceMode,
+                        OnMediaPlayerSetGroupStartTimestampIfInSequenceMode)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_RemoveSegment,
+                        OnMediaPlayerRemoveSegment)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -133,6 +149,95 @@ void MediaChannel::OnMediaPlayerReleaseTexture(int player_id,
   }
 }
 
+void MediaChannel::OnMediaPlayerAddSourceId(
+    int player_id,
+    const std::string& source_id,
+    const std::string& type,
+    const std::vector<std::string>& codecs) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->AddSourceId(source_id, type, codecs);
+  }
+}
+
+void MediaChannel::OnMediaPlayerRemoveSourceId(int player_id,
+                                               const std::string& source_id) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->RemoveSourceId(source_id);
+  }
+}
+
+void MediaChannel::OnMediaPlayerSetDuration(int player_id,
+                                            const base::TimeDelta& duration) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->SetDuration(duration);
+  }
+}
+
+void MediaChannel::OnMediaPlayerMarkEndOfStream(int player_id) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->MarkEndOfStream();
+  }
+}
+
+void MediaChannel::OnMediaPlayerUnmarkEndOfStream(int player_id) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->UnmarkEndOfStream();
+  }
+}
+
+void MediaChannel::OnMediaPlayerSetSequenceMode(int player_id,
+                                                const std::string& source_id,
+                                                bool sequence_mode) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->SetSequenceMode(source_id, sequence_mode);
+  }
+}
+
+void MediaChannel::OnMediaPlayerAppendData(
+    int player_id,
+    const std::string& source_id,
+    const std::vector<unsigned char>& data,
+    const std::vector<base::TimeDelta>& times) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->AppendData(source_id, data, times);
+  }
+}
+
+void MediaChannel::OnMediaPlayerAbort(int player_id,
+                                      const std::string& source_id) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->Abort(source_id);
+  }
+}
+
+void MediaChannel::OnMediaPlayerSetGroupStartTimestampIfInSequenceMode(
+    int player_id,
+    const std::string& source_id,
+    const base::TimeDelta& timestamp_offset) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->SetGroupStartTimestampIfInSequenceMode(source_id, timestamp_offset);
+  }
+}
+
+void MediaChannel::OnMediaPlayerRemoveSegment(int player_id,
+                                              const std::string& source_id,
+                                              const base::TimeDelta& start,
+                                              const base::TimeDelta& end) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->RemoveSegment(source_id, start, end);
+  }
+}
+
 void MediaChannel::SendMediaError(int player_id, int error) {
   Send(new MediaPlayerMsg_MediaError(player_id, error));
 }
@@ -187,6 +292,40 @@ void MediaChannel::SendSetCurrentFrame(int player_id,
                                        const std::vector<int32_t>& name) {
   Send(new MediaPlayerMsg_SetCurrentFrame(player_id, width, height, texture_id,
                                           name));
+}
+
+void MediaChannel::SendSourceSelected(int player_id) {
+  Send(new MediaPlayerMsg_SourceSelected(player_id));
+}
+
+void MediaChannel::SendDidAddSourceId(int player_id,
+                                      const std::string& source_id) {
+  Send(new MediaPlayerMsg_DidAddSourceId(player_id, source_id));
+}
+
+void MediaChannel::SendDidRemoveSourceId(int player_id,
+                                         const std::string& source_id) {
+  Send(new MediaPlayerMsg_DidRemoveSourceId(player_id, source_id));
+}
+
+void MediaChannel::SendInitSegmentReceived(int player_id,
+                                           const std::string& source_id) {
+  Send(new MediaPlayerMsg_InitSegmentReceived(player_id, source_id));
+}
+
+void MediaChannel::SendBufferedRangeUpdate(
+    int player_id,
+    const std::string& source_id,
+    const std::vector<base::TimeDelta>& ranges) {
+  Send(new MediaPlayerMsg_BufferedRangeUpdate(player_id, source_id, ranges));
+}
+
+void MediaChannel::SendTimestampOffsetUpdate(
+    int player_id,
+    const std::string& source_id,
+    const base::TimeDelta& timestamp_offset) {
+  Send(new MediaPlayerMsg_TimestampOffsetUpdate(player_id, source_id,
+                                                timestamp_offset));
 }
 
 bool MediaChannel::Send(IPC::Message* message) {
