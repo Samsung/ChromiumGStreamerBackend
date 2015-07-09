@@ -25,6 +25,8 @@
         'media/gstreamer/gpuprocess/gstglwindow_gpu_process.h',
         'media/gstreamer/gst_chromium_http_source.cc',
         'media/gstreamer/gst_chromium_http_source.h',
+        'media/gstreamer/gst_chromium_media_src.cc',
+        'media/gstreamer/gst_chromium_media_src.h',
         'media/gstreamer/media_player_gstreamer.cc',
         'media/gstreamer/media_player_gstreamer.h',
       ],

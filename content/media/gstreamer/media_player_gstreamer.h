@@ -89,15 +89,37 @@ class MediaPlayerGStreamer
   void Pause();
   void Seek(const base::TimeDelta& duration);
   void ReleaseTexture(unsigned texture_id);
+  void AddSourceId(const std::string& source_id,
+                   const std::string& type,
+                   const std::vector<std::string>& codecs);
+  void RemoveSourceId(const std::string& source_id);
+  void SetDuration(const base::TimeDelta& duration);
+  void MarkEndOfStream();
+  void UnmarkEndOfStream();
+  void SetSequenceMode(const std::string& source_id, bool sequence_mode);
+  void AppendData(const std::string& source_id,
+                  const std::vector<unsigned char>& data,
+                  const std::vector<base::TimeDelta>& times);
+  void Abort(const std::string& source_id);
+  void SetGroupStartTimestampIfInSequenceMode(
+      const std::string& source_id,
+      const base::TimeDelta& timestamp_offset);
+  void RemoveSegment(const std::string& source_id,
+                     const base::TimeDelta& start,
+                     const base::TimeDelta& end);
 
   void DidLoad();
   void OnDurationChanged(const base::TimeDelta& duration);
   void OnVideoSizeChanged(int width, int height);
+  void OnMediaInfoUpdated(GstPlayerMediaInfo* info);
   void DidPlay();
   void DidPause();
   void DidSeek(const base::TimeDelta& delta);
   void DidEOS();
   void DidStop();
+  void InitSegmentReceived(const std::string& source_id);
+  void BufferedRangeUpdate(const std::string& source_id,
+                           const std::vector<base::TimeDelta>& ranges);
   void OnPositionUpdated(base::TimeDelta position);
   void OnBufferingUpdated(int percent);
   void OnError(int error);
@@ -141,6 +163,7 @@ class MediaPlayerGStreamer
   scoped_refptr<base::SingleThreadTaskRunner> gl_task_runner_;
 
   GstPlayer* player_;
+  GstElement* media_source_;
   GstGLDisplay* gst_gl_display_;
   GstGLContext* gst_gl_context_;
 
