@@ -280,6 +280,10 @@
       'renderer/media/crypto/render_cdm_factory.h',
       'renderer/media/gstreamer/webmediaplayer_gstreamer.cc',
       'renderer/media/gstreamer/webmediaplayer_gstreamer.h',
+      'renderer/media/gstreamer/webmediasource_gstreamer.cc',
+      'renderer/media/gstreamer/webmediasource_gstreamer.h',
+      'renderer/media/gstreamer/websourcebuffer_gstreamer.cc',
+      'renderer/media/gstreamer/websourcebuffer_gstreamer.h',
       'renderer/media/media_permission_dispatcher.cc',
       'renderer/media/media_permission_dispatcher.h',
       'renderer/media/media_stream_audio_level_calculator.cc',
@@ -775,6 +779,10 @@
       'sources!': [
         'renderer/media/gstreamer/webmediaplayer_gstreamer.cc',
         'renderer/media/gstreamer/webmediaplayer_gstreamer.h',
+        'renderer/media/gstreamer/webmediasource_gstreamer.cc',
+        'renderer/media/gstreamer/webmediasource_gstreamer.h',
+        'renderer/media/gstreamer/websourcebuffer_gstreamer.cc',
+        'renderer/media/gstreamer/websourcebuffer_gstreamer.h',
       ],
     }],
     ['OS=="android"', {
