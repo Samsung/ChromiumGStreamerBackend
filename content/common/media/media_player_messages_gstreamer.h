@@ -35,6 +35,60 @@ IPC_MESSAGE_CONTROL2(MediaPlayerMsg_ReleaseTexture,
                      int /* player_id */,
                      unsigned /* texture_id */)
 
+// Request the player to add a media source buffer.
+IPC_MESSAGE_CONTROL4(MediaPlayerMsg_AddSourceId,
+                     int /* player_id */,
+                     std::string /* source id */,
+                     std::string /* type */,
+                     std::vector<std::string> /* codecs */)
+
+// Request the player to remove a media source buffer.
+IPC_MESSAGE_CONTROL2(MediaPlayerMsg_RemoveSourceId,
+                     int /* player_id */,
+                     std::string /* source id */)
+
+// Request the player to set the new duration.
+IPC_MESSAGE_CONTROL2(MediaPlayerMsg_SetDuration,
+                     int /* player_id */,
+                     base::TimeDelta /* duration */)
+
+// Request the player to mark EOS the media source.
+IPC_MESSAGE_CONTROL1(MediaPlayerMsg_MarkEndOfStream, int /* player_id */)
+
+// Request the player to unmark EOS the media source.
+IPC_MESSAGE_CONTROL1(MediaPlayerMsg_UnmarkEndOfStream, int /* player_id */)
+
+// Request the player to set the MSE sequence mode.
+IPC_MESSAGE_CONTROL3(MediaPlayerMsg_SetSequenceMode,
+                     int /* player_id */,
+                     std::string /* source id */,
+                     bool /* sequence mode */)
+
+// Request the player to process source buffer data.
+IPC_MESSAGE_CONTROL4(MediaPlayerMsg_AppendData,
+                     int /* player_id */,
+                     std::string /* source id */,
+                     std::vector<unsigned char> /* data */,
+                     std::vector<base::TimeDelta> /* start, end, offset */)
+
+// Request the player to abort the current segment and reset the parser.
+IPC_MESSAGE_CONTROL2(MediaPlayerMsg_Abort,
+                     int /* player_id */,
+                     std::string /* source id */)
+
+// Request the play to configure group timestamps for the sequence.
+IPC_MESSAGE_CONTROL3(MediaPlayerMsg_SetGroupStartTimestampIfInSequenceMode,
+                     int /* player_id */,
+                     std::string /* source id */,
+                     base::TimeDelta /* timestamp offset */)
+
+// Request the play to remove a segment for a source buffer.
+IPC_MESSAGE_CONTROL4(MediaPlayerMsg_RemoveSegment,
+                     int /* player_id */,
+                     std::string /* source id */,
+                     base::TimeDelta /* start */,
+                     base::TimeDelta /* end */)
+
 // From media process to render process
 IPC_MESSAGE_ROUTED1(MediaPlayerMsg_MediaBufferingUpdate, int /* percent */)
 
@@ -80,3 +134,27 @@ IPC_MESSAGE_ROUTED4(MediaPlayerMsg_SetCurrentFrame,
                     int /* height */,
                     unsigned /* texture_id */,
                     std::vector<int32_t> /* name */)
+
+// The player has setup its source element.
+IPC_MESSAGE_ROUTED0(MediaPlayerMsg_SourceSelected)
+
+// The player has added a media source buffer.
+IPC_MESSAGE_ROUTED1(MediaPlayerMsg_DidAddSourceId, std::string /* source id */)
+
+// The player has removed a media source buffer.
+IPC_MESSAGE_ROUTED1(MediaPlayerMsg_DidRemoveSourceId,
+                    std::string /* source id */)
+
+// The player validated a media source buffer.
+IPC_MESSAGE_ROUTED1(MediaPlayerMsg_InitSegmentReceived,
+                    std::string /* source id */)
+
+// The player updated the time range for last append buffer.
+IPC_MESSAGE_ROUTED2(MediaPlayerMsg_BufferedRangeUpdate,
+                    std::string /* source id */,
+                    std::vector<base::TimeDelta> /* ranges */)
+
+// The player updated the timestamp offset for the next sequence.
+IPC_MESSAGE_ROUTED2(MediaPlayerMsg_TimestampOffsetUpdate,
+                    std::string /* source id */,
+                    base::TimeDelta /* timestamp_offset */)
