@@ -26,6 +26,7 @@
 #include "content/common/gpu/client/gl_helper.h"
 #include "content/common/media/media_messages.h"
 #include "content/child/child_process.h"
+#include "content/renderer/media/gstreamer/webmediasource_gstreamer.h"
 #include "content/renderer/render_thread_impl.h"
 #include "gpu/blink/webgraphicscontext3d_impl.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -167,6 +168,104 @@ void WebMediaPlayerMessageDispatcher::SendRealeaseTexture(unsigned texture_id) {
     channel->Send(new MediaPlayerMsg_ReleaseTexture(player_id_, texture_id));
 }
 
+bool WebMediaPlayerMessageDispatcher::SendAddSourceId(
+    const std::string& id,
+    const std::string& type,
+    const std::vector<std::string>& codecs) {
+  bool ret = false;
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+
+  if (channel)
+    ret = channel->Send(
+        new MediaPlayerMsg_AddSourceId(player_id_, id, type, codecs));
+
+  return ret;
+}
+
+void WebMediaPlayerMessageDispatcher::SendRemoveSourceId(
+    const std::string& id) {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(new MediaPlayerMsg_RemoveSourceId(player_id_, id));
+}
+
+void WebMediaPlayerMessageDispatcher::SendSetDuration(
+    const base::TimeDelta& duration) {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(new MediaPlayerMsg_SetDuration(player_id_, duration));
+}
+
+void WebMediaPlayerMessageDispatcher::SendMarkEndOfStream() {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(new MediaPlayerMsg_MarkEndOfStream(player_id_));
+}
+
+void WebMediaPlayerMessageDispatcher::SendUnmarkEndOfStream() {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(new MediaPlayerMsg_UnmarkEndOfStream(player_id_));
+}
+
+void WebMediaPlayerMessageDispatcher::SendSetSequenceMode(const std::string& id,
+                                                          bool sequence_mode) {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(
+        new MediaPlayerMsg_SetSequenceMode(player_id_, id, sequence_mode));
+}
+
+void WebMediaPlayerMessageDispatcher::SendAppendData(
+    const std::string& id,
+    const unsigned char* data,
+    unsigned length,
+    const base::TimeDelta& append_window_start,
+    const base::TimeDelta& append_window_end,
+    const base::TimeDelta& timestamp_offset) {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(new MediaPlayerMsg_AppendData(
+        player_id_, id, std::vector<unsigned char>(data, data + length),
+        std::vector<base::TimeDelta>{append_window_start, append_window_end,
+                                     timestamp_offset}));
+}
+
+void WebMediaPlayerMessageDispatcher::SendAbort(const std::string& id) {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(new MediaPlayerMsg_Abort(player_id_, id));
+}
+
+void WebMediaPlayerMessageDispatcher::
+    SendSetGroupStartTimestampIfInSequenceMode(
+        const std::string& id,
+        const base::TimeDelta& timestamp_offset) {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(new MediaPlayerMsg_SetGroupStartTimestampIfInSequenceMode(
+        player_id_, id, timestamp_offset));
+}
+
+void WebMediaPlayerMessageDispatcher::SendRemoveSegment(
+    const std::string& id,
+    const base::TimeDelta& start,
+    const base::TimeDelta& end) {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(new MediaPlayerMsg_RemoveSegment(player_id_, id, start, end));
+}
+
 bool WebMediaPlayerMessageDispatcher::OnMessageReceived(
     const IPC::Message& message) {
   WebMediaPlayerGStreamer* player = _player.get();
@@ -197,6 +296,18 @@ bool WebMediaPlayerMessageDispatcher::OnMessageReceived(
                         WebMediaPlayerGStreamer::OnPlayerPlay)
     IPC_MESSAGE_FORWARD(MediaPlayerMsg_DidMediaPlayerPause, player,
                         WebMediaPlayerGStreamer::OnPlayerPause)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_SourceSelected, player,
+                        WebMediaPlayerGStreamer::OnSourceSelected)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_DidAddSourceId, player,
+                        WebMediaPlayerGStreamer::OnAddSourceId)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_DidRemoveSourceId, player,
+                        WebMediaPlayerGStreamer::OnRemoveSourceId)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_InitSegmentReceived, player,
+                        WebMediaPlayerGStreamer::OnInitSegmentReceived)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_BufferedRangeUpdate, player,
+                        WebMediaPlayerGStreamer::OnBufferedRangeUpdate)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_TimestampOffsetUpdate, player,
+                        WebMediaPlayerGStreamer::OnTimestampOffsetUpdate)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -238,6 +349,7 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
       client_(client),
       interpolator_(&default_tick_clock_),
       delegate_(delegate),
+      media_source_(nullptr),
       supports_save_(true),
       encrypted_media_support_(cdm_factory,
                                client,
@@ -518,6 +630,55 @@ void WebMediaPlayerGStreamer::OnPlayerPause() {
   client_->playbackStateChanged();
 }
 
+void WebMediaPlayerGStreamer::OnSourceSelected() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DVLOG(1) << __FUNCTION__;
+
+  media_source_ = new WebMediaSourceGStreamer(
+      this, &message_dispatcher_,
+      base::Bind(&WebMediaPlayerGStreamer::SetNetworkState, AsWeakPtr()));
+  client_->mediaSourceOpened(media_source_);
+}
+
+void WebMediaPlayerGStreamer::OnAddSourceId(const std::string& id) {
+  DVLOG(1) << __FUNCTION__;
+
+  media_source_->OnAddSourceId(id);
+}
+
+void WebMediaPlayerGStreamer::OnRemoveSourceId(const std::string& id) {
+  DVLOG(1) << __FUNCTION__;
+
+  media_source_->OnRemoveSourceId(id);
+}
+
+void WebMediaPlayerGStreamer::OnInitSegmentReceived(const std::string& id) {
+  DVLOG(1) << __FUNCTION__;
+
+  media_source_->OnInitSegmentReceived(id);
+}
+
+void WebMediaPlayerGStreamer::OnBufferedRangeUpdate(
+    const std::string& id,
+    const std::vector<base::TimeDelta>& raw_ranges) {
+  DVLOG(1) << __FUNCTION__;
+
+  // TODO really receive ranges
+  Ranges<base::TimeDelta> ranges;
+  for (auto& iter : raw_ranges)
+    ranges.Add(base::TimeDelta(), iter);
+
+  media_source_->OnBufferedRangeUpdate(id, ranges);
+}
+
+void WebMediaPlayerGStreamer::OnTimestampOffsetUpdate(
+    const std::string& id,
+    const base::TimeDelta& timestamp_offset) {
+  DVLOG(1) << __FUNCTION__;
+
+  media_source_->OnTimestampOffsetUpdate(id, timestamp_offset);
+}
+
 void WebMediaPlayerGStreamer::load(LoadType load_type,
                                    const blink::WebURL& url,
                                    CORSMode cors_mode) {
@@ -541,9 +702,20 @@ void WebMediaPlayerGStreamer::DoLoad(LoadType load_type,
 
   load_type_ = load_type;
 
+  if (load_type == LoadTypeMediaSource) {
+    // TODO maybe just do blob://
+    std::string media_url = gurl.spec();
+    size_t pos = media_url.find("blob:");
+    if (pos != std::string::npos) {
+      media_url = media_url.substr(pos + 5);
+      gurl = GURL("mediasourceblob://" + media_url);
+    }
+  }
+
   SetNetworkState(WebMediaPlayer::NetworkStateLoading);
   SetReadyState(WebMediaPlayer::ReadyStateHaveNothing);
   media_log_->AddEvent(media_log_->CreateLoadEvent(url.spec()));
+
   message_dispatcher_.SendLoad(gurl);
 }
 
