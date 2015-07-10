@@ -62,7 +62,7 @@ Exception for the video rendering part because GstGL needs to be setup to use GP
 Indeed the Media Process does not load OpenGL libraries; it uses chromium API to forward OpenGL calls to GPU Process which is the only sandboxed
 process that is allowed to load GL libraries. 
 Exception also for the [GstChromiumHttpSrc](#media-process-stack). It is a GStreamer element that wraps chromium API to load an url.
-![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/infos/images/chromium_media_process_overview.png?raw=true)  
+![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_media_process_overview.png?raw=true)
 
 __  
 
@@ -76,7 +76,7 @@ A new backend that allows to build the GstGL’s vtable from a given get_proc_ad
 
 **GstChromiumHttpSrc:** GStreamer element that wraps the chromium media::BufferedDataSource and instantiate a content::WebURLLoader . It was not possible to re-use WebKitWebSrc because some interfaces are missing or has been removed like PlatformMediaResourceLoader. It uses some parts of WebKitWebSrc though but not sure if it is necessary. Also It does not use appsrc comparing to WebKitWebSrc. It is more similar to filesrc due to media::BufferedDataSource design. That’s clearly an area to improve, maybe we can get rid of media::BufferedDataSource and implement missing interface in order to re-use WebKitWebSrc. Indeed internally it uses ResourceDispatcher, see [multi-process-resource-loading](https://www.chromium.org/developers/design-documents/multi-process-resource-loading). Or maybe we can design a complete new element and interfaces that could be shared between blink and WebKit.
 
-![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/infos/images/chromium_media_process_stack.png?raw=true)  
+![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_media_process_stack.png?raw=true)
 
 __  
 
@@ -90,7 +90,7 @@ the brocker process.
 
 In Media Process main the sandbox is setup before any thread creation. Also there is a preSansbox step where it is possible to dlopen some particular resources. A routine is executed in one go for each system call. In this loop it is decided to allow the system call number, to refuse it or to add a handler for emulation. All of this is setup through Seccomp-BPF. A trap handler (SECCOMP_RET_TRAP), is installed for open and access. Then when starting the sandbox the process forks itself (see chromium/src/sandbox/linux/syscall_broker/broker_process ::BrokerProcess::Init). The child becomes the so called Media Broker Process which instantiates a BrokerHost. The Media Process instantiates a BrokerProcessClient. When a open or access happens it sends a cachable SIGSYS. In this trap handler the BrokerClient emulates the open/access call. It actually asks the BrokerProcessHost, through IPC, to do the real call. Depending on the policy that has been setup the path is allowed or rejected. The return value is passed back to the BrokerClient, i.e. the Media Process, for usage if the call has been accepted.
 
-![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/infos/images/chromium_media_process_sandbox.png?raw=true)  
+![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_media_process_sandbox.png?raw=true)
 
 __  
 
@@ -104,7 +104,7 @@ Media process, upon receiving the request, establishes the channel (MediaChannel
 
 For any messages from WebMediaPlayerGStreamer  WebMediaPlayerMessageDispatcher dispatches messages via MediaChannelHost to MediaChannel in media process. MediaChannel maps the message to the associated media player and call the callback.
 
-![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/infos/images/chromium_media_process_ipc.png?raw=true)  
+![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_media_process_ipc.png?raw=true)
 
 __  
 
