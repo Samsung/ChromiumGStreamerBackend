@@ -124,6 +124,7 @@ class MediaPlayerGStreamer {
   void OnPositionUpdated(base::TimeDelta position);
   void OnBufferingUpdated(int percent);
   void OnError(int error);
+  void OnSeekDone(GstClockTime position);
 
   void DoReleaseTexture(unsigned texture_id);
 
@@ -133,7 +134,6 @@ class MediaPlayerGStreamer {
                                GstGLContext* context,
                                GstSample* sample);
   void GstSourceSetup(GstElement* playbin, GstElement* src);
-  void GstAsyncDone(GstBus* bus, GstMessage* msg);
   void SyncMessage(GstBus* bus, GstMessage* msg);
 
  private:
