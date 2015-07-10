@@ -343,7 +343,6 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
       natural_size_(0, 0),
       ended_(false),
       pending_seek_(false),
-      pending_seek_seconds_(0.0f),
       did_loading_progress_(false),
       buffered_(static_cast<size_t>(1)),
       client_(client),
@@ -542,7 +541,7 @@ void WebMediaPlayerGStreamer::OnSeekCompleted(
   seeking_ = false;
   if (pending_seek_) {
     pending_seek_ = false;
-    seek(pending_seek_seconds_);
+    seek(pending_seek_time_.InSecondsF());
     return;
   }
   interpolator_.SetBounds(current_time, current_time);
@@ -750,9 +749,12 @@ void WebMediaPlayerGStreamer::seek(double seconds) {
 
   if (seeking_) {
     pending_seek_ = true;
-    pending_seek_seconds_ = seconds;
+    pending_seek_time_ = media::ConvertSecondsToTimestamp(seconds);
+    return;
   }
 
+  seek_time_ = media::ConvertSecondsToTimestamp(seconds);
+  seeking_ = true;
   media_log_->AddEvent(media_log_->CreateSeekEvent(seconds));
   message_dispatcher_.SendSeek(base::TimeDelta::FromSecondsD(seconds));
 }
@@ -878,11 +880,12 @@ double WebMediaPlayerGStreamer::currentTime() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   // If the player is processing a seek, return the seek time.
   // Blink may still query us if updatePlaybackState() occurs while seeking.
-  /* TODO:
+
   if (seeking()) {
     return pending_seek_ ?
         pending_seek_time_.InSecondsF() : seek_time_.InSecondsF();
-  }*/
+  }
+
   return std::min((const_cast<media::TimeDeltaInterpolator*>(&interpolator_))
                       ->GetInterpolatedTime(),
                   duration_)
