@@ -328,6 +328,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   // SetPlaybackRate(0) is being executed.
   bool paused_;
   bool seeking_;
+  base::TimeDelta seek_time_;
   double playback_rate_;
   base::TimeDelta paused_time_;
   base::TimeDelta duration_;
@@ -342,7 +343,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   // Seek gets pending if another seek is in progress. Only last pending seek
   // will have effect.
   bool pending_seek_;
-  double pending_seek_seconds_;
+  base::TimeDelta pending_seek_time_;
 
   bool did_loading_progress_;
 
