@@ -53,6 +53,12 @@ static void error_cb(GstPlayer* player,
   media_player->OnError(err->code);
 }
 
+static void seek_done_cb(GstPlayer* player,
+                         GstClockTime position,
+                         MediaPlayerGStreamer* media_player) {
+  media_player->OnSeekDone(position);
+}
+
 static void position_updated_cb(GstPlayer* player,
                                 GstClockTime pos,
                                 MediaPlayerGStreamer* media_player) {
@@ -118,12 +124,6 @@ static void source_setup_cb(GstElement* playbin,
                             GstElement* src,
                             MediaPlayerGStreamer* player) {
   player->GstSourceSetup(playbin, src);
-}
-
-static void async_done_cb(GstBus* bus,
-                          GstMessage* msg,
-                          MediaPlayerGStreamer* player) {
-  player->GstAsyncDone(bus, msg);
 }
 
 static void sync_bus_call(GstBus* bus,
@@ -223,6 +223,7 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
   g_signal_connect(player_, "end-of-stream", G_CALLBACK(end_of_stream_cb),
                    this);
   g_signal_connect(player_, "error", G_CALLBACK(error_cb), this);
+  g_signal_connect(player_, "seek-done", G_CALLBACK(seek_done_cb), this);
 
   GstElement* pipeline = gst_player_get_pipeline(player_);
   g_signal_connect(pipeline, "source-setup", G_CALLBACK(source_setup_cb), this);
@@ -242,7 +243,6 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
   GstBus* bus = gst_element_get_bus(pipeline);
   gst_bus_enable_sync_message_emission(bus);
   g_signal_connect(bus, "sync-message", G_CALLBACK(sync_bus_call), this);
-  g_signal_connect(bus, "message::async-done", G_CALLBACK(async_done_cb), this);
 
   gst_object_unref(bus);
   gst_object_unref(pipeline);
@@ -383,17 +383,6 @@ void MediaPlayerGStreamer::GstSourceSetup(GstElement* playbin,
   }
 }
 
-void MediaPlayerGStreamer::GstAsyncDone(GstBus* bus, GstMessage* msg) {
-  GstClockTime running_time = GST_CLOCK_TIME_NONE;
-  gst_message_parse_async_done(msg, &running_time);
-
-  if (GST_CLOCK_TIME_IS_VALID(running_time) && running_time == seek_time_) {
-    seek_time_ = GST_CLOCK_TIME_NONE;
-    DidSeek(
-        base::TimeDelta::FromMilliseconds(GST_TIME_AS_MSECONDS(running_time)));
-  }
-}
-
 void MediaPlayerGStreamer::SyncMessage(GstBus* bus, GstMessage* msg) {
   switch (GST_MESSAGE_TYPE(msg)) {
     case GST_MESSAGE_ASYNC_DONE: {
@@ -528,7 +517,6 @@ void MediaPlayerGStreamer::Seek(const base::TimeDelta& delta) {
 
   GstClockTime seek_time = delta.InMicroseconds() * 1000;
   if (GST_CLOCK_TIME_IS_VALID(seek_time)) {
-    seek_time_ = seek_time;
     gst_player_seek(player_, seek_time);
   }
 }
@@ -692,6 +680,12 @@ void MediaPlayerGStreamer::OnBufferingUpdated(int percent) {
 
 void MediaPlayerGStreamer::OnError(int error) {
   media_channel_->SendMediaError(player_id_, error);
+}
+
+void MediaPlayerGStreamer::OnSeekDone(GstClockTime position) {
+  if (GST_CLOCK_TIME_IS_VALID(position)) {
+    DidSeek(base::TimeDelta::FromMilliseconds(GST_TIME_AS_MSECONDS(position)));
+  }
 }
 
 }  // namespace media
