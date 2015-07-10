@@ -165,6 +165,38 @@ NO_AUTH_BOTO_CONFIG=~/.boto gclient sync
 NO_AUTH_BOTO_CONFIG=~/.boto gclient runhooks
 ```
 
+### Maintenance ###
+``` bash
+# We have not managed to push original history of chromium because:
+# "remote: error: File chrome_frame/tools/test/reference_build/chrome_frame/chrome_dll.pdb is
+#   124.32 MB; this exceeds GitHub's file size limit of 100.00 MB"
+# This file is not there anymore but it was there in the past.
+# Even using tools like "bfg --strip-blobs-bigger-than 50M" it will change all the next SHA
+# from the point it strips a file.
+# Also there no official chromium/src repo on github that we could fork.
+
+# solution: truncate history to a point where there is not file bigger than 100.00 MB in order
+# to push to github.
+# We use "git replace" to allow rebasing between our truncated branch and original branch.
+
+# fake our branch point because we truncated the history
+git replace 64334b71ec2d2e4a8bf0cf5ca7e2dd18d90db0cb 2553ff05b802a94ef281e647874d37941eefd154
+
+# replay chromium original upstream commits on top of our branch with truncated history
+git checkout NEW_ORIGIN_SHA
+git checkout -b master_new
+git rebase 64334b71ec2d2e4a8bf0cf5ca7e2dd18d90db0cb
+git replace NEW_ORIGIN_SHA $(git rev-parse HEAD)
+
+# replay gst backend
+git checkout -b gstbackend --track github_gstbackend/master
+git rebase master_new
+git push github_gstbackend master_new:master --force
+
+# replace are located in .git/refs/replace/
+
+```
+
 ### Tips ###
 ``` bash
 # disable gpu process and particular sandbox
