@@ -185,6 +185,7 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
       gst_gl_display_(nullptr),
       gst_gl_context_(nullptr),
       seek_time_(GST_CLOCK_TIME_NONE),
+      was_preroll_(false),
       weak_factory_(this) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   GstElementFactory* srcFactory = gst_element_factory_find("chromiumhttpsrc");
@@ -336,6 +337,10 @@ void MediaPlayerGStreamer::GstAsyncDone(GstBus* bus, GstMessage* msg) {
 
 gboolean MediaPlayerGStreamer::SyncMessage(GstBus* bus, GstMessage* msg) {
   switch (GST_MESSAGE_TYPE(msg)) {
+    case GST_MESSAGE_ASYNC_DONE: {
+      was_preroll_ = true;
+    }
+    break;
     case GST_MESSAGE_NEED_CONTEXT: {
       const gchar* context_type = NULL;
       gst_message_parse_context_type(msg, &context_type);
@@ -406,9 +411,15 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
       return true;
   }
 
-  DCHECK(samples_[texture_id] == 0);
-
   DVLOG(1) << __FUNCTION__ << "(Using texture id: " << texture_id << ")";
+
+  if (was_preroll_ && samples_[texture_id]) {
+    was_preroll_ = false;
+    gst_video_frame_unmap(&v_frame);
+    return true;
+  }
+
+  DCHECK(samples_[texture_id] == 0);
 
   samples_[texture_id] = gst_sample_ref(sample);
 
