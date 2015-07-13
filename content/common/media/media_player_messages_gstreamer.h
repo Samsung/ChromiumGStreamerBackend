@@ -32,9 +32,6 @@ IPC_MESSAGE_CONTROL2(MediaPlayerMsg_Seek,
 		int /* player_id */,
 		base::TimeDelta /* time */)
 
-IPC_MESSAGE_CONTROL1(MediaPlayerMsg_Stop,
-        int /* player_id */)
-
 IPC_MESSAGE_CONTROL1(MediaPlayerMsg_Release,
         int /* player_id */)
 
