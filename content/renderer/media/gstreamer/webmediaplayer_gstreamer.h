@@ -69,7 +69,6 @@ class WebMediaPlayerMessageDispatcher
   void SendStart();
   void SendPause();
   void SendSeek(base::TimeDelta);
-  void SendStop();
   void SendRelease();
   void SendRealeaseTexture(unsigned texture_id);
 
