@@ -64,7 +64,6 @@ class MediaChannel : public IPC::Listener, public IPC::Sender {
   void OnMediaPlayerStart(int player_id);
   void OnMediaPlayerPause(int player_id);
   void OnMediaPlayerSeek(int player_id, base::TimeDelta delta);
-  void OnMediaPlayerStop(int player_id);
   void OnMediaPlayerRelease(int player_id);
   void OnMediaPlayerReleaseTexture(int player_id, unsigned texture_id);
 
@@ -90,8 +89,6 @@ class MediaChannel : public IPC::Listener, public IPC::Sender {
                            const std::vector<int32_t>& name);
 
  private:
-  void OnDestroy();
-
   scoped_ptr<IPC::SyncChannel> channel_;
 
   // The id of the client who is on the other side of the channel.
