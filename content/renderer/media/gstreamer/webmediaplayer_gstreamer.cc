@@ -153,13 +153,6 @@ void WebMediaPlayerMessageDispatcher::SendSeek(base::TimeDelta delta) {
     channel->Send(new MediaPlayerMsg_Seek(player_id_, delta));
 }
 
-void WebMediaPlayerMessageDispatcher::SendStop() {
-  content::MediaChannelHost* channel =
-      content::RenderThreadImpl::current()->GetMediaChannel();
-  if (channel)
-    channel->Send(new MediaPlayerMsg_Stop(player_id_));
-}
-
 void WebMediaPlayerMessageDispatcher::SendRelease() {
   content::MediaChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
