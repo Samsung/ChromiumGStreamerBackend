@@ -1012,6 +1012,9 @@ void RenderThreadImpl::Shutdown() {
   if (gpu_channel_.get())
     gpu_channel_->DestroyChannel();
 
+  if (media_channel_.get())
+    media_channel_->DestroyChannel();
+
   ChildThreadImpl::Shutdown();
 
   // Shut down the message loop (if provided when the RenderThreadImpl was
