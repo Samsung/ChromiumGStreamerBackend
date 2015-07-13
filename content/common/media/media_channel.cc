@@ -70,7 +70,6 @@ bool MediaChannel::OnMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(MediaPlayerMsg_Start, OnMediaPlayerStart)
   IPC_MESSAGE_HANDLER(MediaPlayerMsg_Pause, OnMediaPlayerPause)
   IPC_MESSAGE_HANDLER(MediaPlayerMsg_Seek, OnMediaPlayerSeek)
-  IPC_MESSAGE_HANDLER(MediaPlayerMsg_Stop, OnMediaPlayerStop)
   IPC_MESSAGE_HANDLER(MediaPlayerMsg_Release, OnMediaPlayerRelease)
   IPC_MESSAGE_HANDLER(MediaPlayerMsg_ReleaseTexture,
                       OnMediaPlayerReleaseTexture)
@@ -80,16 +79,7 @@ bool MediaChannel::OnMessageReceived(const IPC::Message& message) {
 }
 
 void MediaChannel::OnChannelError() {
-  for (MediaPlayerMap::iterator iter = media_players_.begin();
-       iter != media_players_.end(); ++iter) {
-    MediaPlayerGStreamer* player = iter->second;
-    if (player) {
-      player->Stop();
-    }
-  }
-
   media_players_.clear();
-
   channel_filter_->RemoveChannel(client_id_);
 }
 
@@ -132,19 +122,7 @@ void MediaChannel::OnMediaPlayerSeek(int player_id, base::TimeDelta delta) {
   }
 }
 
-void MediaChannel::OnMediaPlayerStop(int player_id) {
-  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
-  if (player) {
-    player->Stop();
-  }
-}
-
 void MediaChannel::OnMediaPlayerRelease(int player_id) {
-  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
-  if (player) {
-    player->Stop();
-  }
-
   media_players_.erase(player_id);
 }
 
