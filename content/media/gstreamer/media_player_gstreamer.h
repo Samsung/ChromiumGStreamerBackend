@@ -153,6 +153,7 @@ class MediaPlayerGStreamer
 
   typedef base::hash_map<unsigned, GstSample*> GstSampleMap;
   GstSampleMap samples_;
+  bool was_preroll_;
 
   base::WeakPtrFactory<MediaPlayerGStreamer> weak_factory_;
 };
