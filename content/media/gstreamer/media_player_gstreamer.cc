@@ -119,10 +119,10 @@ static void async_done_cb(GstBus* bus,
   player->GstAsyncDone(bus, msg);
 }
 
-static gboolean sync_bus_call(GstBus* bus,
+static void sync_bus_call(GstBus* bus,
                               GstMessage* msg,
                               MediaPlayerGStreamer* player) {
-  return player->SyncMessage(bus, msg);
+  player->SyncMessage(bus, msg);
 }
 
 static GstGLContext* gstgldisplay_create_context_cb(
@@ -335,7 +335,7 @@ void MediaPlayerGStreamer::GstAsyncDone(GstBus* bus, GstMessage* msg) {
   }
 }
 
-gboolean MediaPlayerGStreamer::SyncMessage(GstBus* bus, GstMessage* msg) {
+void MediaPlayerGStreamer::SyncMessage(GstBus* bus, GstMessage* msg) {
   switch (GST_MESSAGE_TYPE(msg)) {
     case GST_MESSAGE_ASYNC_DONE: {
       was_preroll_ = true;
@@ -354,14 +354,12 @@ gboolean MediaPlayerGStreamer::SyncMessage(GstBus* bus, GstMessage* msg) {
         gst_element_set_context(GST_ELEMENT(msg->src), display_context);
         gst_object_unref(gst_gl_display_);
         gst_gl_display_ = nullptr;
-        return TRUE;
       }
       break;
     }
     default:
       break;
   }
-  return FALSE;
 }
 
 void MediaPlayerGStreamer::DoReleaseTexture(unsigned texture_id) {
