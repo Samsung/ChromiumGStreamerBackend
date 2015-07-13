@@ -88,7 +88,6 @@ class MediaPlayerGStreamer
   void Play();
   void Pause();
   void Seek(const base::TimeDelta& duration);
-  void Stop();
   void ReleaseTexture(unsigned texture_id);
 
   void DidLoad();
@@ -97,6 +96,7 @@ class MediaPlayerGStreamer
   void DidPlay();
   void DidPause();
   void DidSeek(const base::TimeDelta& delta);
+  void DidEOS();
   void DidStop();
   void OnPositionUpdated(base::TimeDelta position);
   void OnBufferingUpdated(int percent);
@@ -146,8 +146,6 @@ class MediaPlayerGStreamer
 
   std::mutex gl_thread_mutex_;
   std::condition_variable gl_thread_condition_;
-  std::mutex stop_mutex_;
-  std::condition_variable stop_condition_;
 
   GstClockTime seek_time_;
 

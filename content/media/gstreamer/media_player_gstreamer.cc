@@ -42,7 +42,7 @@ namespace content {
 static void end_of_stream_cb(GstPlayer* player,
                              MediaPlayerGStreamer* media_player) {
   DVLOG(1) << __FUNCTION__ << "(end of stream reached)";
-  media_player->DidStop();
+  media_player->DidEOS();
 }
 
 static void error_cb(GstPlayer* player,
@@ -249,8 +249,17 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
 
 MediaPlayerGStreamer::~MediaPlayerGStreamer() {
   // TODO: release provider and call ::gles2::Terminate(); from gl thread.
-
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
   DVLOG(1) << __FUNCTION__ << "(Releasing GstPlayer)";
+
+  gst_player_stop(player_);
+
+  std::unique_lock<std::mutex> gl_thread_lock(gl_thread_mutex_);
+  gl_task_runner_->PostTask(FROM_HERE,
+                            base::Bind(&MediaPlayerGStreamer::CleanupGLContext,
+                                       weak_factory_.GetWeakPtr()));
+  gl_thread_condition_.wait(gl_thread_lock);
+
   gst_object_unref(player_);
   DVLOG(1) << __FUNCTION__ << "(GstPlayer release)";
 }
@@ -474,14 +483,6 @@ void MediaPlayerGStreamer::Seek(const base::TimeDelta& delta) {
   }
 }
 
-void MediaPlayerGStreamer::Stop() {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  std::unique_lock<std::mutex> lock(stop_mutex_);
-
-  gst_player_stop(player_);
-  stop_condition_.wait(lock);
-}
-
 void MediaPlayerGStreamer::ReleaseTexture(unsigned texture_id) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -514,16 +515,13 @@ void MediaPlayerGStreamer::DidSeek(const base::TimeDelta& delta) {
   media_channel_->SendSeekCompleted(player_id_, delta);
 }
 
-void MediaPlayerGStreamer::DidStop() {
-  std::unique_lock<std::mutex> gl_thread_lock(gl_thread_mutex_);
-  gl_task_runner_->PostTask(FROM_HERE,
-                            base::Bind(&MediaPlayerGStreamer::CleanupGLContext,
-                                       weak_factory_.GetWeakPtr()));
-  gl_thread_condition_.wait(gl_thread_lock);
-  stop_condition_.notify_one();
-
+void MediaPlayerGStreamer::DidEOS() {
   media_channel_->SendMediaPlaybackCompleted(player_id_);
 
+  DVLOG(1) << "Media player GStreamer EOS";
+}
+
+void MediaPlayerGStreamer::DidStop() {
   DVLOG(1) << "Media player GStreamer stopped";
 }
 
