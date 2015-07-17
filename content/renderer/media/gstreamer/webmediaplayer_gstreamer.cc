@@ -175,29 +175,29 @@ bool WebMediaPlayerMessageDispatcher::OnMessageReceived(
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(WebMediaPlayerMessageDispatcher, message)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_SetCurrentFrame, player,
-                      WebMediaPlayerGStreamer::OnSetCurrentFrame)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaDurationChanged, player,
-                      WebMediaPlayerGStreamer::OnMediaDurationChanged)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaPlaybackCompleted, player,
-                      WebMediaPlayerGStreamer::OnMediaPlaybackCompleted)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaBufferingUpdate, player,
-                      WebMediaPlayerGStreamer::OnMediaBufferingUpdate)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_SeekCompleted, player,
-                      WebMediaPlayerGStreamer::OnSeekCompleted)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaError, player,
-                      WebMediaPlayerGStreamer::OnMediaError)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaVideoSizeChanged, player,
-                      WebMediaPlayerGStreamer::OnVideoSizeChanged)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaTimeUpdate, player,
-                      WebMediaPlayerGStreamer::OnTimeUpdate)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaPlayerReleased, player,
-                      WebMediaPlayerGStreamer::OnMediaPlayerReleased)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_DidMediaPlayerPlay, player,
-                      WebMediaPlayerGStreamer::OnPlayerPlay)
-  IPC_MESSAGE_FORWARD(MediaPlayerMsg_DidMediaPlayerPause, player,
-                      WebMediaPlayerGStreamer::OnPlayerPause)
-  IPC_MESSAGE_UNHANDLED(handled = false)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_SetCurrentFrame, player,
+                        WebMediaPlayerGStreamer::OnSetCurrentFrame)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaDurationChanged, player,
+                        WebMediaPlayerGStreamer::OnMediaDurationChanged)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaPlaybackCompleted, player,
+                        WebMediaPlayerGStreamer::OnMediaPlaybackCompleted)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaBufferingUpdate, player,
+                        WebMediaPlayerGStreamer::OnMediaBufferingUpdate)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_SeekCompleted, player,
+                        WebMediaPlayerGStreamer::OnSeekCompleted)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaError, player,
+                        WebMediaPlayerGStreamer::OnMediaError)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaVideoSizeChanged, player,
+                        WebMediaPlayerGStreamer::OnVideoSizeChanged)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaTimeUpdate, player,
+                        WebMediaPlayerGStreamer::OnTimeUpdate)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_MediaPlayerReleased, player,
+                        WebMediaPlayerGStreamer::OnMediaPlayerReleased)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_DidMediaPlayerPlay, player,
+                        WebMediaPlayerGStreamer::OnPlayerPlay)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_DidMediaPlayerPause, player,
+                        WebMediaPlayerGStreamer::OnPlayerPause)
+    IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
 }
@@ -301,8 +301,8 @@ void WebMediaPlayerGStreamer::SetCurrentFrameInternal(
   base::AutoLock auto_lock(current_frame_lock_);
   current_frame_ = video_frame;
   if (video_frame_provider_client_)
-    compositor_loop_->PostTask(FROM_HERE,
-                   base::Bind(&cc::VideoFrameProvider::Client::DidReceiveFrame,
+    compositor_loop_->PostTask(
+        FROM_HERE, base::Bind(&cc::VideoFrameProvider::Client::DidReceiveFrame,
                               base::Unretained(video_frame_provider_client_)));
 }
 
@@ -327,8 +327,7 @@ scoped_refptr<media::VideoFrame> WebMediaPlayerGStreamer::GetCurrentFrame() {
   return video_frame;
 }
 
-void WebMediaPlayerGStreamer::PutCurrentFrame() {
-}
+void WebMediaPlayerGStreamer::PutCurrentFrame() {}
 
 void WebMediaPlayerGStreamer::OnReleaseTexture(unsigned texture_id,
                                                uint32 release_sync_point) {
@@ -714,7 +713,8 @@ double WebMediaPlayerGStreamer::currentTime() const {
   }*/
   return std::min((const_cast<media::TimeDeltaInterpolator*>(&interpolator_))
                       ->GetInterpolatedTime(),
-                  duration_).InSecondsF();
+                  duration_)
+      .InSecondsF();
 }
 
 WebMediaPlayer::NetworkState WebMediaPlayerGStreamer::networkState() const {

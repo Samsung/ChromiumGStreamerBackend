@@ -51,9 +51,9 @@ MediaChannel* MediaChannelFilter::LookupChannel(int32 client_id) {
 bool MediaChannelFilter::OnMessageReceived(const IPC::Message& msg) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(MediaChannelFilter, msg)
-  IPC_MESSAGE_HANDLER(MediaMsg_EstablishChannel, OnEstablishChannel)
-  IPC_MESSAGE_HANDLER(MediaMsg_CloseChannel, OnCloseChannel)
-  IPC_MESSAGE_UNHANDLED(handled = false)
+    IPC_MESSAGE_HANDLER(MediaMsg_EstablishChannel, OnEstablishChannel)
+    IPC_MESSAGE_HANDLER(MediaMsg_CloseChannel, OnCloseChannel)
+    IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
 }

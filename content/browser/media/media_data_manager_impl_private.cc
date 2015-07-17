@@ -44,8 +44,7 @@ void MediaDataManagerImplPrivate::RemoveObserver(
   observer_list_->RemoveObserver(observer);
 }
 
-void MediaDataManagerImplPrivate::Initialize() {
-}
+void MediaDataManagerImplPrivate::Initialize() {}
 
 void MediaDataManagerImplPrivate::AppendRendererCommandLine(
     base::CommandLine* command_line) const {
@@ -110,8 +109,7 @@ MediaDataManagerImplPrivate::MediaDataManagerImplPrivate(
   */
 }
 
-MediaDataManagerImplPrivate::~MediaDataManagerImplPrivate() {
-}
+MediaDataManagerImplPrivate::~MediaDataManagerImplPrivate() {}
 
 void MediaDataManagerImplPrivate::OnMediaProcessInitFailure() {
   // TODO: implement
