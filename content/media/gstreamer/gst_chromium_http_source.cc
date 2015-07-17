@@ -28,22 +28,21 @@ static scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
 // Inspired from WTF/wtf/glib/GUniquePtr.h
 // TODO: move this in a separate header and handle all types.
-template<typename T>
+template <typename T>
 struct GPtrDeleter {
   void operator()(T* ptr) const { g_free(ptr); }
 };
 
-template<typename T>
+template <typename T>
 using GUniquePtr = std::unique_ptr<T, GPtrDeleter<T>>;
 
 #define WTF_DEFINE_GPTR_DELETER(typeName, deleterFunc) \
-  template<> struct GPtrDeleter<typeName> \
-  { \
-    void operator() (typeName* ptr) const \
-    { \
-      if (ptr) \
-      deleterFunc(ptr); \
-    } \
+  template <>                                          \
+  struct GPtrDeleter<typeName> {                       \
+    void operator()(typeName * ptr) const {            \
+      if (ptr)                                         \
+        deleterFunc(ptr);                              \
+    }                                                  \
   };
 
 WTF_DEFINE_GPTR_DELETER(GstStructure, gst_structure_free)
@@ -482,13 +481,14 @@ static gboolean chromiumHttpSrcStop(GstBaseSrc* basesrc) {
     std::unique_lock<std::mutex> lock(priv->mutex_data_source_);
 
     if (priv->data_source_)
-    // Can be called in any thread.
-    priv->data_source_->Stop();
+      // Can be called in any thread.
+      priv->data_source_->Stop();
 
     if (priv->data_source_initialized_) {
-      // media::BufferedDataSource has to be released where it has been attached.
-      priv->main_task_runner_->PostTask(FROM_HERE,
-                                            base::Bind(&onResetDataSource, basesrc));
+      // media::BufferedDataSource has to be released where it has been
+      // attached.
+      priv->main_task_runner_->PostTask(
+          FROM_HERE, base::Bind(&onResetDataSource, basesrc));
       priv->condition_data_source_.wait(lock);
 
       DCHECK(priv->data_source_ == nullptr);
