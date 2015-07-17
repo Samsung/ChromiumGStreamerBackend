@@ -6,10 +6,8 @@
 
 namespace content {
 
-MediaProcess::MediaProcess() {
-}
+MediaProcess::MediaProcess() {}
 
-MediaProcess::~MediaProcess() {
-}
+MediaProcess::~MediaProcess() {}
 
 }  // namespace content
