@@ -35,8 +35,7 @@ MediaChannel::MediaChannel(int client_id, MediaChannelFilter* channel_filter)
   channel_id_ = IPC::Channel::GenerateVerifiedChannelID("media");
 }
 
-MediaChannel::~MediaChannel() {
-}
+MediaChannel::~MediaChannel() {}
 
 void MediaChannel::Init(base::SingleThreadTaskRunner* io_task_runner,
                         base::WaitableEvent* shutdown_event) {
@@ -66,14 +65,14 @@ bool MediaChannel::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
 
   IPC_BEGIN_MESSAGE_MAP(MediaChannel, message)
-  IPC_MESSAGE_HANDLER(MediaPlayerMsg_Load, OnMediaPlayerLoad)
-  IPC_MESSAGE_HANDLER(MediaPlayerMsg_Start, OnMediaPlayerStart)
-  IPC_MESSAGE_HANDLER(MediaPlayerMsg_Pause, OnMediaPlayerPause)
-  IPC_MESSAGE_HANDLER(MediaPlayerMsg_Seek, OnMediaPlayerSeek)
-  IPC_MESSAGE_HANDLER(MediaPlayerMsg_Release, OnMediaPlayerRelease)
-  IPC_MESSAGE_HANDLER(MediaPlayerMsg_ReleaseTexture,
-                      OnMediaPlayerReleaseTexture)
-  IPC_MESSAGE_UNHANDLED(handled = false)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_Load, OnMediaPlayerLoad)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_Start, OnMediaPlayerStart)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_Pause, OnMediaPlayerPause)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_Seek, OnMediaPlayerSeek)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_Release, OnMediaPlayerRelease)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_ReleaseTexture,
+                        OnMediaPlayerReleaseTexture)
+    IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
 }
