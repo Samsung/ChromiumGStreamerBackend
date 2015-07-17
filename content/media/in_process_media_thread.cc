@@ -13,8 +13,7 @@ InProcessMediaThread::InProcessMediaThread(
     const InProcessChildThreadParams& params)
     : base::Thread("Chrome_InProcMediaThread"),
       params_(params),
-      media_process_(NULL) {
-}
+      media_process_(NULL) {}
 
 InProcessMediaThread::~InProcessMediaThread() {
   Stop();
