@@ -120,8 +120,8 @@ static void async_done_cb(GstBus* bus,
 }
 
 static void sync_bus_call(GstBus* bus,
-                              GstMessage* msg,
-                              MediaPlayerGStreamer* player) {
+                          GstMessage* msg,
+                          MediaPlayerGStreamer* player) {
   player->SyncMessage(bus, msg);
 }
 
@@ -151,11 +151,9 @@ MediaPlayerGStreamerFactory::MediaPlayerGStreamerFactory(
     : media_log_(media_log),
       resource_dispatcher_(resource_dispatcher),
       main_task_runner_(main_task_runner),
-      gl_task_runner_(gl_task_runner) {
-}
+      gl_task_runner_(gl_task_runner) {}
 
-MediaPlayerGStreamerFactory::~MediaPlayerGStreamerFactory() {
-}
+MediaPlayerGStreamerFactory::~MediaPlayerGStreamerFactory() {}
 
 MediaPlayerGStreamer* MediaPlayerGStreamerFactory::create(
     int player_id,
@@ -268,7 +266,8 @@ void MediaPlayerGStreamer::SetupContextProvider() {
   std::unique_lock<std::mutex> lock(gl_thread_mutex_);
 
   gl_task_runner_->PostTask(FROM_HERE,
-      base::Bind(&MediaPlayerGStreamer::SetupGLContext, weak_factory_.GetWeakPtr()));
+                            base::Bind(&MediaPlayerGStreamer::SetupGLContext,
+                                       weak_factory_.GetWeakPtr()));
 
   gl_thread_condition_.wait(lock);
 }
@@ -348,15 +347,15 @@ void MediaPlayerGStreamer::SyncMessage(GstBus* bus, GstMessage* msg) {
   switch (GST_MESSAGE_TYPE(msg)) {
     case GST_MESSAGE_ASYNC_DONE: {
       was_preroll_ = true;
-    }
-    break;
+    } break;
     case GST_MESSAGE_NEED_CONTEXT: {
       const gchar* context_type = NULL;
       gst_message_parse_context_type(msg, &context_type);
 
       DVLOG(1) << __FUNCTION__ << "(Need context: " << context_type << ")";
 
-      if (gst_gl_display_ && g_strcmp0(context_type, GST_GL_DISPLAY_CONTEXT_TYPE) == 0) {
+      if (gst_gl_display_ &&
+          g_strcmp0(context_type, GST_GL_DISPLAY_CONTEXT_TYPE) == 0) {
         GstContext* display_context =
             gst_context_new(GST_GL_DISPLAY_CONTEXT_TYPE, TRUE);
         gst_context_set_gl_display(display_context, gst_gl_display_);
@@ -412,10 +411,10 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
   texture_id = *(guint*)v_frame.data[0];
 
   if (texture_id == 0) {
-      DVLOG(1) << __FUNCTION__ << "(Wrong texture id: 0)";
-      OnError(0);
-      // Here the return value means that the callback has been processed.
-      return true;
+    DVLOG(1) << __FUNCTION__ << "(Wrong texture id: 0)";
+    OnError(0);
+    // Here the return value means that the callback has been processed.
+    return true;
   }
 
   DVLOG(1) << __FUNCTION__ << "(Using texture id: " << texture_id << ")";
@@ -486,13 +485,12 @@ void MediaPlayerGStreamer::Seek(const base::TimeDelta& delta) {
 void MediaPlayerGStreamer::ReleaseTexture(unsigned texture_id) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  gl_task_runner_->PostTask(
-      FROM_HERE, base::Bind(&MediaPlayerGStreamer::DoReleaseTexture,
-                            AsWeakPtr(), texture_id));
+  gl_task_runner_->PostTask(FROM_HERE,
+                            base::Bind(&MediaPlayerGStreamer::DoReleaseTexture,
+                                       AsWeakPtr(), texture_id));
 }
 
-void MediaPlayerGStreamer::DidLoad() {
-}
+void MediaPlayerGStreamer::DidLoad() {}
 
 void MediaPlayerGStreamer::OnDurationChanged(const base::TimeDelta& duration) {
   media_channel_->SendMediaDurationChanged(player_id_, duration);

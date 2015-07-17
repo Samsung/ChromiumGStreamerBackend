@@ -71,10 +71,8 @@ base::ListValue* MediaDataManagerImpl::GetLogMessages() const {
 }
 
 MediaDataManagerImpl::MediaDataManagerImpl()
-    : private_(MediaDataManagerImplPrivate::Create(this)) {
-}
+    : private_(MediaDataManagerImplPrivate::Create(this)) {}
 
-MediaDataManagerImpl::~MediaDataManagerImpl() {
-}
+MediaDataManagerImpl::~MediaDataManagerImpl() {}
 
 }  // namespace content
