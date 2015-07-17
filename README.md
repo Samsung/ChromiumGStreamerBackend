@@ -4,7 +4,7 @@ Chromium GStreamer Backend
 [Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [GstPlayer](https://github.com/sdroege/gst-player/commits/master), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Issues](#issues), [Roadmap](#roadmap)
 
 ### Current branching point from official chromium/src  ###
-d903850ee3b13ee59aadea96cea7e52f0d4bd8c4 (Sun Jul 5)
+ea6c5b725c0b1e6a096481ee28a7f1b3dcd907e8 (Sun Jul 16)
 It will be rebased every week.
 
 ### Project description ###
@@ -180,13 +180,13 @@ NO_AUTH_BOTO_CONFIG=~/.boto gclient runhooks
 # We use "git replace" to allow rebasing between our truncated branch and original branch.
 
 # fake our branch point because we truncated the history
-git replace 64334b71ec2d2e4a8bf0cf5ca7e2dd18d90db0cb 2553ff05b802a94ef281e647874d37941eefd154
+git replace f3bc74bb672e94da20f44e2fe34bb90752996b30 ea6c5b725c0b1e6a096481ee28a7f1b3dcd907e8
 
 # replay chromium original upstream commits on top of our branch with truncated history
 git checkout NEW_ORIGIN_SHA
 git checkout -b master_new
-git rebase 64334b71ec2d2e4a8bf0cf5ca7e2dd18d90db0cb
-git replace NEW_ORIGIN_SHA $(git rev-parse HEAD)
+git rebase f3bc74bb672e94da20f44e2fe34bb90752996b30
+git replace $(git rev-parse HEAD) NEW_ORIGIN_SHA
 
 # replay gst backend
 git checkout -b gstbackend --track github_gstbackend/master
