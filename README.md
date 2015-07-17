@@ -199,11 +199,18 @@ git push github_gstbackend master_new:master --force
 
 ### Tips ###
 ``` bash
-# disable gpu process and particular sandbox
+
+# disable nacl to reduce build time
+Insert disable_nacl=1 to GYP_DEFINES, see build steps.
+
+# command lines options for ./out/Release/chrome
+A list of all command line switches is available here: http://peter.sh/experiments/chromium-command-line-switches/
+
+# disable gpu process and particular sandbox at runtime
 CHROME_SANDBOX_DEBUGGING=1 CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./out/Release/chrome --allow-sandbox-debugging --disable-render-sandbox --disable-hang-monitor  http://localhost/test/mov_bbb.ogg
 CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./out/Release/chrome --disable-render-sandbox --disable-gpu --disable-hang-monitor about:blank
 
-# debug mode
+# run chromium in debug mode
 CHROME_DEVEL_SANDBOX=out/Debug/chrome_sandbox ./out/Debug/chrome http://www.w3schools.com/html/mov_bbb.ogg
 CHROME_DEVEL_SANDBOX=out/Debug/chrome_sandbox ./out/Debug/chrome --media-startup-dialog --allow-sandbox-debugging about:blank
 
