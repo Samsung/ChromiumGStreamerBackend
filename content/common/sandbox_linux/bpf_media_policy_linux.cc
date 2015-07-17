@@ -197,11 +197,9 @@ bool UpdateProcessTypeAndEnableSandbox(
 
 }  // namespace
 
-MediaProcessPolicy::MediaProcessPolicy() : broker_process_(NULL) {
-}
+MediaProcessPolicy::MediaProcessPolicy() : broker_process_(NULL) {}
 
-MediaProcessPolicy::~MediaProcessPolicy() {
-}
+MediaProcessPolicy::~MediaProcessPolicy() {}
 
 // Main policy for x86_64/i386.
 ResultExpr MediaProcessPolicy::EvaluateSyscall(int sysno) const {
@@ -442,8 +440,8 @@ void MediaProcessPolicy::InitMediaBrokerProcess(
   permissions.push_back(
       BrokerFilePermission::ReadOnlyRecursive(kUsrLibPulseModulesPath));
   permissions.push_back(BrokerFilePermission::ReadOnlyRecursive(kEtcPulsePath));
-  permissions.push_back(BrokerFilePermission::ReadWriteCreate(
-      kDevRunUserPulse));
+  permissions.push_back(
+      BrokerFilePermission::ReadWriteCreate(kDevRunUserPulse));
   permissions.push_back(BrokerFilePermission::ReadWriteCreateUnlinkRecursive(
       kDevRunUserPulsePath));
 
