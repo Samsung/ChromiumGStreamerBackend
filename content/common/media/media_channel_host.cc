@@ -31,8 +31,7 @@ scoped_refptr<MediaChannelHost> MediaChannelHost::Create(
   return dispatcher;
 }
 
-MediaChannelHost::MediaChannelHost() {
-}
+MediaChannelHost::MediaChannelHost() {}
 
 static bool IsMainThread() {
   return !!ChildThread::Get();
@@ -94,11 +93,9 @@ MediaChannelHost::~MediaChannelHost() {
   DestroyChannel();
 }
 
-MediaChannelHost::MessageFilter::MessageFilter() : lost_(false) {
-}
+MediaChannelHost::MessageFilter::MessageFilter() : lost_(false) {}
 
-MediaChannelHost::MessageFilter::~MessageFilter() {
-}
+MediaChannelHost::MessageFilter::~MessageFilter() {}
 
 void MediaChannelHost::MessageFilter::RegisterDispatcher(
     int player_id,

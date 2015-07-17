@@ -96,8 +96,7 @@ MediaChildThread::MediaChildThread(const InProcessChildThreadParams& params)
   g_thread_safe_sender.Get() = thread_safe_sender();
 }
 
-MediaChildThread::~MediaChildThread() {
-}
+MediaChildThread::~MediaChildThread() {}
 
 void MediaChildThread::Shutdown() {
   ChildThreadImpl::Shutdown();
@@ -127,11 +126,11 @@ bool MediaChildThread::OnControlMessageReceived(const IPC::Message& msg) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(MediaChildThread, msg)
-  IPC_MESSAGE_HANDLER(MediaMsg_Initialize, OnInitialize)
-  IPC_MESSAGE_HANDLER(MediaMsg_Clean, OnClean)
-  IPC_MESSAGE_HANDLER(MediaMsg_Crash, OnCrash)
-  IPC_MESSAGE_HANDLER(MediaMsg_Hang, OnHang)
-  IPC_MESSAGE_UNHANDLED(handled = false)
+    IPC_MESSAGE_HANDLER(MediaMsg_Initialize, OnInitialize)
+    IPC_MESSAGE_HANDLER(MediaMsg_Clean, OnClean)
+    IPC_MESSAGE_HANDLER(MediaMsg_Crash, OnCrash)
+    IPC_MESSAGE_HANDLER(MediaMsg_Hang, OnHang)
+    IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
   if (handled)
