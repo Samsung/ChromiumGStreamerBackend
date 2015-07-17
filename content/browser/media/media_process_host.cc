@@ -416,10 +416,10 @@ void MediaProcessHost::AddFilter(IPC::MessageFilter* filter) {
 bool MediaProcessHost::OnMessageReceived(const IPC::Message& message) {
   DCHECK(CalledOnValidThread());
   IPC_BEGIN_MESSAGE_MAP(MediaProcessHost, message)
-  IPC_MESSAGE_HANDLER(MediaHostMsg_Initialized, OnInitialized)
-  IPC_MESSAGE_HANDLER(MediaHostMsg_ChannelEstablished, OnChannelEstablished)
-  IPC_MESSAGE_HANDLER(MediaHostMsg_DestroyChannel, OnDestroyChannel)
-  IPC_MESSAGE_UNHANDLED(RouteOnUIThread(message))
+    IPC_MESSAGE_HANDLER(MediaHostMsg_Initialized, OnInitialized)
+    IPC_MESSAGE_HANDLER(MediaHostMsg_ChannelEstablished, OnChannelEstablished)
+    IPC_MESSAGE_HANDLER(MediaHostMsg_DestroyChannel, OnDestroyChannel)
+    IPC_MESSAGE_UNHANDLED(RouteOnUIThread(message))
   IPC_END_MESSAGE_MAP()
 
   return true;
