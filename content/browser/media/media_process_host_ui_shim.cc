@@ -149,9 +149,9 @@ bool MediaProcessHostUIShim::OnControlMessageReceived(
   DCHECK(CalledOnValidThread());
 
   IPC_BEGIN_MESSAGE_MAP(MediaProcessHostUIShim, message)
-  IPC_MESSAGE_HANDLER(MediaHostMsg_OnLogMessage, OnLogMessage)
+    IPC_MESSAGE_HANDLER(MediaHostMsg_OnLogMessage, OnLogMessage)
 
-  IPC_MESSAGE_UNHANDLED_ERROR()
+    IPC_MESSAGE_UNHANDLED_ERROR()
   IPC_END_MESSAGE_MAP()
 
   return true;
