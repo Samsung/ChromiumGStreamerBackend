@@ -367,7 +367,7 @@ void WebMediaPlayerGStreamer::OnSetCurrentFrame(
   // TODO: use ubercompositor to avoid inheriting from cc::VideoFrameProvider
   // and to avoid creating media::VideoFrame::WrapNativeTexture here.
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapNativeTexture(
-      media::VideoFrame::ARGB,
+      media::PIXEL_FORMAT_ARGB,
       gpu::MailboxHolder(mailbox, GL_TEXTURE_2D, sync_point),
       media::BindToCurrentLoop(base::Bind(
           &WebMediaPlayerGStreamer::OnReleaseTexture, AsWeakPtr(), texture_id)),
