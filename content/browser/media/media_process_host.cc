@@ -418,7 +418,6 @@ bool MediaProcessHost::OnMessageReceived(const IPC::Message& message) {
   IPC_BEGIN_MESSAGE_MAP(MediaProcessHost, message)
     IPC_MESSAGE_HANDLER(MediaHostMsg_Initialized, OnInitialized)
     IPC_MESSAGE_HANDLER(MediaHostMsg_ChannelEstablished, OnChannelEstablished)
-    IPC_MESSAGE_HANDLER(MediaHostMsg_DestroyChannel, OnDestroyChannel)
     IPC_MESSAGE_UNHANDLED(RouteOnUIThread(message))
   IPC_END_MESSAGE_MAP()
 
@@ -576,10 +575,6 @@ void MediaProcessHost::SendOutstandingReplies() {
     channel_requests_.pop();
     callback.Run(IPC::ChannelHandle());
   }
-}
-
-void MediaProcessHost::OnDestroyChannel(int32 client_id) {
-  TRACE_EVENT0("media", "MediaProcessHost::OnDestroyChannel");
 }
 
 }  // namespace content

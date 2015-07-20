@@ -36,7 +36,6 @@ MediaChannelFilter::~MediaChannelFilter() {
 }
 
 void MediaChannelFilter::RemoveChannel(int client_id) {
-  Send(new MediaHostMsg_DestroyChannel(client_id));
   media_channels_.erase(client_id);
 }
 
