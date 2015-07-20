@@ -25,7 +25,7 @@ We are open to any change related to the design or to the implementation.
 There are choices we made that need to be discussed or re-considered, see [issues](#issues) and [roadmap](#roadmap).
 
 ### Status ###
-24/06/2015: Can play basic html5 videos. MSE is not yet supported (so youtube won't work) but this our main next task, see [roadmap](#roadmap).
+20/07/2015: Can play classic html5 videos and Youtube. It supports MSE without seeking for now like WebKitGTK.
 
 ``` bash
 # Progressive streaming:
@@ -45,9 +45,9 @@ http://www.w3schools.com/html/html5_video.asp
 ```
 
 ### List of modified and added files ###
-24/06/2015: (just to give an idea of the delta from official chromium/src)  
-50 files modified, 604 insertions(+), 12 deletions(-)  
-45 files added, 7363 insertions(+)  
+20/07/2015: (just to give an idea of the delta from official chromium/src)  
+50 files modified, 616 insertions(+), 12 deletions(-)  
+50 files added, 9374 insertions(+)  
 git diff --diff-filter=AM --stat sha-1 HEAD  
 
 ### Build ###
@@ -247,8 +247,8 @@ Just run: git cl format, to indent latest commit.
 * Media Process can work as "In Process" mode when passing --in-process-media command line argument but it currently crashes.
 
 ### Roadmap ###
-* Add MSE support.
 * Add EME support.
+* Add seeking support for MSE. We probably want to use multiappsrc first.
 * Add support for gn build. (we only support gyp for now)
 * For development, pull and build GStreamer locally like it is done for WebKit using jhbuild. (For now we use system wide GStreamer)
 * Use ubercompositor in Media Process.
