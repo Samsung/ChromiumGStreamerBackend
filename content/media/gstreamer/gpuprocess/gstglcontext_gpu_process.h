@@ -38,7 +38,7 @@ typedef struct _GstGLContextGPUProcess GstGLContextGPUProcess;
 typedef struct _GstGLContextGPUProcessPrivate GstGLContextGPUProcessPrivate;
 typedef struct _GstGLContextGPUProcessClass GstGLContextGPUProcessClass;
 
-typedef gpointer (*GstGLProcAddrFunc)(GstGLContext* context, const gchar* name);
+typedef gpointer (*GstGLProcAddrFunc)(GstGLAPI gl_api, const gchar* name);
 
 /**
  * GstGLContextGPUProcess:
