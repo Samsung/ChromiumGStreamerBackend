@@ -948,8 +948,10 @@ void RenderThreadImpl::Shutdown() {
   if (gpu_channel_.get())
     gpu_channel_->DestroyChannel();
 
+#if defined(USE_GSTREAMER)
   if (media_channel_.get())
     media_channel_->DestroyChannel();
+#endif
 
   ChildThreadImpl::Shutdown();
 
@@ -1817,6 +1819,7 @@ MediaChannelHost* RenderThreadImpl::GetMediaChannel(
       return media_channel_.get();
 
     // Recreate the channel if it has been lost.
+    media_channel_->DestroyChannel();
     media_channel_ = NULL;
   }
 
