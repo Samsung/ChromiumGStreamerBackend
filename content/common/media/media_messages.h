@@ -75,9 +75,6 @@ IPC_MESSAGE_CONTROL1(MediaHostMsg_Initialized, bool /* result */)
 IPC_MESSAGE_CONTROL1(MediaHostMsg_ChannelEstablished,
                      IPC::ChannelHandle /* channel_handle */)
 
-// Message from the media process to notify to destroy the channel.
-IPC_MESSAGE_CONTROL1(MediaHostMsg_DestroyChannel, int32 /* client_id */)
-
 // Message from the media process to add a media process log message to the
 // about:media page.
 IPC_MESSAGE_CONTROL3(MediaHostMsg_OnLogMessage,
