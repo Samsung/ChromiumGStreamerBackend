@@ -115,7 +115,6 @@ class MediaProcessHost : public BrowserChildProcessHostDelegate,
   // Message handlers.
   void OnInitialized(bool result);
   void OnChannelEstablished(const IPC::ChannelHandle& channel_handle);
-  void OnDestroyChannel(int32 client_id);
 
   bool LaunchMediaProcess(const std::string& channel_id);
 
