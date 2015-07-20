@@ -132,7 +132,7 @@ static GstGLContext* gstgldisplay_create_context_cb(
   return player->GstgldisplayCreateContextCallback(display, other_context);
 }
 
-static gpointer gpu_process_proc_addr(GstGLContext*, const gchar* name) {
+static gpointer gpu_process_proc_addr(GstGLAPI gl_api, const gchar* name) {
   return (gpointer)gles2::GetGLFunctionPointer(name);
 }
 
