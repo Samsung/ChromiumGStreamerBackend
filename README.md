@@ -1,7 +1,7 @@
 Chromium GStreamer Backend
 ==========================
 
-[Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [GstPlayer](https://github.com/sdroege/gst-player/commits/master), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Issues](#issues), [Roadmap](#roadmap)
+[Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [MSE](#mse), [GstPlayer](https://github.com/sdroege/gst-player/commits/master), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Tips](#tips), [Maintenance](#maintenance), [Issues](#issues), [Roadmap](#roadmap)
 
 ### Current branching point from official chromium/src  ###
 ea6c5b725c0b1e6a096481ee28a7f1b3dcd907e8 (Sun Jul 16)
@@ -105,6 +105,24 @@ Media process, upon receiving the request, establishes the channel (MediaChannel
 For any messages from WebMediaPlayerGStreamer  WebMediaPlayerMessageDispatcher dispatches messages via MediaChannelHost to MediaChannel in media process. MediaChannel maps the message to the associated media player and call the callback.
 
 ![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_media_process_ipc.png?raw=true)
+
+__  
+
+### MSE ###
+
+[Media Source Extensions specification](https://w3c.github.io/media-source/).
+
+When load_type param of blink::WebMediaPlayer::load is equal to LoadTypeMediaSource the url is formated to start with mediasourceblob://.
+
+It allows GstPlayer's pipeline to select GstChromiumMediaSrc. This GstBin adds and removes appsrc elements when receiving AddSourceBuffer and RemoveSourceBuffer.
+
+Encoded data is currently sent through IPC message. We can later consider using shared memory but it seems efficient enough like.
+And it is also what Android does.
+
+Currently seeking is not implemented but WebKitGTK does not support it too.
+Also it exists on-going work somewhere. And it should be easier to handle it with future multiappsrc element.
+
+![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_media_process_mse.png?raw=true)
 
 __  
 
