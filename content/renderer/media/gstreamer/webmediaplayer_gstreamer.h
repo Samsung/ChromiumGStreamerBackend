@@ -105,7 +105,7 @@ class WebMediaPlayerMessageDispatcher
 
  private:
   int player_id_;
-  base::WeakPtr<WebMediaPlayerGStreamer> _player;
+  base::WeakPtr<WebMediaPlayerGStreamer> player_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
