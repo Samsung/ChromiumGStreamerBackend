@@ -115,9 +115,7 @@ void MediaChildThread::Init(const base::Time& process_start_time) {
 bool MediaChildThread::Send(IPC::Message* msg) {
   // The media process must never send a synchronous IPC message to the browser
   // process. This could result in deadlock.
-  // TODO: DCHECK(!msg->is_sync()); - check if msg is synchronous except
-  // if msg is gpu establich channel
-
+  DCHECK(!msg->is_sync() || msg->type() == GpuHostMsg_EstablishGpuChannel::ID);
   return ChildThreadImpl::Send(msg);
 }
 
