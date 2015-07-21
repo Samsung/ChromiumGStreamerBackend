@@ -113,7 +113,7 @@ STATIC_ASSERT_MATCHING_ENUM(UseCredentials);
 WebMediaPlayerMessageDispatcher::WebMediaPlayerMessageDispatcher(
     int player_id,
     base::WeakPtr<WebMediaPlayerGStreamer> player)
-    : player_id_(player_id), _player(player) {
+    : player_id_(player_id), player_(player) {
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
   content::MediaChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
@@ -268,7 +268,7 @@ void WebMediaPlayerMessageDispatcher::SendRemoveSegment(
 
 bool WebMediaPlayerMessageDispatcher::OnMessageReceived(
     const IPC::Message& message) {
-  WebMediaPlayerGStreamer* player = _player.get();
+  WebMediaPlayerGStreamer* player = player_.get();
   if (!player)
     return false;
 
