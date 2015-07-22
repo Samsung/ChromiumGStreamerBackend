@@ -599,6 +599,7 @@ static void onResetDataSource(GstBaseSrc* basesrc) {
   ChromiumHttpSrcPrivate* priv = src->priv;
 
   if (priv->data_source_initialized_) {
+    std::unique_lock<std::mutex> lock(priv->mutex_data_source_);
     // The callback has been spwan to released the data source.
     priv->data_source_ = nullptr;
     priv->data_source_initialized_ = false;
