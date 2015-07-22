@@ -125,6 +125,10 @@ bool GpuChannelHost::Send(IPC::Message* msg) {
   }
 
   bool result = sync_filter_->Send(message.release());
+#if defined(USE_GSTREAMER)
+  if (!result)
+    VLOG(1) << "GpuChannelHost::Send failed: SyncMessageFilter::Send failed";
+#endif
   return result;
 }
 
