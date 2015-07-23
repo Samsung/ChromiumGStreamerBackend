@@ -70,8 +70,7 @@ class MediaPlayerGStreamerFactory {
 };
 
 // TODO: use ubercompositor and inherits from cc::VideoFrameProvider.
-class MediaPlayerGStreamer
-    : public base::SupportsWeakPtr<MediaPlayerGStreamer> {
+class MediaPlayerGStreamer {
  public:
   MediaPlayerGStreamer(
       int player_id,
