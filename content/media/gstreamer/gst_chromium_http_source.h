@@ -46,13 +46,43 @@ struct _ChromiumHttpSrcClass {
 };
 
 GType chromium_http_src_get_type(void);
-void chromiumHttpSrcSetup(
-    ChromiumHttpSrc* src,
-    scoped_refptr<media::MediaLog> media_log,
-    media::BufferedDataSourceHost* buffered_data_source_host,
-    content::ResourceDispatcher* resource_dispatcher,
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
 G_END_DECLS
+
+namespace content {
+
+class GStreamerBufferedDataSource {
+public:
+    GStreamerBufferedDataSource(GURL url, media::BufferedResourceLoader::CORSMode cors_mode, ChromiumHttpSrc* src);
+    media::BufferedDataSourceHostImpl* buffered_data_source_host() { return &buffered_data_source_host_; }
+    media::BufferedDataSource* data_source() { return data_source_.get(); }
+
+private:
+    media::BufferedDataSourceHostImpl buffered_data_source_host_;
+    scoped_ptr<media::BufferedDataSource> data_source_;
+};
+
+class GStreamerBufferedDataSourceFactory {
+public:
+    GStreamerBufferedDataSourceFactory(
+        scoped_refptr<media::MediaLog> media_log,
+        content::ResourceDispatcher* resource_dispatcher,
+        scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner);
+
+    void create(gchar* uri, media::BufferedResourceLoader::CORSMode cors_mode, ChromiumHttpSrc* src);
+    static GStreamerBufferedDataSourceFactory* Get();
+    static void Init(scoped_refptr<media::MediaLog>, content::ResourceDispatcher*, scoped_refptr<base::SingleThreadTaskRunner>);
+    scoped_refptr<media::MediaLog> media_log() { return media_log_; }
+    content::ResourceDispatcher* resource_dispatcher() { return resource_dispatcher_; }
+    scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner() { return data_source_task_runner_; }
+
+private:
+    static scoped_ptr<GStreamerBufferedDataSourceFactory> data_source_factory_;
+    scoped_refptr<media::MediaLog> media_log_;
+    content::ResourceDispatcher* resource_dispatcher_;
+    scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner_;
+};
+
+}
 
 #endif  // CONTENT_MEDIA_GSTREAMER_HTTP_SOURCE_H_
