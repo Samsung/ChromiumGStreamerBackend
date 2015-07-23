@@ -94,7 +94,6 @@ bool MediaChannel::OnMessageReceived(const IPC::Message& message) {
 }
 
 void MediaChannel::OnChannelError() {
-  media_players_.clear();
   channel_filter_->RemoveChannel(client_id_);
 }
 
