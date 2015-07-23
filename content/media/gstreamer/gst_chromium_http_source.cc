@@ -15,11 +15,6 @@
 #include "content/child/web_url_loader_impl.h"
 #include "url/gurl.h"
 
-static scoped_refptr<media::MediaLog> media_log_;
-static media::BufferedDataSourceHost* buffered_data_source_host_;
-static content::ResourceDispatcher* resource_dispatcher_;
-static scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
 #define DEFAULT_BLOCKSIZE 4 * 1024
 
 #define CHROMIUM_HTTP_SRC_GET_PRIVATE(obj)                    \
@@ -48,20 +43,17 @@ using GUniquePtr = std::unique_ptr<T, GPtrDeleter<T>>;
 WTF_DEFINE_GPTR_DELETER(GstStructure, gst_structure_free)
 
 struct _ChromiumHttpSrcPrivate {
-  gchar* uri;
-  bool keepAlive;
-  GUniquePtr<GstStructure> extraHeaders;
-  bool compress;
+  gchar* uri_;
+  bool keepAlive_;
+  GUniquePtr<GstStructure> extraHeaders_;
+  bool compress_;
 
   bool data_source_initialized_;
-  scoped_ptr<media::BufferedDataSource> data_source_;
   gint last_read_bytes_;
   base::Closure error_cb_;
 
   base::WaitableEvent* aborted_;
   base::WaitableEvent* read_complete_;
-
-  gboolean pendingStart;
 
   // icecast stuff
   gchar* iradioName;
@@ -71,10 +63,7 @@ struct _ChromiumHttpSrcPrivate {
 
   std::mutex mutex_data_source_;
   std::condition_variable condition_data_source_;
-  scoped_refptr<media::MediaLog> media_log_;
-  media::BufferedDataSourceHost* buffered_data_source_host_;
-  content::ResourceDispatcher* resource_dispatcher_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  scoped_ptr<content::GStreamerBufferedDataSource> gst_data_source_ ;
 };
 
 enum {
@@ -99,7 +88,6 @@ GST_DEBUG_CATEGORY_STATIC(chromium_http_src_debug);
 
 static void chromiumHttpSrcUriHandlerInit(gpointer gIface, gpointer ifaceData);
 
-static void chromiumHttpSrcDispose(GObject*);
 static void chromiumHttpSrcFinalize(GObject*);
 static void chromiumHttpSrcSetProperty(GObject*,
                                        guint propertyID,
@@ -111,6 +99,8 @@ static void chromiumHttpSrcGetProperty(GObject*,
                                        GParamSpec*);
 static gboolean chromiumHttpSrcStart(GstBaseSrc* basesrc);
 static gboolean chromiumHttpSrcStop(GstBaseSrc* basesrc);
+static gboolean chromiumHttpSrcUnlock(GstBaseSrc* basesrc);
+static gboolean chromiumHttpSrcUnlockStop(GstBaseSrc* basesrc);
 static gboolean chromiumHttpSrcIsSeekable(GstBaseSrc* src);
 static gboolean chromiumHttpSrcGetSize(GstBaseSrc* src, guint64* size);
 static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* src,
@@ -131,43 +121,19 @@ G_DEFINE_TYPE_WITH_CODE(ChromiumHttpSrc,
                                               chromiumHttpSrcUriHandlerInit);
                         CHROMIUM_HTTP_SRC_CATEGORY_INIT);
 
-void chromiumHttpSrcSetup(
-    ChromiumHttpSrc* src,
-    scoped_refptr<media::MediaLog> media_log,
-    media::BufferedDataSourceHost* buffered_data_source_host,
-    content::ResourceDispatcher* resource_dispatcher,
-    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner) {
-  ChromiumHttpSrcPrivate* priv = src->priv;
-
-  static volatile gsize _init = 0;
-
-  // Keep them around for hls: gst_element_make_from_uri.
-  if (g_once_init_enter(&_init)) {
-    media_log_ = media_log;
-    buffered_data_source_host_ = buffered_data_source_host;
-    resource_dispatcher_ = resource_dispatcher;
-    main_task_runner_ = main_task_runner;
-    g_once_init_leave(&_init, 1);
-  }
-
-  priv->media_log_ = media_log_;
-  priv->buffered_data_source_host_ = buffered_data_source_host_;
-  priv->resource_dispatcher_ = resource_dispatcher_;
-  priv->main_task_runner_ = main_task_runner_;
-}
-
 static void chromium_http_src_class_init(ChromiumHttpSrcClass* klass) {
   GObjectClass* oklass = G_OBJECT_CLASS(klass);
   GstElementClass* eklass = GST_ELEMENT_CLASS(klass);
   GstBaseSrcClass* bklass = GST_BASE_SRC_CLASS(klass);
 
-  oklass->dispose = GST_DEBUG_FUNCPTR(chromiumHttpSrcDispose);
   oklass->finalize = GST_DEBUG_FUNCPTR(chromiumHttpSrcFinalize);
   oklass->set_property = GST_DEBUG_FUNCPTR(chromiumHttpSrcSetProperty);
   oklass->get_property = GST_DEBUG_FUNCPTR(chromiumHttpSrcGetProperty);
 
   bklass->start = GST_DEBUG_FUNCPTR(chromiumHttpSrcStart);
   bklass->stop = GST_DEBUG_FUNCPTR(chromiumHttpSrcStop);
+  bklass->unlock = GST_DEBUG_FUNCPTR(chromiumHttpSrcUnlock);
+  bklass->unlock_stop = GST_DEBUG_FUNCPTR(chromiumHttpSrcUnlockStop);
   bklass->is_seekable = GST_DEBUG_FUNCPTR(chromiumHttpSrcIsSeekable);
   bklass->get_size = GST_DEBUG_FUNCPTR(chromiumHttpSrcGetSize);
   bklass->fill = GST_DEBUG_FUNCPTR(chromiumHttpSrcFill);
@@ -242,43 +208,34 @@ static void chromium_http_src_init(ChromiumHttpSrc* src) {
   ChromiumHttpSrcPrivate* priv = CHROMIUM_HTTP_SRC_GET_PRIVATE(src);
   src->priv = priv;
 
-  priv->data_source_ = nullptr;
+  priv->gst_data_source_  = nullptr;
   priv->data_source_initialized_ = false;
 
   priv->aborted_ = new base::WaitableEvent{true, false};
   priv->read_complete_ = new base::WaitableEvent{false, false};
 
-  priv->media_log_ = media_log_;
-  priv->buffered_data_source_host_ = buffered_data_source_host_;
-  priv->resource_dispatcher_ = resource_dispatcher_;
-  priv->main_task_runner_ = main_task_runner_;
-
   gst_base_src_set_blocksize(GST_BASE_SRC(src), DEFAULT_BLOCKSIZE);
 }
 
-static void chromiumHttpSrcDispose(GObject* object) {
-  ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(object);
-  ChromiumHttpSrcPrivate* priv = src->priv;
-
-  priv->data_source_ = nullptr;
-  priv->data_source_initialized_ = false;
-
-  GST_CALL_PARENT(G_OBJECT_CLASS, dispose, (object));
+static void onDeleteDataSource(content::GStreamerBufferedDataSource* gst_data_source) {
+  delete gst_data_source;
 }
 
 static void chromiumHttpSrcFinalize(GObject* object) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(object);
   ChromiumHttpSrcPrivate* priv = src->priv;
 
-  g_free(priv->uri);
+  g_free(priv->uri_);
 
   delete priv->read_complete_;
   delete priv->aborted_;
 
-  priv->media_log_ = nullptr;
-  priv->buffered_data_source_host_ = nullptr;
-  priv->resource_dispatcher_ = nullptr;
-  priv->main_task_runner_ = nullptr;
+  if (priv->gst_data_source_) {
+    content::GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner()->PostTask(FROM_HERE,
+        base::Bind(&onDeleteDataSource, priv->gst_data_source_.release()));
+
+    priv->gst_data_source_ = nullptr;
+  }
 
   GST_CALL_PARENT(G_OBJECT_CLASS, finalize, (object));
 }
@@ -295,15 +252,15 @@ static void chromiumHttpSrcSetProperty(GObject* object,
                               g_value_get_string(value), 0);
       break;
     case PROP_KEEP_ALIVE:
-      src->priv->keepAlive = g_value_get_boolean(value);
+      src->priv->keepAlive_ = g_value_get_boolean(value);
       break;
     case PROP_EXTRA_HEADERS: {
       const GstStructure* s = gst_value_get_structure(value);
-      src->priv->extraHeaders.reset(s ? gst_structure_copy(s) : nullptr);
+      src->priv->extraHeaders_.reset(s ? gst_structure_copy(s) : nullptr);
       break;
     }
     case PROP_COMPRESS:
-      src->priv->compress = g_value_get_boolean(value);
+      src->priv->compress_ = g_value_get_boolean(value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, propID, pspec);
@@ -333,16 +290,16 @@ static void chromiumHttpSrcGetProperty(GObject* object,
       g_value_set_string(value, priv->iradioTitle);
       break;
     case PROP_LOCATION:
-      g_value_set_string(value, priv->uri);
+      g_value_set_string(value, priv->uri_);
       break;
     case PROP_KEEP_ALIVE:
-      g_value_set_boolean(value, priv->keepAlive);
+      g_value_set_boolean(value, priv->keepAlive_);
       break;
     case PROP_EXTRA_HEADERS:
-      gst_value_set_structure(value, priv->extraHeaders.get());
+      gst_value_set_structure(value, priv->extraHeaders_.get());
       break;
     case PROP_COMPRESS:
-      g_value_set_boolean(value, priv->compress);
+      g_value_set_boolean(value, priv->compress_);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, propID, pspec);
@@ -379,7 +336,7 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
   }
 
   int64 file_size;
-  if (priv->data_source_->GetSize(&file_size) && read_position >= file_size) {
+  if (priv->gst_data_source_->data_source()->GetSize(&file_size) && read_position >= file_size) {
     GST_ELEMENT_ERROR(src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
     return GST_FLOW_ERROR;
   }
@@ -398,8 +355,8 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
     //   2) |aborted_| is signalled
     priv->last_read_bytes_ = 0;
 
-    priv->data_source_->Read(read_position, to_read, data,
-                             base::Bind(&SignalReadCompleted, basesrc));
+    priv->gst_data_source_->data_source()->Read(read_position, to_read, data,
+        base::Bind(&SignalReadCompleted, basesrc));
 
     base::WaitableEvent* events[] = {priv->aborted_, priv->read_complete_};
     size_t index = base::WaitableEvent::WaitMany(events, arraysize(events));
@@ -455,7 +412,7 @@ eos : {
 static gboolean chromiumHttpSrcIsSeekable(GstBaseSrc* basesrc) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
-  return !priv->data_source_->IsStreaming();
+  return !priv->gst_data_source_->data_source()->IsStreaming();
 }
 
 static gboolean chromiumHttpSrcGetSize(GstBaseSrc* basesrc, guint64* size) {
@@ -463,7 +420,7 @@ static gboolean chromiumHttpSrcGetSize(GstBaseSrc* basesrc, guint64* size) {
   ChromiumHttpSrcPrivate* priv = src->priv;
 
   int64 file_size;
-  if (!priv->data_source_->GetSize(&file_size))
+  if (!priv->gst_data_source_->data_source()->GetSize(&file_size))
     return FALSE;
 
   *size = file_size;
@@ -476,23 +433,10 @@ static gboolean chromiumHttpSrcStop(GstBaseSrc* basesrc) {
   ChromiumHttpSrcPrivate* priv = src->priv;
 
   GST_OBJECT_LOCK(src);
-
-  {
-    std::unique_lock<std::mutex> lock(priv->mutex_data_source_);
-
-    if (priv->data_source_)
-      // Can be called in any thread.
-      priv->data_source_->Stop();
-
-    if (priv->data_source_initialized_) {
-      // media::BufferedDataSource has to be released where it has been
-      // attached.
-      priv->main_task_runner_->PostTask(
-          FROM_HERE, base::Bind(&onResetDataSource, basesrc));
-      priv->condition_data_source_.wait(lock);
-
-      DCHECK(priv->data_source_ == nullptr);
-    }
+  if (priv->gst_data_source_) {
+    // Can be called in any thread.
+    priv->gst_data_source_->data_source()->Stop();
+    priv->data_source_initialized_ = false;
 
     g_free(priv->iradioName);
     priv->iradioName = 0;
@@ -508,6 +452,26 @@ static gboolean chromiumHttpSrcStop(GstBaseSrc* basesrc) {
   }
 
   GST_OBJECT_UNLOCK(src);
+  return TRUE;
+}
+
+static gboolean chromiumHttpSrcUnlock (GstBaseSrc * basesrc) {
+  ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
+  ChromiumHttpSrcPrivate* priv = src->priv;
+  GST_OBJECT_LOCK(src);
+
+  if (priv->gst_data_source_ && !priv->read_complete_->IsSignaled()) {
+    GST_DEBUG("Data source is unlocking.");
+
+    priv->last_read_bytes_ = 0;
+    priv->read_complete_->Signal();
+  }
+
+  GST_OBJECT_UNLOCK(src);
+  return TRUE;
+}
+
+static gboolean chromiumHttpSrcUnlockStop (GstBaseSrc * basesrc) {
   return TRUE;
 }
 
@@ -584,10 +548,7 @@ static void onSourceInitialized(GstBaseSrc* basesrc, bool success) {
 }
 
 static void onNotifyDownloading(GstBaseSrc* basesrc, bool is_downloading) {
-  ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
-  ChromiumHttpSrcPrivate* priv = src->priv;
-
-  priv->media_log_->AddEvent(priv->media_log_->CreateBooleanEvent(
+  content::GStreamerBufferedDataSourceFactory::Get()->media_log()->AddEvent(content::GStreamerBufferedDataSourceFactory::Get()->media_log()->CreateBooleanEvent(
       media::MediaLogEvent::NETWORK_ACTIVITY_SET, "is_downloading_data",
       is_downloading));
 
@@ -598,23 +559,15 @@ static void onResetDataSource(GstBaseSrc* basesrc) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
 
-  if (priv->data_source_initialized_) {
-    std::unique_lock<std::mutex> lock(priv->mutex_data_source_);
-    // The callback has been spwan to released the data source.
-    priv->data_source_ = nullptr;
-    priv->data_source_initialized_ = false;
-    priv->condition_data_source_.notify_one();
-    return;
-  }
-
-  GST_DEBUG("Preparing data source for uri: %s", priv->uri);
+  GST_DEBUG("Preparing data source for uri: %s", priv->uri_);
 
   content::WebURLLoaderImpl* url_loader = new content::WebURLLoaderImpl(
-      priv->resource_dispatcher_, priv->main_task_runner_);
+      content::GStreamerBufferedDataSourceFactory::Get()->resource_dispatcher(),
+      content::GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner());
 
   // TODO: allow to set extra headers on WebURLLoaderImpl
 
-  /*URL url = URL(URL(), priv->uri);
+  /*URL url = URL(URL(), priv->uri_);
 
   ResourceRequest request(url);
   request.setAllowCookies(true);
@@ -651,55 +604,40 @@ static void onResetDataSource(GstBaseSrc* basesrc) {
   }
   priv->offset = priv->requestedOffset;*/
 
-  /*if (!priv->keepAlive) {
+  /*if (!priv->keepAlive_) {
       GST_DEBUG_OBJECT(src, "Persistent connection support disabled");
       request.setHTTPHeaderField(HTTPHeaderName::Connection, "close");
   }*/
 
   // We always request Icecast/Shoutcast metadata, just in case ...
   // request.setHTTPHeaderField(HTTPHeaderName::IcyMetadata, "1");*/
-
-  if (priv->extraHeaders)
-    gst_structure_foreach(priv->extraHeaders.get(),
+  if (priv->extraHeaders_)
+    gst_structure_foreach(priv->extraHeaders_.get(),
                           chromiumHttpSrcProcessExtraHeaders, /*&request*/ 0);
 
-  // TODO: get this from IPC
-  blink::WebString referrer = "";
-  blink::WebReferrerPolicy referrer_policy = blink::WebReferrerPolicyDefault;
-  media::BufferedResourceLoader::CORSMode cors_mode =
-      media::BufferedResourceLoader::CORSMode::kUnspecified;
+  GST_DEBUG("Create data source for uri: %s", priv->uri_);
 
-  priv->data_source_.reset(new media::BufferedDataSource(
-      GURL(priv->uri),
-      static_cast<media::BufferedResourceLoader::CORSMode>(cors_mode),
-      priv->main_task_runner_, nullptr, priv->media_log_.get(),
-      priv->buffered_data_source_host_,
-      base::Bind(&onNotifyDownloading, basesrc)));
+  content::GStreamerBufferedDataSourceFactory::Get()->create(priv->uri_, media::BufferedResourceLoader::CORSMode::kUnspecified, src);
+  priv->gst_data_source_->data_source()->SetPreload(media::BufferedDataSource::AUTO);
+  priv->gst_data_source_->data_source()->Initialize(base::Bind(&onSourceInitialized, basesrc),
+      url_loader, "", blink::WebReferrerPolicyDefault);
 
-  priv->data_source_->SetPreload(media::BufferedDataSource::AUTO);
-
-  GST_DEBUG("Data source prepared for uri: %s", priv->uri);
-
-  priv->data_source_->Initialize(base::Bind(&onSourceInitialized, basesrc),
-                                 url_loader, referrer, referrer_policy);
-
-  priv->data_source_->MediaIsPlaying();
+  priv->gst_data_source_->data_source()->MediaIsPlaying();
 }
 
 static gboolean chromiumHttpSrcStart(GstBaseSrc* basesrc) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
-
   GST_OBJECT_LOCK(src);
 
-  if (!priv->uri) {
+  if (!priv->uri_) {
     GST_ERROR_OBJECT(src, "No URI provided");
     GST_OBJECT_UNLOCK(src);
     return false;
   }
 
-  if (!priv->resource_dispatcher_) {
-    GST_WARNING("Resource dispatcher has not been set");
+  if (priv->data_source_initialized_) {
+    GST_ERROR("Data source already initialized");
     GST_OBJECT_UNLOCK(src);
     return false;
   }
@@ -707,8 +645,8 @@ static gboolean chromiumHttpSrcStart(GstBaseSrc* basesrc) {
   GST_DEBUG("Creating data source");
 
   std::unique_lock<std::mutex> lock(priv->mutex_data_source_);
-  priv->main_task_runner_->PostTask(FROM_HERE,
-                                    base::Bind(&onResetDataSource, basesrc));
+  content::GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner()->PostTask(FROM_HERE,
+      base::Bind(&onResetDataSource, basesrc));
   priv->condition_data_source_.wait(lock);
 
   if (!priv->data_source_initialized_) {
@@ -749,7 +687,7 @@ static gchar* chromiumHttpSrcGetUri(GstURIHandler* handler) {
   gchar* ret;
 
   GST_OBJECT_LOCK(src);
-  ret = g_strdup(src->priv->uri);
+  ret = g_strdup(src->priv->uri_);
 
   GST_OBJECT_UNLOCK(src);
   return ret;
@@ -768,8 +706,8 @@ static gboolean chromiumHttpSrcSetUri(GstURIHandler* handler,
 
   GST_OBJECT_LOCK(src);
 
-  g_free(priv->uri);
-  priv->uri = 0;
+  g_free(priv->uri_);
+  priv->uri_ = 0;
 
   if (!uri)
     return TRUE;
@@ -781,7 +719,7 @@ static gboolean chromiumHttpSrcSetUri(GstURIHandler* handler,
     return FALSE;
   }
 
-  priv->uri = g_strdup(url.spec().c_str());
+  priv->uri_ = g_strdup(url.spec().c_str());
 
   GST_OBJECT_UNLOCK(src);
   return TRUE;
@@ -914,3 +852,42 @@ G_TYPE_INT, (gint) icyMetaInt, NULL));
         gst_pad_push_event(priv->srcpad, gst_event_new_tag(tags));
 }
 */
+
+namespace content {
+
+GStreamerBufferedDataSource::GStreamerBufferedDataSource(GURL url, media::BufferedResourceLoader::CORSMode cors_mode, ChromiumHttpSrc* src)
+  : data_source_(new media::BufferedDataSource(
+    url,
+    cors_mode,
+    GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner(),
+    nullptr,
+    GStreamerBufferedDataSourceFactory::Get()->media_log().get(),
+    &buffered_data_source_host_,
+    base::Bind(&onNotifyDownloading, GST_BASE_SRC(src)))) {
+}
+
+GStreamerBufferedDataSourceFactory::GStreamerBufferedDataSourceFactory(
+    scoped_refptr<media::MediaLog> media_log,
+    content::ResourceDispatcher* resource_dispatcher,
+    scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner)
+    : media_log_(media_log),
+      resource_dispatcher_(resource_dispatcher),
+      data_source_task_runner_(data_source_task_runner) {
+}
+
+void GStreamerBufferedDataSourceFactory::create(gchar* uri, media::BufferedResourceLoader::CORSMode cors_mode, ChromiumHttpSrc* src) {
+  ChromiumHttpSrcPrivate* priv = src->priv;
+  priv->gst_data_source_.reset(new GStreamerBufferedDataSource(GURL(uri), cors_mode, src));
+}
+
+void GStreamerBufferedDataSourceFactory::Init(scoped_refptr<media::MediaLog> media_log, content::ResourceDispatcher* resource_dispatcher, scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner) {
+  data_source_factory_.reset(new GStreamerBufferedDataSourceFactory(media_log, resource_dispatcher, data_source_task_runner));
+}
+
+GStreamerBufferedDataSourceFactory* GStreamerBufferedDataSourceFactory::Get() {
+  return data_source_factory_.get();
+}
+
+scoped_ptr<GStreamerBufferedDataSourceFactory> GStreamerBufferedDataSourceFactory::data_source_factory_;
+
+}

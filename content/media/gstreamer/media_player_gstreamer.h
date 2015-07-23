@@ -19,6 +19,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "content/common/media/media_channel_filter.h"
+#include "content/media/gstreamer/gst_chromium_http_source.h"
 #include "content/renderer/media/render_media_log.h"
 #include "media/base/time_delta_interpolator.h"
 #include "media/blink/buffered_data_source.h"
@@ -48,6 +49,7 @@ struct RunHolder;
 class MediaPlayerGStreamer;
 class MediaChannel;
 class ResourceDispatcher;
+class GStreamerBufferedDataSourceFactory;
 
 class MediaPlayerGStreamerFactory {
  public:

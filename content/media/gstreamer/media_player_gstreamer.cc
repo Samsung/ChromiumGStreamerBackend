@@ -375,9 +375,7 @@ void MediaPlayerGStreamer::GstSourceSetup(GstElement* playbin,
     // nothing todo
   } else if (url_.SchemeIsHTTPOrHTTPS() || url_.SchemeIsBlob() ||
              url_.SchemeIsFile()) {
-    chromiumHttpSrcSetup(CHROMIUM_HTTP_SRC(src), media_log_,
-                         &buffered_data_source_host_, resource_dispatcher_,
-                         main_task_runner_);
+    // nothing todo
   } else {
     DVLOG(1) << __FUNCTION__ << "(Restricted protocol: << " << url_.spec()
              << ")";
