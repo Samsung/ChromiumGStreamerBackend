@@ -137,6 +137,7 @@ class MediaPlayerGStreamer {
  private:
   void SetupContextProvider();
   void SetupGLContext();
+  void CleanupSamples();
   void CleanupGLContext();
   void ExecuteInGLThread(RunHolder* holder);
 
