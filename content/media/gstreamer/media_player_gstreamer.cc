@@ -269,20 +269,26 @@ MediaPlayerGStreamer::~MediaPlayerGStreamer() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DVLOG(1) << __FUNCTION__ << "(Releasing GstPlayer)";
 
-  gst_player_stop(player_);
-
-  if (media_source_) {
-    gst_object_unref(media_source_);
-    media_source_ = nullptr;
+  // 1. Clean up samples first.
+  {
+    std::unique_lock<std::mutex> gl_thread_lock(gl_thread_mutex_);
+    gl_task_runner_->PostTask(FROM_HERE,
+                              base::Bind(&MediaPlayerGStreamer::CleanupSamples,
+                                         weak_factory_.GetWeakPtr()));
+    gl_thread_condition_.wait(gl_thread_lock);
   }
 
-  std::unique_lock<std::mutex> gl_thread_lock(gl_thread_mutex_);
-  gl_task_runner_->PostTask(FROM_HERE,
-                            base::Bind(&MediaPlayerGStreamer::CleanupGLContext,
-                                       weak_factory_.GetWeakPtr()));
-  gl_thread_condition_.wait(gl_thread_lock);
-
+  // 2. Destroy the pipeline. Note that some cleanup callbacks will be called later in this task runner.
   gst_object_unref(player_);
+
+  // 3. Clean up the context finally.
+  {
+    std::unique_lock<std::mutex> gl_thread_lock(gl_thread_mutex_);
+    gl_task_runner_->PostTask(FROM_HERE,
+                              base::Bind(&MediaPlayerGStreamer::CleanupGLContext,
+                                         weak_factory_.GetWeakPtr()));
+    gl_thread_condition_.wait(gl_thread_lock);
+  }
 
   DVLOG(1) << __FUNCTION__ << "(GstPlayer release)";
 }
@@ -328,10 +334,10 @@ void MediaPlayerGStreamer::SetupGLContext() {
   gl_thread_condition_.notify_one();
 }
 
-void MediaPlayerGStreamer::CleanupGLContext() {
+void MediaPlayerGStreamer::CleanupSamples() {
   std::unique_lock<std::mutex> lock(gl_thread_mutex_);
 
-  DVLOG(1) << __FUNCTION__ << "(Cleaning GstGL)";
+  DVLOG(1) << __FUNCTION__ << "(Cleaning samples)";
 
   for (GstSampleMap::iterator iter = samples_.begin(); iter != samples_.end();
        ++iter) {
@@ -341,6 +347,14 @@ void MediaPlayerGStreamer::CleanupGLContext() {
       gst_sample_unref(sample);
     }
   }
+
+  gl_thread_condition_.notify_one();
+}
+
+void MediaPlayerGStreamer::CleanupGLContext() {
+  std::unique_lock<std::mutex> lock(gl_thread_mutex_);
+
+  DVLOG(1) << __FUNCTION__ << "(Cleaning GstGL)";
 
   if (gst_gl_context_) {
     gst_object_unref(gst_gl_context_);
