@@ -290,6 +290,9 @@ void MediaChildThread::OnInitialize() {
   scoped_refptr<media::MediaLog> media_log(
       new media::MediaLog());  // TODO: new RenderMediaLog
 
+  GStreamerBufferedDataSourceFactory::Init(media_log.get(), resource_dispatcher(),
+      base::ThreadTaskRunnerHandle::Get());
+
   media_channel_filter_ = new MediaChannelFilter(
       GetRouter(), ChildProcess::current()->io_task_runner(),
       ChildProcess::current()->GetShutDownEvent(), channel(),
