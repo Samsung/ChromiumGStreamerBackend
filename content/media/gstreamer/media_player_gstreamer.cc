@@ -526,7 +526,7 @@ void MediaPlayerGStreamer::ReleaseTexture(unsigned texture_id) {
 
   gl_task_runner_->PostTask(FROM_HERE,
                             base::Bind(&MediaPlayerGStreamer::DoReleaseTexture,
-                                       AsWeakPtr(), texture_id));
+                                       weak_factory_.GetWeakPtr(), texture_id));
 }
 
 void MediaPlayerGStreamer::AddSourceId(const std::string& source_id,
