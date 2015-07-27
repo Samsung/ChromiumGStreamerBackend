@@ -50,6 +50,7 @@ class WebLocalFrame;
 
 namespace cc_blink {
 class WebLayerImpl;
+class WebMediaPlayerEncryptedMediaClient;
 }
 
 namespace media {
@@ -118,6 +119,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
  public:
   WebMediaPlayerGStreamer(blink::WebLocalFrame* frame,
                           blink::WebMediaPlayerClient* client,
+                          blink::WebMediaPlayerEncryptedMediaClient* encrypted_client,
                           base::WeakPtr<WebMediaPlayerDelegate> delegate,
                           CdmFactory* cdm_factory,
                           media::MediaPermission* media_permission,
@@ -351,6 +353,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   blink::WebTimeRanges buffered_;
 
   blink::WebMediaPlayerClient* client_;
+  blink::WebMediaPlayerEncryptedMediaClient* encrypted_client_;
 
   // base::TickClock used by |interpolator_|.
   base::DefaultTickClock default_tick_clock_;
