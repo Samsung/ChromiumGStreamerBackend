@@ -492,11 +492,12 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
   return true;
 }
 
-void MediaPlayerGStreamer::Load(GURL url) {
+void MediaPlayerGStreamer::Load(GURL url, unsigned position_update_interval_ms) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   url_ = url;
   gst_player_set_uri(player_, url_.spec().c_str());
+  gst_player_set_position_update_interval (player_, position_update_interval_ms);
   gst_player_pause(player_);
 }
 

@@ -131,7 +131,7 @@ void WebMediaPlayerMessageDispatcher::SendLoad(GURL url) {
   content::MediaChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
-    channel->Send(new MediaPlayerMsg_Load(player_id_, url));
+    channel->Send(new MediaPlayerMsg_Load(player_id_, url, media::kTimeUpdateInterval));
 }
 
 void WebMediaPlayerMessageDispatcher::SendStart() {
