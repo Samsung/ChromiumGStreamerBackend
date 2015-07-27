@@ -85,7 +85,7 @@ class MediaPlayerGStreamer {
 
   virtual ~MediaPlayerGStreamer();
 
-  void Load(GURL url);
+  void Load(GURL url, unsigned position_update_interval_ms);
   void Play();
   void Pause();
   void Seek(const base::TimeDelta& duration);
