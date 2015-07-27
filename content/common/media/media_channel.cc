@@ -108,10 +108,10 @@ MediaPlayerGStreamer* MediaChannel::GetMediaPlayer(int player_id) {
   return media_players_.find(player_id)->second;
 }
 
-void MediaChannel::OnMediaPlayerLoad(int player_id, GURL url) {
+void MediaChannel::OnMediaPlayerLoad(int player_id, GURL url, unsigned position_update_interval_ms) {
   MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
   if (player) {
-    player->Load(url);
+    player->Load(url, position_update_interval_ms);
   }
 }
 
