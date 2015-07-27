@@ -2032,8 +2032,9 @@ blink::WebMediaPlayer* RenderFrameImpl::createMediaPlayer(
     DVLOG(1) << __FUNCTION__ << "(Create WebMediaPlayerGStreamer)";
     if (content::RenderThreadImpl::current()->GetMediaChannel())
       return new media::WebMediaPlayerGStreamer(
-          frame, client, weak_factory_.GetWeakPtr(), GetCdmFactory(),
-          GetMediaPermission(), initial_cdm, new RenderMediaLog());
+          frame, client, encrypted_client, weak_factory_.GetWeakPtr(),
+          GetCdmFactory(), GetMediaPermission(), initial_cdm,
+          new RenderMediaLog());
   }
 
   DVLOG(1) << __FUNCTION__ << "(Cannot create WebMediaPlayerGStreamer)";
