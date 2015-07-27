@@ -54,6 +54,7 @@
 #include "media/filters/chunk_demuxer.h"
 #include "media/filters/ffmpeg_demuxer.h"
 #include "third_party/WebKit/public/platform/WebEncryptedMediaTypes.h"
+#include "third_party/WebKit/public/platform/WebMediaPlayerEncryptedMediaClient.h"
 #include "third_party/WebKit/public/platform/WebMediaSource.h"
 #include "third_party/WebKit/public/platform/WebRect.h"
 #include "third_party/WebKit/public/platform/WebSize.h"
@@ -318,6 +319,7 @@ base::AtomicSequenceNumber WebMediaPlayerGStreamer::next_player_id_;
 WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
     blink::WebLocalFrame* frame,
     blink::WebMediaPlayerClient* client,
+    blink::WebMediaPlayerEncryptedMediaClient* encrypted_client,
     base::WeakPtr<WebMediaPlayerDelegate> delegate,
     CdmFactory* cdm_factory,
     media::MediaPermission* media_permission,
@@ -346,12 +348,13 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
       did_loading_progress_(false),
       buffered_(static_cast<size_t>(1)),
       client_(client),
+      encrypted_client_(encrypted_client),
       interpolator_(&default_tick_clock_),
       delegate_(delegate),
       media_source_(nullptr),
       supports_save_(true),
       encrypted_media_support_(cdm_factory,
-                               client,
+                               encrypted_client,
                                media_permission,
                                base::Bind(&WebMediaPlayerGStreamer::SetCdm,
                                           AsWeakPtr(),
@@ -1057,7 +1060,6 @@ void WebMediaPlayerGStreamer::setContentDecryptionModule(
          ToWebContentDecryptionModuleImpl(cdm)->GetCdmContext());
 }
 
-// TODO(jrummell): |init_data_type| should be an enum. http://crbug.com/417440
 void WebMediaPlayerGStreamer::OnEncryptedMediaInitData(
     EmeInitDataType init_data_type,
     const std::vector<uint8>& init_data) {
@@ -1075,18 +1077,18 @@ void WebMediaPlayerGStreamer::OnEncryptedMediaInitData(
 
   encrypted_media_support_.SetInitDataType(init_data_type);
 
-  client_->encrypted(ConvertToWebInitDataType(init_data_type),
-                     vector_as_array(&init_data),
-                     base::saturated_cast<unsigned int>(init_data.size()));
+  encrypted_client_->encrypted(
+      ConvertToWebInitDataType(init_data_type), vector_as_array(&init_data),
+      base::saturated_cast<unsigned int>(init_data.size()));
 }
 
 void WebMediaPlayerGStreamer::OnWaitingForDecryptionKey() {
-  client_->didBlockPlaybackWaitingForKey();
+  encrypted_client_->didBlockPlaybackWaitingForKey();
 
   // TODO(jrummell): didResumePlaybackBlockedForKey() should only be called
   // when a key has been successfully added (e.g. OnSessionKeysChange() with
   // |has_additional_usable_key| = true). http://crbug.com/461903
-  client_->didResumePlaybackBlockedForKey();
+  encrypted_client_->didResumePlaybackBlockedForKey();
 }
 
 void WebMediaPlayerGStreamer::SetCdm(const CdmAttachedCB& cdm_attached_cb,
