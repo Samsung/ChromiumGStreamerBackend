@@ -538,11 +538,12 @@ static void onSourceInitialized(GstBaseSrc* basesrc, bool success) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
 
-  std::unique_lock<std::mutex> lock(priv->mutex_data_source_);
+  {
+    std::lock_guard<std::mutex> lock(priv->mutex_data_source_);
+    priv->data_source_initialized_ = success;
+  }
 
   GST_DEBUG("Data source notified intialization");
-
-  priv->data_source_initialized_ = success;
 
   priv->condition_data_source_.notify_one();
 }
@@ -628,6 +629,8 @@ static void onResetDataSource(GstBaseSrc* basesrc) {
 static gboolean chromiumHttpSrcStart(GstBaseSrc* basesrc) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
+  gboolean is_seekable = FALSE;
+
   GST_OBJECT_LOCK(src);
 
   if (!priv->uri_) {
@@ -636,36 +639,43 @@ static gboolean chromiumHttpSrcStart(GstBaseSrc* basesrc) {
     return false;
   }
 
-  if (priv->data_source_initialized_) {
-    GST_ERROR("Data source already initialized");
-    GST_OBJECT_UNLOCK(src);
-    return false;
-  }
-
-  GST_DEBUG("Creating data source");
-
-  std::unique_lock<std::mutex> lock(priv->mutex_data_source_);
-  content::GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner()->PostTask(FROM_HERE,
-      base::Bind(&onResetDataSource, basesrc));
-  priv->condition_data_source_.wait(lock);
-
-  if (!priv->data_source_initialized_) {
-    GST_ERROR("Failed to initialized data source");
-    GST_OBJECT_UNLOCK(src);
-    return false;
-  }
-
-  GST_DEBUG("Data source is initialized");
-
-  // TODO set data_source_->SetBitrate();
-
-  gst_base_src_set_dynamic_size(basesrc, chromiumHttpSrcIsSeekable(basesrc));
-
-  // priv->data_source_->MediaIsPlaying();
-
-  // TODO call data_source_->MediaIsPaused(); when paused
-
   GST_OBJECT_UNLOCK(src);
+
+  {
+    std::unique_lock<std::mutex> lock(priv->mutex_data_source_);
+
+    if (priv->data_source_initialized_) {
+      GST_ERROR("Data source already initialized");
+      return false;
+    }
+
+    GST_DEBUG("Creating data source");
+
+    content::GStreamerBufferedDataSourceFactory::Get()
+        ->data_source_task_runner()
+        ->PostTask(FROM_HERE, base::Bind(&onResetDataSource, basesrc));
+    priv->condition_data_source_.wait(lock);
+
+    if (!priv->data_source_initialized_) {
+      GST_ERROR("Failed to initialized data source");
+      return false;
+    }
+
+    GST_DEBUG("Data source is initialized");
+
+    // TODO set data_source_->SetBitrate();
+
+    is_seekable = chromiumHttpSrcIsSeekable(basesrc);
+
+    // priv->data_source_->MediaIsPlaying();
+
+    // TODO call data_source_->MediaIsPaused(); when paused
+  }
+
+  GST_OBJECT_LOCK(src);
+  gst_base_src_set_dynamic_size(basesrc, is_seekable);
+  GST_OBJECT_UNLOCK(src);
+
   return true;
 }
 
