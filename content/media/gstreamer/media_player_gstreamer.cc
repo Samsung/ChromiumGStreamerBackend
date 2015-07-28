@@ -305,46 +305,50 @@ void MediaPlayerGStreamer::SetupContextProvider() {
 
 void MediaPlayerGStreamer::SetupGLContext() {
   DVLOG(1) << __FUNCTION__ << "(Setting up GstGL)";
-  std::unique_lock<std::mutex> lock(gl_thread_mutex_);
+  std::lock_guard<std::mutex> lock(gl_thread_mutex_);
 
-  if (!provider_->ContextSupport()) {
-    bool ret = provider_->BindToCurrentThread();
-    if (!ret) {
-      DVLOG(1) << __FUNCTION__ << "(Failed to setup gl context)";
-      OnError(0);
-      return;
+  {
+    if (!provider_->ContextSupport()) {
+      bool ret = provider_->BindToCurrentThread();
+      if (!ret) {
+        DVLOG(1) << __FUNCTION__ << "(Failed to setup gl context)";
+        OnError(0);
+        return;
+      }
+
+      gpu::gles2::GLES2Interface* gles2_ctx = provider_->ContextGL();
+
+      ::gles2::Initialize();
+      ::gles2::SetGLContext(gles2_ctx);
     }
 
-    gpu::gles2::GLES2Interface* gles2_ctx = provider_->ContextGL();
+    gst_gl_display_ =
+        reinterpret_cast<GstGLDisplay*>(gst_gl_display_gpu_process_new());
 
-    ::gles2::Initialize();
-    ::gles2::SetGLContext(gles2_ctx);
+    g_signal_connect(G_OBJECT(gst_gl_display_), "create-context",
+                     G_CALLBACK(gstgldisplay_create_context_cb), this);
+
+    gst_gl_context_ = gst_gl_context_gpu_process_new(
+        gst_gl_display_, GST_GL_API_GLES2,
+        (GstGLProcAddrFunc)gpu_process_proc_addr);
   }
-
-  gst_gl_display_ =
-      reinterpret_cast<GstGLDisplay*>(gst_gl_display_gpu_process_new());
-
-  g_signal_connect(G_OBJECT(gst_gl_display_), "create-context",
-                   G_CALLBACK(gstgldisplay_create_context_cb), this);
-
-  gst_gl_context_ =
-      gst_gl_context_gpu_process_new(gst_gl_display_, GST_GL_API_GLES2,
-                                     (GstGLProcAddrFunc)gpu_process_proc_addr);
 
   gl_thread_condition_.notify_one();
 }
 
 void MediaPlayerGStreamer::CleanupSamples() {
-  std::unique_lock<std::mutex> lock(gl_thread_mutex_);
+  {
+    std::lock_guard<std::mutex> lock(gl_thread_mutex_);
 
-  DVLOG(1) << __FUNCTION__ << "(Cleaning samples)";
+    DVLOG(1) << __FUNCTION__ << "(Cleaning samples)";
 
-  for (GstSampleMap::iterator iter = samples_.begin(); iter != samples_.end();
-       ++iter) {
-    GstSample* sample = iter->second;
-    if (sample) {
-      iter->second = nullptr;
-      gst_sample_unref(sample);
+    for (GstSampleMap::iterator iter = samples_.begin(); iter != samples_.end();
+         ++iter) {
+      GstSample* sample = iter->second;
+      if (sample) {
+        iter->second = nullptr;
+        gst_sample_unref(sample);
+      }
     }
   }
 
@@ -352,13 +356,15 @@ void MediaPlayerGStreamer::CleanupSamples() {
 }
 
 void MediaPlayerGStreamer::CleanupGLContext() {
-  std::unique_lock<std::mutex> lock(gl_thread_mutex_);
+  {
+    std::lock_guard<std::mutex> lock(gl_thread_mutex_);
 
-  DVLOG(1) << __FUNCTION__ << "(Cleaning GstGL)";
+    DVLOG(1) << __FUNCTION__ << "(Cleaning GstGL)";
 
-  if (gst_gl_context_) {
-    gst_object_unref(gst_gl_context_);
-    gst_gl_context_ = nullptr;
+    if (gst_gl_context_) {
+      gst_object_unref(gst_gl_context_);
+      gst_gl_context_ = nullptr;
+    }
   }
 
   gl_thread_condition_.notify_one();
