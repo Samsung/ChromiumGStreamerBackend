@@ -17,6 +17,8 @@
 #define IPC_MESSAGE_START MediaPlayerMsgStart
 
 // From render process to media process
+IPC_SYNC_MESSAGE_CONTROL1_0(MediaPlayerMsg_Create, int /* player_id */)
+
 // Start the player for playback.
 IPC_MESSAGE_CONTROL3(MediaPlayerMsg_Load, int /* player_id */, GURL /* url */,
                      unsigned /* position_update_interval */)
