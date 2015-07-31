@@ -65,6 +65,7 @@ bool MediaChannel::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
 
   IPC_BEGIN_MESSAGE_MAP(MediaChannel, message)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_Create, OnMediaPlayerCreate)
     IPC_MESSAGE_HANDLER(MediaPlayerMsg_Load, OnMediaPlayerLoad)
     IPC_MESSAGE_HANDLER(MediaPlayerMsg_Start, OnMediaPlayerStart)
     IPC_MESSAGE_HANDLER(MediaPlayerMsg_Pause, OnMediaPlayerPause)
@@ -106,6 +107,13 @@ MediaPlayerGStreamer* MediaChannel::GetMediaPlayer(int player_id) {
       channel_filter_->GetMediaPlayerFactory()->create(player_id, this));
   media_players_.set(player_id, player.Pass());
   return media_players_.find(player_id)->second;
+}
+
+void MediaChannel::OnMediaPlayerCreate(int player_id) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (!player) {
+    SendMediaError(player_id, 0);
+  }
 }
 
 void MediaChannel::OnMediaPlayerLoad(int player_id, GURL url, unsigned position_update_interval_ms) {
