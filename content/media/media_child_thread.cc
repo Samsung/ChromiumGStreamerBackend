@@ -171,6 +171,7 @@ GpuChannelHost* MediaChildThread::EstablishGpuChannelSync(
       return gpu_channel_.get();
 
     // Recreate the channel if it has been lost.
+    gpu_channel_->DestroyChannel();
     gpu_channel_ = NULL;
   }
 
