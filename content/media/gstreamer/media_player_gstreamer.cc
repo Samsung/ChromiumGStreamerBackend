@@ -294,44 +294,59 @@ MediaPlayerGStreamer::~MediaPlayerGStreamer() {
 }
 
 void MediaPlayerGStreamer::SetupContextProvider() {
-  std::unique_lock<std::mutex> lock(gl_thread_mutex_);
+  DVLOG(1) << __FUNCTION__ << "(Set up GstGL context)";
 
-  gl_task_runner_->PostTask(FROM_HERE,
-                            base::Bind(&MediaPlayerGStreamer::SetupGLContext,
-                                       weak_factory_.GetWeakPtr()));
+  {
+    std::unique_lock<std::mutex> lock(gl_thread_mutex_);
 
-  gl_thread_condition_.wait(lock);
+    gl_task_runner_->PostTask(FROM_HERE,
+                              base::Bind(&MediaPlayerGStreamer::SetupGLContext,
+                                         weak_factory_.GetWeakPtr()));
+
+    gl_thread_condition_.wait(lock);
+  }
+
+  if (!gst_gl_context_) {
+    DVLOG(1) << __FUNCTION__ << "(Failed to create GstGL context)";
+    OnError(0);
+  }
 }
 
 void MediaPlayerGStreamer::SetupGLContext() {
-  DVLOG(1) << __FUNCTION__ << "(Setting up GstGL)";
-  std::lock_guard<std::mutex> lock(gl_thread_mutex_);
+  bool ret = false;
 
   {
-    if (!provider_->ContextSupport()) {
-      bool ret = provider_->BindToCurrentThread();
-      if (!ret) {
-        DVLOG(1) << __FUNCTION__ << "(Failed to setup gl context)";
-        OnError(0);
-        return;
+    std::lock_guard<std::mutex> lock(gl_thread_mutex_);
+
+    DVLOG(1) << __FUNCTION__ << "(Setting up GstGL)";
+
+    ret = provider_->ContextSupport();
+
+    if (!ret) {
+      if (provider_->BindToCurrentThread()) {
+        gpu::gles2::GLES2Interface* gles2_ctx = provider_->ContextGL();
+
+        ::gles2::Initialize();
+        ::gles2::SetGLContext(gles2_ctx);
+        ret = true;
       }
-
-      gpu::gles2::GLES2Interface* gles2_ctx = provider_->ContextGL();
-
-      ::gles2::Initialize();
-      ::gles2::SetGLContext(gles2_ctx);
     }
 
-    gst_gl_display_ =
-        reinterpret_cast<GstGLDisplay*>(gst_gl_display_gpu_process_new());
+    if (ret) {
+      gst_gl_display_ =
+          reinterpret_cast<GstGLDisplay*>(gst_gl_display_gpu_process_new());
 
-    g_signal_connect(G_OBJECT(gst_gl_display_), "create-context",
-                     G_CALLBACK(gstgldisplay_create_context_cb), this);
+      g_signal_connect(G_OBJECT(gst_gl_display_), "create-context",
+                       G_CALLBACK(gstgldisplay_create_context_cb), this);
 
-    gst_gl_context_ = gst_gl_context_gpu_process_new(
-        gst_gl_display_, GST_GL_API_GLES2,
-        (GstGLProcAddrFunc)gpu_process_proc_addr);
+      gst_gl_context_ = gst_gl_context_gpu_process_new(
+          gst_gl_display_, GST_GL_API_GLES2,
+          (GstGLProcAddrFunc)gpu_process_proc_addr);
+    }
   }
+
+  if (!ret)
+    DVLOG(1) << __FUNCTION__ << "(Failed to setup gl context)";
 
   gl_thread_condition_.notify_one();
 }
