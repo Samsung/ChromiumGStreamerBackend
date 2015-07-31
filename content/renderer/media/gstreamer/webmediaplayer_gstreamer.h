@@ -68,6 +68,7 @@ class WebMediaPlayerMessageDispatcher
       base::WeakPtr<WebMediaPlayerGStreamer> player);
   ~WebMediaPlayerMessageDispatcher();
 
+  void SendCreate();
   void SendLoad(GURL);
   void SendStart();
   void SendPause();
