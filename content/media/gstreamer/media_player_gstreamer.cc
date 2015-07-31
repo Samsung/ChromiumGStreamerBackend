@@ -194,6 +194,7 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
       was_preroll_(false),
       weak_factory_(this) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DVLOG(1) << __FUNCTION__ << "(Creating player)";
 
   GstElementFactory* httpSrcFactory =
       gst_element_factory_find("chromiumhttpsrc");
@@ -252,14 +253,6 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
 
   if (!provider_) {
     DVLOG(1) << __FUNCTION__ << "(Failed to create context provider)";
-    OnError(0);
-    return;
-  }
-
-  SetupContextProvider();
-
-  if (!gst_gl_context_) {
-    DVLOG(1) << __FUNCTION__ << "(Failed to create GstGL context)";
     OnError(0);
   }
 }
@@ -515,6 +508,12 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
 
 void MediaPlayerGStreamer::Load(GURL url, unsigned position_update_interval_ms) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  if (!gst_gl_context_)
+    SetupContextProvider();
+
+  if (!gst_gl_context_)
+    return;
 
   url_ = url;
   gst_player_set_uri(player_, url_.spec().c_str());
