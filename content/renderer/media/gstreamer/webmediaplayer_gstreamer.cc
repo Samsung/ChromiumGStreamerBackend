@@ -127,6 +127,13 @@ WebMediaPlayerMessageDispatcher::~WebMediaPlayerMessageDispatcher() {
   channel->RemoveDispatcher(player_id_);
 }
 
+void WebMediaPlayerMessageDispatcher::SendCreate() {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(new MediaPlayerMsg_Create(player_id_));
+}
+
 void WebMediaPlayerMessageDispatcher::SendLoad(GURL url) {
   content::MediaChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
@@ -376,6 +383,8 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
   main_task_runner_->PostTask(
       FROM_HERE,
       base::Bind(&WebMediaPlayerGStreamer::SetupGLContext, AsWeakPtr()));
+
+  message_dispatcher_.SendCreate();
 }
 
 WebMediaPlayerGStreamer::~WebMediaPlayerGStreamer() {
