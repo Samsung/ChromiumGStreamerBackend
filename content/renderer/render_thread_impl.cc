@@ -1810,7 +1810,7 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync(
   return gpu_channel_;
 }
 #if defined(USE_GSTREAMER)
-MediaChannelHost* RenderThreadImpl::GetMediaChannel(
+MediaChannelHost* RenderThreadImpl::EstablishMediaChannelSync(
     CauseForMediaLaunch cause_for_media_launch) {
   if (media_channel_.get()) {
     // Do nothing if we already have a Media channel or are already
@@ -1960,6 +1960,16 @@ RenderThreadImpl::CreateCompositorOutputSurface(
 
   media_channel_ = content::MediaChannelHost::Create(
       channel_handle, content::ChildProcess::current()->GetShutDownEvent());
+
+  return media_channel_.get();
+}
+
+MediaChannelHost* RenderThreadImpl::GetMediaChannel() {
+  if (!media_channel_.get())
+    return NULL;
+
+  if (media_channel_->IsLost())
+    return NULL;
 
   return media_channel_.get();
 }
