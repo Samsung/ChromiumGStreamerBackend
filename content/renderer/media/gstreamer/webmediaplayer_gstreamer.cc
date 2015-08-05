@@ -118,13 +118,15 @@ WebMediaPlayerMessageDispatcher::WebMediaPlayerMessageDispatcher(
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
   content::MediaChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
-  channel->RegisterDispatcher(player_id_, this);
+  if (channel)
+    channel->RegisterDispatcher(player_id_, this);
 }
 
 WebMediaPlayerMessageDispatcher::~WebMediaPlayerMessageDispatcher() {
   content::MediaChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
-  channel->RemoveDispatcher(player_id_);
+  if (channel)
+    channel->RemoveDispatcher(player_id_);
 }
 
 void WebMediaPlayerMessageDispatcher::SendCreate() {
