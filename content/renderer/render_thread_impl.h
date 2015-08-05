@@ -231,8 +231,11 @@ class CONTENT_EXPORT RenderThreadImpl
 #if defined(USE_GSTREAMER)
   // Synchronously establish a channel to the media process if not previously
   // established or if it has been lost or get the current channel.
-  MediaChannelHost* GetMediaChannel(
+  MediaChannelHost* EstablishMediaChannelSync(
       CauseForMediaLaunch = CAUSE_FOR_MEDIA_LAUNCH_RENDERER);
+
+  // Get media channel if it is created and not lost.
+  MediaChannelHost* GetMediaChannel();
 #endif
 
   // True if we are running layout tests. This currently disables forwarding
