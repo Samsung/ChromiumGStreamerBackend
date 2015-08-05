@@ -31,7 +31,7 @@ IPC_MESSAGE_CONTROL2(MediaPlayerMsg_Seek,
                      int /* player_id */,
                      base::TimeDelta /* time */)
 
-IPC_MESSAGE_CONTROL1(MediaPlayerMsg_Release, int /* player_id */)
+IPC_SYNC_MESSAGE_CONTROL1_0(MediaPlayerMsg_Release, int /* player_id */)
 
 // The player is done with the current texture
 IPC_MESSAGE_CONTROL2(MediaPlayerMsg_ReleaseTexture,
