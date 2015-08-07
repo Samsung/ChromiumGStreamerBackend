@@ -198,12 +198,12 @@ NO_AUTH_BOTO_CONFIG=~/.boto gclient runhooks
 # We use "git replace" to allow rebasing between our truncated branch and original branch.
 
 # fake our branch point because we truncated the history
-git replace 4acf84e3ec71b937840bdd3380b2cf8e6d74cdff 4997ce8c4264d7572a58b5a2757b01e97baefb89
+git replace 95cbc1a1c73a55c65e1c6b98399771d5c200a449 2977ebf3b41b57398762743080108623bf15c8d1
 
 # replay chromium original upstream commits on top of our branch with truncated history
 git checkout NEW_ORIGIN_SHA
 git checkout -b master_new
-git rebase 4acf84e3ec71b937840bdd3380b2cf8e6d74cdff
+git rebase 95cbc1a1c73a55c65e1c6b98399771d5c200a449
 git replace $(git rev-parse HEAD) NEW_ORIGIN_SHA
 
 # replay gst backend
