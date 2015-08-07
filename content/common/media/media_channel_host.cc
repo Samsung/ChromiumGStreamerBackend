@@ -45,7 +45,7 @@ void MediaChannelHost::Connect(const IPC::ChannelHandle& channel_handle,
       channel_handle, IPC::Channel::MODE_CLIENT, NULL,
       ChildProcess::current()->io_task_runner(), true, shutdown_event);
 
-  sync_filter_ = new IPC::SyncMessageFilter(shutdown_event);
+  sync_filter_ = channel_->CreateSyncMessageFilter();
 
   channel_->AddFilter(sync_filter_.get());
 
