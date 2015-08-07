@@ -149,9 +149,8 @@ MediaChildThread::CreateSharedContextProvider() {
     if (!provider_.get()) {
       if (!gpu_channel_.get())
         EstablishGpuChannelSync(
-            CAUSE_FOR_GPU_LAUNCH_WEBGRAPHICSCONTEXT3DCOMMANDBUFFERIMPL_INITIALIZE);
-      // TODO: Add and use
-      // CAUSE_FOR_GPU_LAUNCH_MEDIA_GSTREAMER_CONTEXT_INITIALIZE instead
+            CAUSE_FOR_GPU_LAUNCH_MEDIA_GSTREAMER_CONTEXT_INITIALIZE);
+
       provider_ = ContextProviderCommandBuffer::Create(
           CreateOffscreenContext3d(), MEDIA_GSTREAMER_CONTEXT);
     }
