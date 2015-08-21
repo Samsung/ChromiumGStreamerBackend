@@ -4,7 +4,7 @@ Chromium GStreamer Backend
 [Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [MSE](#mse), [GstPlayer](https://github.com/sdroege/gst-player/commits/master), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Tips](#tips), [Maintenance](#maintenance), [Issues](#issues), [Roadmap](#roadmap)
 
 ### Current branching point from official chromium/src  ###
-4997ce8c4264d7572a58b5a2757b01e97baefb89 (Sat Jul 27)
+cfb66f6714024c70f56b42617fb777c5a4256a5b (Thu Aug 20)
 It will be rebased every week.
 
 ### Project description ###
@@ -45,9 +45,9 @@ http://www.w3schools.com/html/html5_video.asp
 ```
 
 ### List of modified and added files ###
-20/07/2015: (just to give an idea of the delta from official chromium/src)  
-50 files modified, 616 insertions(+), 12 deletions(-)  
-50 files added, 9374 insertions(+)  
+21/08/2015: (just to give an idea of the delta from official chromium/src)  
+53 files modified, 642 insertions(+), 13 deletions(-)  
+51 files added, 9187 insertions(+)  
 git diff --diff-filter=AM --stat sha-1 HEAD  
 
 ### Build ###
@@ -198,12 +198,12 @@ NO_AUTH_BOTO_CONFIG=~/.boto gclient runhooks
 # We use "git replace" to allow rebasing between our truncated branch and original branch.
 
 # fake our branch point because we truncated the history
-git replace 95cbc1a1c73a55c65e1c6b98399771d5c200a449 2977ebf3b41b57398762743080108623bf15c8d1
+git replace f7f76d06775c74e5a310a893a79d17b314cea0a3 cfb66f6714024c70f56b42617fb777c5a4256a5b
 
 # replay chromium original upstream commits on top of our branch with truncated history
 git checkout NEW_ORIGIN_SHA
 git checkout -b master_new
-git rebase 95cbc1a1c73a55c65e1c6b98399771d5c200a449
+git rebase f7f76d06775c74e5a310a893a79d17b314cea0a3
 git replace $(git rev-parse HEAD) NEW_ORIGIN_SHA
 
 # replay gst backend
