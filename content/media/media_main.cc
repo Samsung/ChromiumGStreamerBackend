@@ -69,8 +69,10 @@ bool MediaProcessLogMessageHandler(int severity,
 
 // Main function for starting the media process.
 int MediaMain(const MainFunctionParams& parameters) {
-  // base::debug::EnableInProcessStackDumping();
-  base::debug::EnableInProcessStackDumpingForSandbox();
+
+#if !defined(OFFICIAL_BUILD)
+  base::debug::EnableInProcessStackDumping();
+#endif
 
   TRACE_EVENT0("media", "MediaMain");
   base::trace_event::TraceLog::GetInstance()->SetProcessName("Media Process");

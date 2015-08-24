@@ -29,7 +29,6 @@
 #include "sandbox/linux/bpf_dsl/bpf_dsl_impl.h"
 #include "sandbox/linux/bpf_dsl/policy_compiler.h"
 #include "sandbox/linux/seccomp-bpf/die.h"
-#include "sandbox/linux/seccomp-bpf/errorcode.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/seccomp-bpf/syscall.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
