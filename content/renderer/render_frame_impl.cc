@@ -2030,14 +2030,24 @@ blink::WebMediaPlayer* RenderFrameImpl::createMediaPlayer(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableGStreamerMediaBackend)) {
     DVLOG(1) << __FUNCTION__ << "(Create WebMediaPlayerGStreamer)";
-    if (content::RenderThreadImpl::current()->GetMediaChannel())
-      return new media::WebMediaPlayerGStreamer(
+    blink::WebMediaPlayer* player_gst = new media::WebMediaPlayerGStreamer(
           frame, client, encrypted_client, weak_factory_.GetWeakPtr(),
           GetCdmFactory(), GetMediaPermission(), initial_cdm,
           new RenderMediaLog());
-  }
 
-  DVLOG(1) << __FUNCTION__ << "(Cannot create WebMediaPlayerGStreamer)";
+    if (!player_gst) {
+        LOG(ERROR) << "Failed to create WebMediaPlayerGStreamer";
+        return NULL;
+    }
+
+    if (!content::RenderThreadImpl::current()->GetMediaChannel()) {
+        LOG(ERROR) << "Cannot use WebMediaPlayerGStreamer because no media channel";
+        delete player_gst;
+        return NULL;
+    }
+
+    return player_gst;
+  }
 #endif  // defined(USE_GSTREAMER)
 
   blink::WebMediaStream web_stream(
