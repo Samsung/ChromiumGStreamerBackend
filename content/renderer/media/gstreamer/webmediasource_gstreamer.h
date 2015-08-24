@@ -32,7 +32,7 @@ class WebMediaSourceGStreamer : public blink::WebMediaSource {
   // blink::WebMediaSource implementation.
   virtual AddStatus addSourceBuffer(
       const blink::WebString& type,
-      const blink::WebVector<blink::WebString>& codecs,
+      const blink::WebString& codecs,
       blink::WebSourceBuffer** source_buffer);
   virtual double duration();
   virtual void setDuration(double duration);
