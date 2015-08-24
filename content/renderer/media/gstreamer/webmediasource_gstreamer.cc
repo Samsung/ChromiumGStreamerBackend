@@ -7,6 +7,7 @@
 #include "base/guid.h"
 #include "content/renderer/media/gstreamer/webmediaplayer_gstreamer.h"
 #include "content/renderer/media/gstreamer/websourcebuffer_gstreamer.h"
+#include "media/base/mime_util.h"
 #include "media/blink/websourcebuffer_impl.h"
 #include "media/filters/chunk_demuxer.h"
 #include "third_party/WebKit/public/platform/WebCString.h"
@@ -41,14 +42,14 @@ WebMediaSourceGStreamer::~WebMediaSourceGStreamer() {}
 
 WebMediaSource::AddStatus WebMediaSourceGStreamer::addSourceBuffer(
     const blink::WebString& type,
-    const blink::WebVector<blink::WebString>& codecs,
+    const blink::WebString& codecs,
     blink::WebSourceBuffer** source_buffer) {
   std::string id = base::GenerateGUID();
-  std::vector<std::string> new_codecs(codecs.size());
-  for (size_t i = 0; i < codecs.size(); ++i)
-    new_codecs[i] = codecs[i].utf8().data();
 
-  if (!message_dispatcher_->SendAddSourceId(id, type.utf8().data(), new_codecs))
+  std::vector<std::string> parsed_codec_ids;
+  media::ParseCodecString(codecs.utf8().data(), &parsed_codec_ids, false);
+
+  if (!message_dispatcher_->SendAddSourceId(id, type.utf8().data(), parsed_codec_ids))
     return WebMediaSource::AddStatusNotSupported;
 
   WebSourceBufferGStreamer* source_buffer_gstreamer =
