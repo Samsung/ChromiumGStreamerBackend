@@ -763,11 +763,11 @@ void WebMediaPlayerGStreamer::seek(double seconds) {
 
   if (seeking_) {
     pending_seek_ = true;
-    pending_seek_time_ = media::ConvertSecondsToTimestamp(seconds);
+    pending_seek_time_ = base::TimeDelta::FromSecondsD(seconds);
     return;
   }
 
-  seek_time_ = media::ConvertSecondsToTimestamp(seconds);
+  seek_time_ = base::TimeDelta::FromSecondsD(seconds);
   seeking_ = true;
   media_log_->AddEvent(media_log_->CreateSeekEvent(seconds));
   message_dispatcher_.SendSeek(base::TimeDelta::FromSecondsD(seconds));
@@ -975,7 +975,7 @@ bool WebMediaPlayerGStreamer::didPassCORSAccessCheck() const {
 }
 
 double WebMediaPlayerGStreamer::mediaTimeForTimeValue(double timeValue) const {
-  return ConvertSecondsToTimestamp(timeValue).InSecondsF();
+  return base::TimeDelta::FromSecondsD(timeValue).InSecondsF();
 }
 
 unsigned WebMediaPlayerGStreamer::decodedFrameCount() const {
