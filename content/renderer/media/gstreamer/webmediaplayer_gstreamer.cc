@@ -117,7 +117,7 @@ WebMediaPlayerMessageDispatcher::WebMediaPlayerMessageDispatcher(
     : player_id_(player_id), player_(player) {
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
   content::MediaChannelHost* channel =
-      content::RenderThreadImpl::current()->EstablishMediaChannelSync();
+      content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->RegisterDispatcher(player_id_, this);
 }
