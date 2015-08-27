@@ -252,7 +252,7 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
                   ->CreateSharedContextProvider();
 
   if (!provider_) {
-    DVLOG(1) << __FUNCTION__ << "(Failed to create context provider)";
+    LOG(ERROR) << __FUNCTION__ << "(Failed to create context provider)";
     OnError(0);
   }
 }
@@ -300,7 +300,7 @@ void MediaPlayerGStreamer::SetupContextProvider() {
   }
 
   if (!gst_gl_context_) {
-    DVLOG(1) << __FUNCTION__ << "(Failed to create GstGL context)";
+    LOG(ERROR) << __FUNCTION__ << "(Failed to create GstGL context)";
     OnError(0);
   }
 }
@@ -339,7 +339,7 @@ void MediaPlayerGStreamer::SetupGLContext() {
   }
 
   if (!ret)
-    DVLOG(1) << __FUNCTION__ << "(Failed to setup gl context)";
+    LOG(ERROR) << __FUNCTION__ << "(Failed to setup gl context)";
 
   gl_thread_condition_.notify_one();
 }
@@ -456,7 +456,7 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
 
   if (!gst_video_frame_map(&v_frame, &v_info, buf,
                            (GstMapFlags)(GST_MAP_READ | GST_MAP_GL))) {
-    DVLOG(1) << __FUNCTION__ << "(Failed to map GstGL buffer)";
+    LOG(ERROR) << __FUNCTION__ << "(Failed to map GstGL buffer)";
     OnError(0);
     // Here the return value means that the callback has been processed.
     return true;
