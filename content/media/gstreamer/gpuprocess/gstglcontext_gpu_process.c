@@ -52,7 +52,8 @@ gst_gl_context_gpu_process_finalize (GObject * object)
 {
   GstGLContext *context = GST_GL_CONTEXT (object);
 
-  GST_GL_WINDOW_GET_CLASS (context->window)->close (context->window);
+  if (context->window)
+    GST_GL_WINDOW_GET_CLASS (context->window)->close (context->window);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
