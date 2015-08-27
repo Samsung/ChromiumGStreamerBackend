@@ -326,6 +326,10 @@ void MediaPlayerGStreamer::SetupGLContext() {
     }
 
     if (ret) {
+      // CLear old errors.
+      gpu::gles2::GLES2Interface* gl = ::gles2::GetGLContext();
+      gl->GetError();
+
       gst_gl_display_ =
           reinterpret_cast<GstGLDisplay*>(gst_gl_display_gpu_process_new());
 
