@@ -23,6 +23,12 @@ const uint8_t kCencCommonSystemId[] = {0x10, 0x77, 0xef, 0xec, 0xc0, 0xb2,
                                        0x4d, 0x02, 0xac, 0xe3, 0x3c, 0x1e,
                                        0x52, 0xe2, 0xfb, 0x4b};
 
+#if defined(USE_GSTREAMER)
+const uint8_t kLegacyCencCommonSystemId[] = {0x58, 0x14, 0x7e, 0xc8, 0x04, 0x23,
+                                             0x46, 0x59, 0x92, 0xe6, 0xf5, 0x2c,
+                                             0x5c, 0xe8, 0xc3, 0xcc};
+#endif
+
 // Returns true if |input| contains only 1 or more valid 'pssh' boxes, false
 // otherwise. |pssh_boxes| is updated as the set of parsed 'pssh' boxes.
 // Note: All boxes in |input| must be 'pssh' boxes. However, if they can't be
@@ -90,10 +96,24 @@ bool GetKeyIdsForCommonSystemId(const std::vector<uint8_t>& pssh_boxes,
   std::vector<uint8_t> common_system_id(
       kCencCommonSystemId,
       kCencCommonSystemId + arraysize(kCencCommonSystemId));
+#if defined(USE_GSTREAMER)  // Some tests still use legacy cenc id.
+  std::vector<uint8_t> legacy_common_system_id(
+      kLegacyCencCommonSystemId,
+      kLegacyCencCommonSystemId + arraysize(kLegacyCencCommonSystemId));
+#endif
   for (const auto& child : children) {
+#if defined(USE_GSTREAMER)
+    if (child.system_id == common_system_id ||
+        child.system_id == legacy_common_system_id) {
+#else
     if (child.system_id == common_system_id) {
+#endif
       key_ids->assign(child.key_ids.begin(), child.key_ids.end());
+#if defined(USE_GSTREAMER)
+      return true;  // pssh for common decryption might not have key ids at all.
+#else
       return key_ids->size() > 0;
+#endif
     }
   }
 
