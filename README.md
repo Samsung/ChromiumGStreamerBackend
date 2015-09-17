@@ -264,10 +264,10 @@ Just run: git cl format, to indent latest commit.
 
 ### Roadmap ###
 * Add EME support.
-* Add seeking support for MSE. We probably want to use multiappsrc first.
+* (On going) Zero-copy, see [mesa/vaapi/nouveau](https://bugs.freedesktop.org/show_bug.cgi?id=89969), [mesa/vaapi/dmabuf](https://bugs.freedesktop.org/show_bug.cgi?id=92022), [gstreamer-vaapi_dmabuf](https://bugzilla.gnome.org/show_bug.cgi?id=755072),
+[glimagesink/dmabuf](https://bugzilla.gnome.org/show_bug.cgi?id=743345), [chromium/dmabuf](https://chromium.googlesource.com/chromium/src/+/194331b394178f526b37c51ba0f663e33f46431a)
+* Add seeking support for MSE. Need to review and try [multiappsrc](https://bugzilla.gnome.org/show_bug.cgi?id=725187).
 * Add support for gn build. (we only support gyp for now)
 * For development, pull and build GStreamer locally like it is done for WebKit using jhbuild. (For now we use system wide GStreamer)
-* Use ubercompositor in Media Process.
-* Experiment using EGLImage with [EXT_image_dma_buf](https://www.khronos.org/registry/egl/extensions/EXT/EGL_EXT_image_dma_buf_import.txt) to avoid round trip to cpu memory between
-hardware decoder and gltexture. Also see [gstreamer-vaapi](https://github.com/01org/gstreamer-vaapi) and [mesa3d](http://cgit.freedesktop.org/mesa/mesa/tree/src/egl/main/eglimage.c#n100).
+* Use ubercompositor in Media Process
 
