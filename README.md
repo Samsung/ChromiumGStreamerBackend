@@ -258,7 +258,6 @@ Just run: git cl format, to indent latest commit.
 * GstChromiumHttpSrc design has to be discussed regarding media::BufferedDataSource usage.
 * Registering ResourceMessageFilter in MediaProcessHost has to be discussed regarding setting-up its content::StoragePartition.
 * Random crashes regarding seeking. We suspect it highly depends on GstChromiumHttpSrc.
-* Media Process sometimes fails to connect to GPU process when starting.
 * chrome://flags, kEnableGStreamerMediaBackend dynamic flag sometimes make the browser to crash when enabling, disabling.
 * Playing video from disk (file://) shows black frame.
 * Media Process can work as "In Process" mode when passing --in-process-media command line argument but it currently crashes.
