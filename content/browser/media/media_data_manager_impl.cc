@@ -15,7 +15,7 @@ MediaDataManager* MediaDataManager::GetInstance() {
 
 // static
 MediaDataManagerImpl* MediaDataManagerImpl::GetInstance() {
-  return Singleton<MediaDataManagerImpl>::get();
+  return base::Singleton<MediaDataManagerImpl>::get();
 }
 
 void MediaDataManagerImpl::GetMediaProcessHandles(
