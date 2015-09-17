@@ -193,7 +193,7 @@ GpuChannelHost* MediaChildThread::EstablishGpuChannelSync(
   io_thread_task_runner_ = ChildProcess::current()->io_task_runner();
 
   gpu_channel_ = GpuChannelHost::Create(
-      this, gpu_info, channel_handle,
+      this, client_id, gpu_info, channel_handle,
       ChildProcess::current()->GetShutDownEvent(), gpu_memory_buffer_manager());
   return gpu_channel_.get();
 }
