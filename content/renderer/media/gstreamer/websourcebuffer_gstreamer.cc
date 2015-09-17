@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "content/renderer/media/gstreamer/webmediaplayer_gstreamer.h"
+#include "media/base/timestamp_constants.h"
 #include "third_party/WebKit/public/platform/WebSourceBufferClient.h"
 
 namespace media {
@@ -81,6 +82,12 @@ blink::WebTimeRanges WebSourceBufferGStreamer::buffered() {
   return result;
 }
 
+bool WebSourceBufferGStreamer::evictCodedFrames(double currentPlaybackTime,
+                                           size_t newDataSize) {
+  // TODO: implement message_dispatcher_->evictCodedFrames
+  return true;
+}
+
 void WebSourceBufferGStreamer::append(const unsigned char* data,
                                       unsigned length,
                                       double* timestamp_offset) {
@@ -104,6 +111,10 @@ void WebSourceBufferGStreamer::append(const unsigned char* data,
 }
 
 void WebSourceBufferGStreamer::abort() {
+  resetParserState();
+}
+
+void WebSourceBufferGStreamer::resetParserState() {
   message_dispatcher_->SendAbort(id_);
 }
 
