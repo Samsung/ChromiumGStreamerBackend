@@ -62,7 +62,7 @@ class CONTENT_EXPORT MediaDataManagerImpl
 
  private:
   friend class MediaDataManagerImplPrivate;
-  friend struct DefaultSingletonTraits<MediaDataManagerImpl>;
+  friend struct base::DefaultSingletonTraits<MediaDataManagerImpl>;
 
   class UnlockedSession {
    public:
