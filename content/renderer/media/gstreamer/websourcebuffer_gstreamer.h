@@ -26,10 +26,13 @@ class WebSourceBufferGStreamer : public blink::WebSourceBuffer {
   virtual void setClient(blink::WebSourceBufferClient* client);
   virtual bool setMode(AppendMode mode);
   virtual blink::WebTimeRanges buffered();
+  virtual bool evictCodedFrames(double currentPlaybackTime,
+                                size_t newDataSize);
   virtual void append(const unsigned char* data,
                       unsigned length,
                       double* timestamp_offset);
   virtual void abort();
+  virtual void resetParserState();
   virtual void remove(double start, double end);
   virtual bool setTimestampOffset(double offset);
   virtual void setAppendWindowStart(double start);
