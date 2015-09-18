@@ -389,6 +389,10 @@ void AesDecryptor::UpdateSession(const std::string& session_id,
       if (item.second->Contains(session_id)) {
         scoped_ptr<CdmKeyInformation> key_info(new CdmKeyInformation);
         key_info->key_id.assign(item.first.begin(), item.first.end());
+#if defined(USE_GSTREAMER)
+        item.second->LatestDecryptionKey()->decryption_key()->GetRawKey(
+            &key_info->key);
+#endif
         key_info->status = CdmKeyInformation::USABLE;
         key_info->system_code = 0;
         keys_info.push_back(key_info.release());
