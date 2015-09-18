@@ -44,6 +44,9 @@ struct MEDIA_EXPORT CdmKeyInformation {
   ~CdmKeyInformation();
 
   std::vector<uint8_t> key_id;
+#if defined(USE_GSTREAMER)
+  std::string key;
+#endif
   KeyStatus status;
   uint32_t system_code;
 };
