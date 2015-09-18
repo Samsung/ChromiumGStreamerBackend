@@ -267,6 +267,7 @@ void AesDecryptor::CreateSessionAndGenerateRequest(
   // TODO(jrummell): Validate |session_type|.
 
   std::vector<uint8_t> message;
+<<<<<<< HEAD
   std::vector<std::vector<uint8_t>> keys;
   switch (init_data_type) {
     case EmeInitDataType::WEBM:
@@ -279,7 +280,7 @@ void AesDecryptor::CreateSessionAndGenerateRequest(
       keys.push_back(init_data);
       break;
     case EmeInitDataType::CENC:
-#if defined(USE_PROPRIETARY_CODECS)
+#if defined(USE_PROPRIETARY_CODECS) || defined(USE_GSTREAMER)
       // |init_data| is a set of 0 or more concatenated 'pssh' boxes.
       if (!GetKeyIdsForCommonSystemId(init_data, &keys)) {
         promise->reject(CdmPromise::NOT_SUPPORTED_ERROR, 0,
