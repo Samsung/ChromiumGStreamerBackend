@@ -120,12 +120,22 @@ EncryptedMediaPlayerSupport::EncryptedMediaPlayerSupport(
     CdmFactory* cdm_factory,
     WebMediaPlayerEncryptedMediaClient* client,
     MediaPermission* media_permission,
+#if defined(USE_GSTREAMER)
+    const CdmContextReadyCB& cdm_context_ready_cb,
+    const CdmContextKeysReadyCB& cdm_context_keys_ready_cb)
+#else
     const CdmContextReadyCB& cdm_context_ready_cb)
+#endif
     : cdm_factory_(cdm_factory),
       client_(client),
       media_permission_(media_permission),
       init_data_type_(EmeInitDataType::UNKNOWN),
+#if defined(USE_GSTREAMER)
+      cdm_context_ready_cb_(cdm_context_ready_cb),
+      cdm_context_keys_ready_cb_(cdm_context_keys_ready_cb) {
+#else
       cdm_context_ready_cb_(cdm_context_ready_cb) {
+#endif
 }
 
 EncryptedMediaPlayerSupport::~EncryptedMediaPlayerSupport() {
@@ -174,8 +184,14 @@ EncryptedMediaPlayerSupport::GenerateKeyRequestInternal(
 
     GURL security_origin(
         blink::WebStringToGURL(frame->document().securityOrigin().toString()));
+#if defined(USE_GSTREAMER)
+    proxy_decryptor_->CreateCdm(cdm_factory_, key_system, security_origin,
+                                cdm_context_ready_cb_,
+                                cdm_context_keys_ready_cb_);
+#else
     proxy_decryptor_->CreateCdm(cdm_factory_, key_system, security_origin,
                                 cdm_context_ready_cb_);
+#endif
     current_key_system_ = key_system;
   }
 

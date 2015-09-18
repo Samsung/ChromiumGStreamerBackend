@@ -41,12 +41,22 @@ class EncryptedMediaPlayerSupport
     : public base::SupportsWeakPtr<EncryptedMediaPlayerSupport> {
  public:
   using CdmContextReadyCB = ProxyDecryptor::CdmContextReadyCB;
+#if defined(USE_GSTREAMER)
+  using CdmContextKeysReadyCB = ProxyDecryptor::CdmContextKeysReadyCB;
+#endif
 
   // |cdm_context_ready_cb| is called when the CDM instance creation completes.
-  EncryptedMediaPlayerSupport(CdmFactory* cdm_factory,
-                              blink::WebMediaPlayerEncryptedMediaClient* client,
-                              MediaPermission* media_permission,
-                              const CdmContextReadyCB& cdm_context_ready_cb);
+  EncryptedMediaPlayerSupport(
+      CdmFactory* cdm_factory,
+      blink::WebMediaPlayerEncryptedMediaClient* client,
+      MediaPermission* media_permission,
+#if defined(USE_GSTREAMER)
+      const CdmContextReadyCB& cdm_context_ready_cb,
+      const CdmContextKeysReadyCB& cdm_context_keys_ready_cb =
+          base::Bind(&media::IgnoreCdmContextKeysReady));
+#else
+      const CdmContextReadyCB& cdm_context_ready_cb);
+#endif
   ~EncryptedMediaPlayerSupport();
 
   blink::WebMediaPlayer::MediaKeyException GenerateKeyRequest(
@@ -111,6 +121,9 @@ class EncryptedMediaPlayerSupport
   EmeInitDataType init_data_type_;
 
   CdmContextReadyCB cdm_context_ready_cb_;
+#if defined(USE_GSTREAMER)
+  CdmContextKeysReadyCB cdm_context_keys_ready_cb_;
+#endif
 
   // Manages decryption keys and decrypts encrypted frames.
   scoped_ptr<ProxyDecryptor> proxy_decryptor_;

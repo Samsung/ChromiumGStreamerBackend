@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 
+#if defined(USE_GSTREAMER)
+#include "base/bind.h"
+#endif
 #include "base/containers/hash_tables.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -18,6 +21,9 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "media/base/cdm_context.h"
+#if defined(USE_GSTREAMER)
+#include "media/base/cdm_key_information.h"
+#endif
 #include "media/base/decryptor.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"
@@ -28,6 +34,12 @@ namespace media {
 
 class CdmFactory;
 class MediaPermission;
+
+#if defined(USE_GSTREAMER)
+MEDIA_EXPORT void IgnoreCdmContextKeysReady(const std::string& session_id,
+                                            bool has_additional_usable_key,
+                                            CdmKeysInfo keys_info);
+#endif
 
 // ProxyDecryptor is for EME v0.1b only. It should not be used for the WD API.
 // A decryptor proxy that creates a real decryptor object on demand and
@@ -41,6 +53,11 @@ class MEDIA_EXPORT ProxyDecryptor {
   // Callback to provide a CdmContext when the CDM creation is finished.
   // If CDM creation failed, |cdm_context| will be null.
   typedef base::Callback<void(CdmContext* cdm_context)> CdmContextReadyCB;
+#if defined(USE_GSTREAMER)
+  typedef base::Callback<void(const std::string& session_id,
+                              bool has_additional_usable_key,
+                              CdmKeysInfo keys_info)> CdmContextKeysReadyCB;
+#endif
 
   // These are similar to the callbacks in media_keys.h, but pass back the
   // session ID rather than the internal session ID.
@@ -65,7 +82,13 @@ class MEDIA_EXPORT ProxyDecryptor {
   void CreateCdm(CdmFactory* cdm_factory,
                  const std::string& key_system,
                  const GURL& security_origin,
+#if defined(USE_GSTREAMER)
+                 const CdmContextReadyCB& cdm_context_ready_cb,
+                 const CdmContextKeysReadyCB& cdm_context_keys_ready_cb =
+                     base::Bind(&IgnoreCdmContextKeysReady));
+#else
                  const CdmContextReadyCB& cdm_context_ready_cb);
+#endif
 
   // May only be called after CreateCDM().
   void GenerateKeyRequest(EmeInitDataType init_data_type,
@@ -147,6 +170,9 @@ class MEDIA_EXPORT ProxyDecryptor {
   KeyAddedCB key_added_cb_;
   KeyErrorCB key_error_cb_;
   KeyMessageCB key_message_cb_;
+#if defined(USE_GSTREAMER)
+  CdmContextKeysReadyCB cdm_context_keys_ready_cb_;
+#endif
 
   std::string key_system_;
   GURL security_origin_;
