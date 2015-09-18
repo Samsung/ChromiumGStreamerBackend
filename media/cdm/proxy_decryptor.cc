@@ -63,10 +63,22 @@ ProxyDecryptor::~ProxyDecryptor() {
   media_keys_ = nullptr;
 }
 
-void ProxyDecryptor::CreateCdm(CdmFactory* cdm_factory,
-                               const std::string& key_system,
-                               const GURL& security_origin,
-                               const CdmContextReadyCB& cdm_context_ready_cb) {
+#if defined(USE_GSTREAMER)
+void IgnoreCdmContextKeysReady(const std::string& session_id,
+                               bool has_additional_usable_key,
+                               CdmKeysInfo keys_info) {}
+#endif
+
+void ProxyDecryptor::CreateCdm(
+    CdmFactory* cdm_factory,
+    const std::string& key_system,
+    const GURL& security_origin,
+#if defined(USE_GSTREAMER)
+    const CdmContextReadyCB& cdm_context_ready_cb,
+    const CdmContextKeysReadyCB& cdm_context_keys_ready_cb) {
+#else
+    const CdmContextReadyCB& cdm_context_ready_cb) {
+#endif
   DVLOG(1) << __FUNCTION__ << ": key_system = " << key_system;
   DCHECK(!is_creating_cdm_);
   DCHECK(!media_keys_);
@@ -80,6 +92,10 @@ void ProxyDecryptor::CreateCdm(CdmFactory* cdm_factory,
   cdm_config.use_hw_secure_codecs = use_hw_secure_codecs_;
 
   is_creating_cdm_ = true;
+
+#if defined(USE_GSTREAMER)
+  cdm_context_keys_ready_cb_ = cdm_context_keys_ready_cb;
+#endif
 
   base::WeakPtr<ProxyDecryptor> weak_this = weak_ptr_factory_.GetWeakPtr();
   cdm_factory->Create(
@@ -329,6 +345,10 @@ void ProxyDecryptor::OnSessionKeysChange(const std::string& session_id,
                                          bool has_additional_usable_key,
                                          CdmKeysInfo keys_info) {
   // EME v0.1b doesn't support this event.
+#if defined(USE_GSTREAMER)
+  cdm_context_keys_ready_cb_.Run(session_id, has_additional_usable_key,
+                                 keys_info.Pass());
+#endif
 }
 
 void ProxyDecryptor::OnSessionExpirationUpdate(
