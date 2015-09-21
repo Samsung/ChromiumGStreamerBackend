@@ -25,6 +25,7 @@
 #include "content/common/media/media_channel.h"
 #include "content/media/gstreamer/gst_chromium_http_source.h"
 #include "content/media/gstreamer/gst_chromium_media_src.h"
+#include "content/media/gstreamer/gst_chromium_common_encryption_decryptor.h"
 #include "content/media/gstreamer/gpuprocess/gstglcontext_gpu_process.h"
 #include "content/media/gstreamer/gpuprocess/gstgldisplay_gpu_process.h"
 #include "content/media/media_child_thread.h"
@@ -132,6 +133,12 @@ static void sync_bus_call(GstBus* bus,
   player->SyncMessage(bus, msg);
 }
 
+static void async_bus_call(GstBus* bus,
+                           GstMessage* msg,
+                           MediaPlayerGStreamer* player) {
+  player->AsyncMessage(bus, msg);
+}
+
 static GstGLContext* gstgldisplay_create_context_cb(
     GstGLDisplay* display,
     GstGLContext* other_context,
@@ -210,6 +217,14 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
                          CHROMIUM_TYPE_MEDIA_SRC);
   }
 
+  GstElementFactory* cencDecryptorFactory =
+      gst_element_factory_find("chromiumcencdec");
+
+  if (!cencDecryptorFactory) {
+    gst_element_register(0, "chromiumcencdec", GST_RANK_PRIMARY + 100,
+                         CHROMIUM_TYPE_MEDIA_CENC_DECRYPT);
+  }
+
   g_signal_connect(player_, "duration-changed", G_CALLBACK(duration_changed_cb),
                    this);
   g_signal_connect(player_, "position-updated", G_CALLBACK(position_updated_cb),
@@ -244,6 +259,7 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
   GstBus* bus = gst_element_get_bus(pipeline);
   gst_bus_enable_sync_message_emission(bus);
   g_signal_connect(bus, "sync-message", G_CALLBACK(sync_bus_call), this);
+  g_signal_connect(bus, "message::element", G_CALLBACK(async_bus_call), this);
 
   gst_object_unref(bus);
   gst_object_unref(pipeline);
@@ -420,6 +436,36 @@ void MediaPlayerGStreamer::SyncMessage(GstBus* bus, GstMessage* msg) {
         gst_element_set_context(GST_ELEMENT(msg->src), display_context);
         gst_object_unref(gst_gl_display_);
         gst_gl_display_ = nullptr;
+      }
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void MediaPlayerGStreamer::AsyncMessage(GstBus* bus, GstMessage* msg) {
+  switch (GST_MESSAGE_TYPE(msg)) {
+    case GST_MESSAGE_ELEMENT: {
+      const GstStructure* structure = gst_message_get_structure(msg);
+      if (gst_structure_has_name(structure, "drm-key-needed")) {
+        DVLOG(1) << __FUNCTION__ << "(drm-key-needed)";
+
+        GstBuffer* data;
+        const char* keySystemId;
+        gboolean valid = gst_structure_get(
+            structure, "data", GST_TYPE_BUFFER, &data, "key-system-id",
+            G_TYPE_STRING, &keySystemId, nullptr);
+        GstMapInfo mapInfo;
+        if (!valid || !gst_buffer_map(data, &mapInfo, GST_MAP_READ))
+          break;
+
+        DVLOG(1) << __FUNCTION__ << "(Need key: " << keySystemId << ")";
+        media_channel_->SendNeedKey(
+            player_id_, keySystemId,
+            std::vector<unsigned char>(mapInfo.data,
+                                       mapInfo.data + mapInfo.size));
+        gst_buffer_unmap(data, &mapInfo);
       }
       break;
     }
@@ -638,6 +684,7 @@ void MediaPlayerGStreamer::AddKey(const std::string& session_id,
                                   const std::string& key_id,
                                   const std::string& key) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  chromiumCommonEncryptionDecryptAddKey(gst_player_get_pipeline(player_), key);
 }
 
 void MediaPlayerGStreamer::OnDurationChanged(const base::TimeDelta& duration) {
