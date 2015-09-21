@@ -634,6 +634,12 @@ void MediaPlayerGStreamer::RemoveSegment(const std::string& source_id,
                                 start, end);
 }
 
+void MediaPlayerGStreamer::AddKey(const std::string& session_id,
+                                  const std::string& key_id,
+                                  const std::string& key) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+}
+
 void MediaPlayerGStreamer::OnDurationChanged(const base::TimeDelta& duration) {
   media_channel_->SendMediaDurationChanged(player_id_, duration);
 }
