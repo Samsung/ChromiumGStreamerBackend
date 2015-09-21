@@ -91,6 +91,10 @@ class MediaChannel : public IPC::Listener, public IPC::Sender {
                                   const std::string& source_id,
                                   const base::TimeDelta& start,
                                   const base::TimeDelta& end);
+  void OnMediaPlayerAddKey(int player_id,
+                           const std::string& session_id,
+                           const std::string& key_id,
+                           const std::string& key);
 
   // IPC::Sender implementation:
   bool Send(IPC::Message* msg) override;
@@ -122,6 +126,9 @@ class MediaChannel : public IPC::Listener, public IPC::Sender {
   void SendTimestampOffsetUpdate(int player_id,
                                  const std::string& source_id,
                                  const base::TimeDelta& timestamp_offset);
+  void SendNeedKey(int player_id,
+                   const std::string& system_id,
+                   const std::vector<unsigned char>& init_data);
 
  private:
   scoped_ptr<IPC::SyncChannel> channel_;

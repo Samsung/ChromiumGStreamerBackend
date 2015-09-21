@@ -108,6 +108,9 @@ class MediaPlayerGStreamer {
   void RemoveSegment(const std::string& source_id,
                      const base::TimeDelta& start,
                      const base::TimeDelta& end);
+  void AddKey(const std::string& session_id,
+              const std::string& key_id,
+              const std::string& key);
 
   void DidLoad();
   void OnDurationChanged(const base::TimeDelta& duration);

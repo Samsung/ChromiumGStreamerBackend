@@ -89,6 +89,7 @@ bool MediaChannel::OnMessageReceived(const IPC::Message& message) {
                         OnMediaPlayerSetGroupStartTimestampIfInSequenceMode)
     IPC_MESSAGE_HANDLER(MediaPlayerMsg_RemoveSegment,
                         OnMediaPlayerRemoveSegment)
+    IPC_MESSAGE_HANDLER(MediaPlayerMsg_AddKey, OnMediaPlayerAddKey)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -245,6 +246,16 @@ void MediaChannel::OnMediaPlayerRemoveSegment(int player_id,
   }
 }
 
+void MediaChannel::OnMediaPlayerAddKey(int player_id,
+                                       const std::string& session_id,
+                                       const std::string& key_id,
+                                       const std::string& key) {
+  MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
+  if (player) {
+    player->AddKey(session_id, key_id, key);
+  }
+}
+
 void MediaChannel::SendMediaError(int player_id, int error) {
   Send(new MediaPlayerMsg_MediaError(player_id, error));
 }
@@ -333,6 +344,12 @@ void MediaChannel::SendTimestampOffsetUpdate(
     const base::TimeDelta& timestamp_offset) {
   Send(new MediaPlayerMsg_TimestampOffsetUpdate(player_id, source_id,
                                                 timestamp_offset));
+}
+
+void MediaChannel::SendNeedKey(int player_id,
+                               const std::string& system_id,
+                               const std::vector<unsigned char>& init_data) {
+  Send(new MediaPlayerMsg_NeedKey(player_id, system_id, init_data));
 }
 
 bool MediaChannel::Send(IPC::Message* message) {
