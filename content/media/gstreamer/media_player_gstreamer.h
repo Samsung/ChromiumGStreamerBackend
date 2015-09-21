@@ -138,6 +138,7 @@ class MediaPlayerGStreamer {
                                GstSample* sample);
   void GstSourceSetup(GstElement* playbin, GstElement* src);
   void SyncMessage(GstBus* bus, GstMessage* msg);
+  void AsyncMessage(GstBus* bus, GstMessage* msg);
 
  private:
   void SetupContextProvider();
