@@ -98,6 +98,9 @@ class WebMediaPlayerMessageDispatcher
   void SendRemoveSegment(const std::string& id,
                          const base::TimeDelta& start,
                          const base::TimeDelta& end);
+  void SendAddKey(const std::string& session_id,
+                  const std::string& key_id,
+                  const std::string& key);
 
   bool OnMessageReceived(const IPC::Message& message) override;
 
@@ -255,6 +258,8 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
                              const std::vector<base::TimeDelta>& raw_ranges);
   void OnTimestampOffsetUpdate(const std::string& id,
                                const base::TimeDelta& timestamp_offset);
+  void OnNeedKey(const std::string& system_id,
+                 const std::vector<uint8>& init_data);
 
  private:
   void SetupGLContext();
@@ -282,6 +287,10 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   // Called when a CDM has been attached to the |pipeline_|.
   void OnCdmAttached(blink::WebContentDecryptionModuleResult result,
                      bool success);
+
+  void OnCdmKeysReady(const std::string& session_id,
+                      bool has_additional_usable_key,
+                      CdmKeysInfo keys_info);
 
   void UpdatePlayingState(bool is_playing);
 
@@ -369,11 +378,10 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
 
   bool supports_save_;
 
-  // TODO:
-  EncryptedMediaPlayerSupport encrypted_media_support_;
-
   static base::AtomicSequenceNumber next_player_id_;
   WebMediaPlayerMessageDispatcher message_dispatcher_;
+
+  EncryptedMediaPlayerSupport encrypted_media_support_;
 
   DISALLOW_COPY_AND_ASSIGN(WebMediaPlayerGStreamer);
 };
