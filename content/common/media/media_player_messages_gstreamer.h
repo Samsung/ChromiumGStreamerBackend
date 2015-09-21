@@ -92,6 +92,13 @@ IPC_MESSAGE_CONTROL4(MediaPlayerMsg_RemoveSegment,
                      base::TimeDelta /* start */,
                      base::TimeDelta /* end */)
 
+// Add new DRM key.
+IPC_MESSAGE_CONTROL4(MediaPlayerMsg_AddKey,
+                     int /* player_id */,
+                     std::string /* session id */,
+                     std::string /* key id */,
+                     std::string /* key */)
+
 // From media process to render process
 IPC_MESSAGE_ROUTED1(MediaPlayerMsg_MediaBufferingUpdate, int /* percent */)
 
@@ -161,3 +168,8 @@ IPC_MESSAGE_ROUTED2(MediaPlayerMsg_BufferedRangeUpdate,
 IPC_MESSAGE_ROUTED2(MediaPlayerMsg_TimestampOffsetUpdate,
                     std::string /* source id */,
                     base::TimeDelta /* timestamp_offset */)
+
+// The player requested the DRM key.
+IPC_MESSAGE_ROUTED2(MediaPlayerMsg_NeedKey,
+                    std::string /* system_id */,
+                    std::vector<unsigned char> /* init_data */)
