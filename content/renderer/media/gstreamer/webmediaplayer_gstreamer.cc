@@ -17,6 +17,7 @@
 #include "base/metrics/histogram.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/blink/web_layer_impl.h"
@@ -38,6 +39,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
 #include "media/base/limits.h"
+#include "media/base/key_systems.h"
 #include "media/base/media_log.h"
 #include "media/base/pipeline.h"
 #include "media/base/text_renderer.h"
@@ -110,6 +112,14 @@ STATIC_ASSERT_MATCHING_ENUM(Unspecified);
 STATIC_ASSERT_MATCHING_ENUM(Anonymous);
 STATIC_ASSERT_MATCHING_ENUM(UseCredentials);
 #undef STATIC_ASSERT_MATCHING_ENUM
+
+// Convert a WebString to ASCII, falling back on an empty string in the case
+// of a non-ASCII string.
+static std::string ToASCIIOrEmpty(const WebString& string) {
+  return base::IsStringASCII(string)
+             ? base::UTF16ToASCII(base::StringPiece16(string))
+             : std::string();
+}
 
 WebMediaPlayerMessageDispatcher::WebMediaPlayerMessageDispatcher(
     int player_id,
@@ -276,6 +286,16 @@ void WebMediaPlayerMessageDispatcher::SendRemoveSegment(
     channel->Send(new MediaPlayerMsg_RemoveSegment(player_id_, id, start, end));
 }
 
+void WebMediaPlayerMessageDispatcher::SendAddKey(const std::string& session_id,
+                                                 const std::string& key_id,
+                                                 const std::string& key) {
+  content::MediaChannelHost* channel =
+      content::RenderThreadImpl::current()->GetMediaChannel();
+  if (channel)
+    channel->Send(
+        new MediaPlayerMsg_AddKey(player_id_, session_id, key_id, key));
+}
+
 bool WebMediaPlayerMessageDispatcher::OnMessageReceived(
     const IPC::Message& message) {
   WebMediaPlayerGStreamer* player = player_.get();
@@ -318,6 +338,8 @@ bool WebMediaPlayerMessageDispatcher::OnMessageReceived(
                         WebMediaPlayerGStreamer::OnBufferedRangeUpdate)
     IPC_MESSAGE_FORWARD(MediaPlayerMsg_TimestampOffsetUpdate, player,
                         WebMediaPlayerGStreamer::OnTimestampOffsetUpdate)
+    IPC_MESSAGE_FORWARD(MediaPlayerMsg_NeedKey, player,
+                        WebMediaPlayerGStreamer::OnNeedKey)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -362,13 +384,15 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
       delegate_(delegate),
       media_source_(nullptr),
       supports_save_(true),
-      encrypted_media_support_(cdm_factory,
-                               encrypted_client,
-                               media_permission,
-                               base::Bind(&WebMediaPlayerGStreamer::SetCdm,
-                                          AsWeakPtr(),
-                                          base::Bind(&IgnoreCdmAttached))),
-      message_dispatcher_(next_player_id_.GetNext(), AsWeakPtr()) {
+      message_dispatcher_(next_player_id_.GetNext(), AsWeakPtr()),
+      encrypted_media_support_(
+          cdm_factory,
+          encrypted_client,
+          media_permission,
+          base::Bind(&WebMediaPlayerGStreamer::SetCdm,
+                     AsWeakPtr(),
+                     base::Bind(&IgnoreCdmAttached)),
+          base::Bind(&WebMediaPlayerGStreamer::OnCdmKeysReady, AsWeakPtr())) {
   media_log_->AddEvent(
       media_log_->CreateEvent(MediaLogEvent::WEBMEDIAPLAYER_CREATED));
 
@@ -690,6 +714,17 @@ void WebMediaPlayerGStreamer::OnTimestampOffsetUpdate(
   DVLOG(1) << __FUNCTION__;
 
   media_source_->OnTimestampOffsetUpdate(id, timestamp_offset);
+}
+
+void WebMediaPlayerGStreamer::OnNeedKey(const std::string& system_id,
+                                        const std::vector<uint8>& init_data) {
+  DVLOG(1) << __FUNCTION__ << "(" << system_id << ")";
+  EmeInitDataType type = EmeInitDataType::UNKNOWN;
+
+  if (system_id == "org.w3.clearkey")
+    type = EmeInitDataType::CENC;
+
+  OnEncryptedMediaInitData(type, init_data);
 }
 
 void WebMediaPlayerGStreamer::load(LoadType load_type,
@@ -1028,6 +1063,14 @@ WebMediaPlayer::MediaKeyException WebMediaPlayerGStreamer::generateKeyRequest(
     unsigned init_data_length) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
+  std::string ascii_key_system =
+      media::GetUnprefixedKeySystemName(media::ToASCIIOrEmpty(key_system));
+
+  // Support common decryption only for now
+  if (!CanUseAesDecryptor(ascii_key_system)) {
+    return MediaKeyExceptionKeySystemNotSupported;
+  }
+
   return encrypted_media_support_.GenerateKeyRequest(
       frame_, key_system, init_data, init_data_length);
 }
@@ -1118,6 +1161,16 @@ void WebMediaPlayerGStreamer::OnCdmAttached(
   result.completeWithError(
       blink::WebContentDecryptionModuleExceptionNotSupportedError, 0,
       "Unable to set MediaKeys object");
+}
+
+void WebMediaPlayerGStreamer::OnCdmKeysReady(const std::string& session_id,
+                                             bool has_additional_usable_key,
+                                             CdmKeysInfo keys_info) {
+  for (const auto& item : keys_info) {
+    message_dispatcher_.SendAddKey(
+        session_id, std::string(item->key_id.begin(), item->key_id.end()),
+        item->key);
+  }
 }
 
 void WebMediaPlayerGStreamer::OnAddTextTrack(
