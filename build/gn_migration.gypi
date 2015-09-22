@@ -94,7 +94,7 @@
         '../ipc/ipc.gyp:ipc_tests',
         '../ipc/mojo/ipc_mojo.gyp:ipc_mojo_unittests',
         '../jingle/jingle.gyp:jingle_unittests',
-        '../media/media.gyp:ffmpeg_regression_tests',  # TODO(GYP) this should be conditional on media_use_ffmpeg
+        #'../media/media.gyp:ffmpeg_regression_tests',  # TODO(GYP) this should be conditional on media_use_ffmpeg
         '../media/media.gyp:media_perftests',
         '../media/media.gyp:media_unittests',
         '../media/midi/midi.gyp:midi_unittests',

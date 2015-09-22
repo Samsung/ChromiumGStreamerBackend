@@ -56,6 +56,8 @@ void ParseAudioVideoMetadata(
     std::vector<AttachedImage>* attached_images) {
   DCHECK(source);
   DCHECK(metadata);
+
+#if !defined(MEDIA_DISABLE_FFMPEG)
   media::AudioVideoMetadataExtractor extractor;
 
   if (!extractor.Extract(source, get_attached_images))
@@ -108,6 +110,9 @@ void ParseAudioVideoMetadata(
                                       &attached_images->back().type);
     }
   }
+#else
+  return;
+#endif
 }
 
 void FinishParseAudioVideoMetadata(

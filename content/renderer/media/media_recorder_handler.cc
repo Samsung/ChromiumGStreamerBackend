@@ -61,8 +61,12 @@ bool MediaRecorderHandler::start(int timeslice) {
   DCHECK(!recording_);
   DCHECK(!media_stream_.isNull());
 
+#if !defined(MEDIA_DISABLE_LIBWEBM)
   webm_muxer_.reset(new media::WebmMuxer(media::BindToCurrentLoop(base::Bind(
       &MediaRecorderHandler::WriteData, weak_factory_.GetWeakPtr()))));
+#else
+  return false;
+#endif
   DCHECK(webm_muxer_);
 
   blink::WebVector<blink::WebMediaStreamTrack> video_tracks;
