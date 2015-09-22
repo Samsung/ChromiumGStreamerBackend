@@ -354,7 +354,7 @@
             '../gpu/gles2_conform_support/gles2_conform_test.gyp:gles2_conform_test',  # TODO(GYP) crbug.com/471920
             '../gpu/khronos_glcts_support/khronos_glcts_test.gyp:khronos_glcts_test',  # TODO(GYP) crbug.com/471903 to make this complete.
             '../ipc/ipc.gyp:ipc_perftests',
-            '../media/media.gyp:ffmpeg_regression_tests',  # TODO(GYP) this should be conditional on media_use_ffmpeg
+            #'../media/media.gyp:ffmpeg_regression_tests',  # TODO(GYP) this should be conditional on media_use_ffmpeg
             '../mojo/mojo_base.gyp:mojo_common_unittests',
             '../ppapi/tools/ppapi_tools.gyp:pepper_hash_for_uma',
             '../skia/skia.gyp:filter_fuzz_stub',
