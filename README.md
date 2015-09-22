@@ -217,6 +217,9 @@ git push github_gstbackend gstbackend:master --force
 ### Tips ###
 ``` bash
 
+# disable ffmpeg and other decoders
+Insert media_use_ffmpeg=0 media_use_libvpx=0 media_use_libwebm=0 into GYP_DEFINES, see build steps.
+
 # disable nacl to reduce build time
 Insert disable_nacl=1 to GYP_DEFINES, see build steps.
 
