@@ -207,7 +207,6 @@ static GstCaps* chromiumCommonEncryptionDecryptTransformCaps(
   }
 
   GST_DEBUG_OBJECT(base, "returning %" GST_PTR_FORMAT, transformedCaps);
-  printf("%s:%d\n", __PRETTY_FUNCTION__, __LINE__);
   return transformedCaps;
 }
 
