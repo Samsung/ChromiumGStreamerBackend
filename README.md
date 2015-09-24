@@ -125,6 +125,28 @@ Also it exists on-going work somewhere. And it should be easier to handle it wit
 
 __  
 
+### EME ###
+
+[Encrypted Media Extensions specification](http://www.w3.org/TR/encrypted-media/).
+
+ChromiumCommonEncryptionDecrypt GStreamer element factory is registered in MediaPlayerGStreamer
+to decrypt encrypted streams inside mp4 and webm containers.
+
+When MediaPlayerGStreamer receives a need key asynchronous event from ChromiumCommonEncryptionDecrypt
+(it is triggered by GStreamer protection event) it passes an initial data from encrypted stream pssh box
+to to the render process.
+
+On key needed event WebMediaPlayerGStreamer passes the initial data from the media process to the default CDM.
+It registers OnCdmKeysReady callback in order to receive a parsed key data from the web application.
+Then new keys are sent back to the media process.
+
+On getting add key IPC message from the render process MediaPlayerGStreamer passes the key down
+to ChromiumCommonEncryptionDecrypt element, which unblocks and starts decrypting of the encrypted frame in place.
+
+![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_media_process_eme.png?raw=true)
+
+__
+
 ### Build steps ###
 ``` bash
 # GStreamer
