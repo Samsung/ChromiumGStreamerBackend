@@ -188,6 +188,12 @@ class CONTENT_EXPORT GpuChannel
   const GpuCommandBufferStub* GetOneStub() const;
 #endif
 
+#if defined(USE_GSTREAMER)
+  scoped_refptr<gfx::GLImage> CreateEGLImage(
+      const gfx::Size& size,
+      const std::vector<int32>& attributes);
+#endif
+
  protected:
   // The message filter on the io thread.
   scoped_refptr<GpuChannelMessageFilter> filter_;
