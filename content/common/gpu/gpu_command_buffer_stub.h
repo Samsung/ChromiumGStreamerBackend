@@ -219,6 +219,12 @@ class GpuCommandBufferStub
                      uint32 internalformat);
   void OnDestroyImage(int32 id);
 
+#if defined(USE_GSTREAMER)
+  void OnCreateEGLImage(int32 id,
+                        gfx::Size size,
+                        const std::vector<int32>& attributes);
+#endif
+
   void OnCommandProcessed();
   void OnParseError();
   void OnCreateStreamTexture(

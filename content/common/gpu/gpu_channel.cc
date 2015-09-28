@@ -48,6 +48,10 @@
 #include "ipc/ipc_channel_posix.h"
 #endif
 
+#if defined(USE_GSTREAMER)
+#include "ui/gl/gl_image_egl.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -1153,6 +1157,20 @@ scoped_refptr<gfx::GLImage> GpuChannel::CreateImageForGpuMemoryBuffer(
     }
   }
 }
+
+#if defined(USE_GSTREAMER)
+scoped_refptr<gfx::GLImage> GpuChannel::CreateEGLImage(
+    const gfx::Size& size,
+    const std::vector<int32>& attributes) {
+  scoped_refptr<gfx::GLImageEGL> image(new gfx::GLImageEGL(size));
+  if (!image->Initialize(EGL_LINUX_DMA_BUF_EXT,
+                         static_cast<EGLClientBuffer>(nullptr),
+                         static_cast<const EGLint*>(attributes.data())))
+    return scoped_refptr<gfx::GLImageEGL>();
+
+  return image;
+}
+#endif
 
 void GpuChannel::HandleUpdateValueState(
     unsigned int target, const gpu::ValueState& state) {
