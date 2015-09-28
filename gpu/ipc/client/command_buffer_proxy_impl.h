@@ -175,6 +175,12 @@ class GPU_EXPORT CommandBufferProxyImpl
   }
   uint32_t CreateStreamTexture(uint32_t texture_id);
 
+#if defined(USE_GSTREAMER)
+  int32_t CreateEGLImage(size_t width,
+                         size_t height,
+                         const std::vector<int32_t>& attributes);
+#endif
+
  private:
   typedef std::map<int32_t, scoped_refptr<gpu::Buffer>> TransferBufferMap;
   typedef base::hash_map<uint32_t, base::Closure> SignalTaskMap;

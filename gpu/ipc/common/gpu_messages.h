@@ -242,6 +242,14 @@ IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_CreateImage,
 // Destroy a previously created image.
 IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_DestroyImage, int32_t /* id */)
 
+#if defined(USE_GSTREAMER)
+// Create an EGLImage.
+IPC_MESSAGE_ROUTED3(GpuCommandBufferMsg_CreateEGLImage,
+                    int32 /* id */,
+                    gfx::Size /* size */,
+                    std::vector<int32> /* attributes */)
+#endif
+
 // Attaches an external image stream to the client texture.
 IPC_SYNC_MESSAGE_ROUTED2_1(GpuCommandBufferMsg_CreateStreamTexture,
                            uint32_t, /* client_texture_id */

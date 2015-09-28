@@ -189,6 +189,13 @@ class GPU_EXPORT GpuCommandBufferStub
   void OnCreateStreamTexture(uint32_t texture_id,
                              int32_t stream_id,
                              bool* succeeded);
+
+#if defined(USE_GSTREAMER)
+  void OnCreateEGLImage(int32 id,
+                        gfx::Size size,
+                        const std::vector<int32>& attributes);
+#endif
+
   void OnCommandProcessed();
   void OnParseError();
 

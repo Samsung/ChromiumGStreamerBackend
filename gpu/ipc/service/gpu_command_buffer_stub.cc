@@ -253,6 +253,9 @@ bool GpuCommandBufferStub::OnMessageReceived(const IPC::Message& message) {
                         OnSignalQuery)
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateImage, OnCreateImage);
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_DestroyImage, OnDestroyImage);
+#if defined(USE_GSTREAMER)
+    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateEGLImage, OnCreateEGLImage);
+#endif
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateStreamTexture,
                         OnCreateStreamTexture)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -1045,6 +1048,32 @@ void GpuCommandBufferStub::SendConsoleMessage(int32_t id,
   msg->set_unblock(true);
   Send(msg);
 }
+
+#if defined(USE_GSTREAMER)
+void GpuCommandBufferStub::OnCreateEGLImage(
+    int32 id,
+    gfx::Size size,
+    const std::vector<int32>& attributes) {
+  TRACE_EVENT0("gpu", "GpuCommandBufferStub::OnCreateEGLImage");
+
+  if (!decoder_)
+    return;
+
+  gpu::gles2::ImageManager* image_manager = decoder_->GetImageManager();
+  DCHECK(image_manager);
+  if (image_manager->LookupImage(id)) {
+    LOG(ERROR) << "Image already exists with same ID.";
+    return;
+  }
+
+  scoped_refptr<gfx::GLImage> image =
+      channel()->CreateEGLImage(size, attributes);
+  if (!image.get())
+    return;
+
+  image_manager->AddImage(image.get(), id);
+}
+#endif
 
 void GpuCommandBufferStub::SendCachedShader(
     const std::string& key, const std::string& shader) {
