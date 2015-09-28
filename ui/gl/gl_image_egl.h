@@ -33,6 +33,12 @@ class GL_EXPORT GLImageEGL : public GLImage {
                             const gfx::Rect& bounds_rect,
                             const gfx::RectF& crop_rect) override;
 
+#if defined(USE_GSTREAMER)
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                    uint64_t process_tracing_id,
+                    const std::string& dump_name) override {}
+#endif
+
  protected:
   ~GLImageEGL() override;
 

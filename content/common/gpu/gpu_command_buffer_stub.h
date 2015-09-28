@@ -216,6 +216,12 @@ class GpuCommandBufferStub
                              int32 stream_id,
                              bool* succeeded);
 
+#if defined(USE_GSTREAMER)
+  void OnCreateEGLImage(int32 id,
+                        gfx::Size size,
+                        const std::vector<int32>& attributes);
+#endif
+
   void OnCommandProcessed();
   void OnParseError();
   void OnSchedulingChanged(bool scheduled);

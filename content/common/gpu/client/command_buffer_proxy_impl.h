@@ -112,6 +112,13 @@ class CommandBufferProxyImpl
                                    size_t height,
                                    unsigned internal_format,
                                    unsigned usage) override;
+
+#if defined(USE_GSTREAMER)
+  int32_t CreateEGLImage(size_t width,
+                         size_t height,
+                         const std::vector<int32_t>& attributes);
+#endif
+
   uint32 InsertSyncPoint() override;
   uint32_t InsertFutureSyncPoint() override;
   void RetireSyncPoint(uint32_t sync_point) override;

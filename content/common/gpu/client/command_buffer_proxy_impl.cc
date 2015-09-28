@@ -487,6 +487,29 @@ int32_t CommandBufferProxyImpl::CreateGpuMemoryBufferImage(
   return CreateImage(buffer->AsClientBuffer(), width, height, internal_format);
 }
 
+#if defined(USE_GSTREAMER)
+int32_t CommandBufferProxyImpl::CreateEGLImage(
+    size_t width,
+    size_t height,
+    const std::vector<int32_t>& attributes) {
+  CheckLock();
+  if (last_state_.error != gpu::error::kNoError)
+    return -1;
+
+  if (!channel_ || channel_->IsLost())
+    return -1;
+
+  int32 new_id = channel_->ReserveImageId();
+
+  if (!Send(new GpuCommandBufferMsg_CreateEGLImage(
+          route_id_, new_id, gfx::Size(width, height), attributes))) {
+    return -1;
+  }
+
+  return new_id;
+}
+#endif
+
 uint32 CommandBufferProxyImpl::CreateStreamTexture(uint32 texture_id) {
   CheckLock();
   if (last_state_.error != gpu::error::kNoError)
