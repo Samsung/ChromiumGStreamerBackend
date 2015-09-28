@@ -154,6 +154,12 @@ class CONTENT_EXPORT GpuChannel
       gfx::BufferFormat format,
       uint32 internalformat);
 
+#if defined(USE_GSTREAMER)
+  scoped_refptr<gfx::GLImage> CreateEGLImage(
+      const gfx::Size& size,
+      const std::vector<int32>& attributes);
+#endif
+
   bool allow_future_sync_points() const { return allow_future_sync_points_; }
 
   void HandleUpdateValueState(unsigned int target,
