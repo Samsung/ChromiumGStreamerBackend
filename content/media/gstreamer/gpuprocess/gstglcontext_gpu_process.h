@@ -16,6 +16,7 @@
 #define GST_GL_HAVE_OPENGL 0
 
 #include <gst/gl/gl.h>
+#include <gst/gl/egl/gstglcontext_egl.h>
 
 G_BEGIN_DECLS
 
@@ -46,7 +47,7 @@ typedef gpointer (*GstGLProcAddrFunc)(GstGLAPI gl_api, const gchar* name);
  * Opaque #GstGLContextGPUProcess object
  */
 struct _GstGLContextGPUProcess {
-  GstGLContext parent;
+  GstGLContextEGL parent;
 
   /*< private >*/
   GstGLContextGPUProcessPrivate* priv;
@@ -56,7 +57,7 @@ struct _GstGLContextGPUProcess {
 };
 
 struct _GstGLContextGPUProcessClass {
-  GstGLContextClass parent;
+  GstGLContextEGLClass parent;
 
   /*< private >*/
   gpointer _reserved[GST_PADDING];
