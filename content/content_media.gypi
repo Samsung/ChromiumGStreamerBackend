@@ -17,6 +17,8 @@
         'media/media_main.cc',
         'media/media_process.cc',
         'media/media_process.h',
+        'media/gstreamer/gpuprocess/client_egl.h',
+        'media/gstreamer/gpuprocess/client_egl.cc',
         'media/gstreamer/gpuprocess/gstglcontext_gpu_process.c',
         'media/gstreamer/gpuprocess/gstglcontext_gpu_process.h',
         'media/gstreamer/gpuprocess/gstgldisplay_gpu_process.c',

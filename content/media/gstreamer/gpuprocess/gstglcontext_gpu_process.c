@@ -16,11 +16,12 @@
 
 #define gst_gl_context_gpu_process_parent_class parent_class
 G_DEFINE_TYPE (GstGLContextGPUProcess, gst_gl_context_gpu_process,
-    GST_GL_TYPE_CONTEXT);
+    GST_GL_TYPE_CONTEXT_EGL);
 
 struct _GstGLContextGPUProcessPrivate
 {
-  GstGLAPI gl_api;
+  // Nothing for now;
+  gint empty;
 };
 
 static guintptr
@@ -32,7 +33,7 @@ gst_gl_context_gpu_process_get_gl_context (GstGLContext * context)
 static GstGLAPI
 gst_gl_context_gpu_process_get_gl_api (GstGLContext * context)
 {
-  return GST_GL_CONTEXT_GPU_PROCESS (context)->priv->gl_api;
+  return GST_GL_CONTEXT_EGL (context)->gl_api;
 }
 
 static GstGLPlatform
@@ -89,6 +90,7 @@ gst_gl_context_gpu_process_new (GstGLDisplay * display,
     GstGLAPI gl_api, GstGLProcAddrFunc proc_addr)
 {
   GstGLContext *context = NULL;
+  GstGLContextEGL *egl_context = NULL;
   GstGLContextGPUProcess *gpu_context = NULL;
   GstGLContextClass *context_class = NULL;
   GstGLWindow *window = NULL;
@@ -97,7 +99,9 @@ gst_gl_context_gpu_process_new (GstGLDisplay * display,
       GST_GL_API_NONE, NULL);
 
   gpu_context = g_object_new (GST_GL_TYPE_CONTEXT_GPU_PROCESS, NULL);
-  gpu_context->priv->gl_api = gl_api;
+
+  egl_context = GST_GL_CONTEXT_EGL (gpu_context);
+  egl_context->gl_api = gl_api;
 
   context = GST_GL_CONTEXT (gpu_context);
 
@@ -119,6 +123,11 @@ gst_gl_context_gpu_process_new (GstGLDisplay * display,
     gst_object_unref (context);
     return NULL;
   }
+
+  egl_context->eglCreateImage = gst_gl_context_get_proc_address (context,
+    "eglCreateImage");
+  egl_context->eglDestroyImage = gst_gl_context_get_proc_address (context,
+    "eglDestroyImage");
 
   window = GST_GL_WINDOW (gst_gl_window_gpu_process_new (display));
   gst_gl_context_set_window (context, window);
