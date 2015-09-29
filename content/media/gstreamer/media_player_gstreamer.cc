@@ -26,6 +26,7 @@
 #include "content/media/gstreamer/gst_chromium_http_source.h"
 #include "content/media/gstreamer/gst_chromium_media_src.h"
 #include "content/media/gstreamer/gst_chromium_common_encryption_decryptor.h"
+#include "content/media/gstreamer/gpuprocess/client_egl.h"
 #include "content/media/gstreamer/gpuprocess/gstglcontext_gpu_process.h"
 #include "content/media/gstreamer/gpuprocess/gstgldisplay_gpu_process.h"
 #include "content/media/media_child_thread.h"
@@ -147,7 +148,12 @@ static GstGLContext* gstgldisplay_create_context_cb(
 }
 
 static gpointer gpu_process_proc_addr(GstGLAPI gl_api, const gchar* name) {
-  return (gpointer)gles2::GetGLFunctionPointer(name);
+  if (std::string(name).find("eglCreateImage") != std::string::npos)
+    return (gpointer)content::CreateEGLImageKHR;
+  else if (std::string(name).find("eglDestroyImage") != std::string::npos)
+    return (gpointer)content::DestroyEGLImageKHR;
+  else
+    return (gpointer)gles2::GetGLFunctionPointer(name);
 }
 
 static gboolean glimagesink_draw_cb(GstElement* gl_sink,
