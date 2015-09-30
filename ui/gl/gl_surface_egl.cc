@@ -583,7 +583,12 @@ EGLConfig NativeViewGLSurfaceEGL::GetConfig() {
         return NULL;
       }
 
+#if defined(USE_GSTREAMER)
+      if ((g_config && g_config == config_) ||
+          config_depth == win_attribs.depth) {
+#else
       if (config_depth == win_attribs.depth) {
+#endif
         return config_;
       }
     }

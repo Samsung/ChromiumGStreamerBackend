@@ -330,6 +330,9 @@ scoped_refptr<GLSurface> GLSurface::CreateOffscreenGLSurface(
       return surface;
     }
     case kGLImplementationEGLGLES2: {
+#if defined(USE_GSTREAMER)
+// TODO: if EGL_KHR_surfaceless_context just use surface as EGL_NO_SURFACE.
+#endif
       scoped_refptr<GLSurface> surface(new PbufferGLSurfaceEGL(size));
       if (!surface->Initialize())
         return NULL;

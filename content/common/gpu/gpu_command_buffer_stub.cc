@@ -576,6 +576,17 @@ void GpuCommandBufferStub::OnInitialize(
       }
       channel_->share_group()->SetSharedContext(context.get());
     }
+
+#if defined(USE_GSTREAMER)
+    if (!handle_.is_null() &&
+        surface_->GetConfig() !=
+            channel_->gpu_channel_manager()
+                ->GetDefaultOffscreenSurface()
+                ->GetConfig())
+      LOG(ERROR) << "OFF and ON screenSurface do not have the same EGLConfig, "
+                    "eglMakeCurrent might fail.";
+#endif
+
     // This should be a non-virtual GL context.
     DCHECK(context->GetHandle());
     context = new gpu::GLContextVirtual(
