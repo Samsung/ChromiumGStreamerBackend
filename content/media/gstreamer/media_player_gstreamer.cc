@@ -152,6 +152,9 @@ static gpointer gpu_process_proc_addr(GstGLAPI gl_api, const gchar* name) {
     return (gpointer)content::CreateEGLImageKHR;
   else if (std::string(name).find("eglDestroyImage") != std::string::npos)
     return (gpointer)content::DestroyEGLImageKHR;
+  else if (std::string(name).find("glEGLImageTargetTexture2D") !=
+           std::string::npos)
+    return (gpointer)gles2::GetGLFunctionPointer("glBindTexImage2DCHROMIUM");
   else
     return (gpointer)gles2::GetGLFunctionPointer(name);
 }
