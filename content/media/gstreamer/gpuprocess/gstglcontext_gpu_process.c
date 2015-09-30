@@ -124,6 +124,15 @@ gst_gl_context_gpu_process_new (GstGLDisplay * display,
     return NULL;
   }
 
+  context->gl_vtable->EGLImageTargetTexture2D =
+      gst_gl_context_get_proc_address (context, "glEGLImageTargetTexture2D");
+
+  if (!context->gl_vtable->EGLImageTargetTexture2D) {
+    GST_ERROR_OBJECT (context, "Cannot find glEGLImageTargetTexture2D");
+    gst_object_unref (context);
+    return NULL;
+  }
+
   egl_context->eglCreateImage = gst_gl_context_get_proc_address (context,
     "eglCreateImage");
   egl_context->eglDestroyImage = gst_gl_context_get_proc_address (context,
