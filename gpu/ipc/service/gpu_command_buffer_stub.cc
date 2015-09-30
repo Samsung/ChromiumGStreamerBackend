@@ -1068,8 +1068,10 @@ void GpuCommandBufferStub::OnCreateEGLImage(
 
   scoped_refptr<gfx::GLImage> image =
       channel()->CreateEGLImage(size, attributes);
-  if (!image.get())
+  if (!image.get()) {
+    LOG(ERROR) << "channel()->CreateEGLImage failed.";
     return;
+  }
 
   image_manager->AddImage(image.get(), id);
 }
