@@ -61,12 +61,17 @@ EGLImageKHR CreateEGLImageKHR(EGLDisplay dpy,
   GLsizei width = 0;
   GLsizei height = 0;
   size_t nb_attribs = 0;
+  std::vector<int32_t> dmabuf_fds;
 
   for (size_t i = 0; i < 20; ++i) {
     if (attrib_list[i] == EGL_WIDTH)
       width = attrib_list[i + 1];
     else if (attrib_list[i] == EGL_HEIGHT)
       height = attrib_list[i + 1];
+    else if (attrib_list[i] == EGL_DMA_BUF_PLANE0_FD_EXT ||
+             attrib_list[i] == EGL_DMA_BUF_PLANE1_FD_EXT ||
+             attrib_list[i] == EGL_DMA_BUF_PLANE2_FD_EXT)
+      dmabuf_fds.push_back(attrib_list[i + 1]);
     else if (attrib_list[i] == EGL_NONE) {
       nb_attribs = i + 1;
       break;
@@ -110,7 +115,7 @@ EGLImageKHR CreateEGLImageKHR(EGLDisplay dpy,
 
   int32_t image_id = cmd_impl->CreateEGLImage(
       width, height,
-      std::vector<int32_t>(attrib_list, attrib_list + nb_attribs));
+      std::vector<int32_t>(attrib_list, attrib_list + nb_attribs), dmabuf_fds);
 
   if (image_id < 0) {
     NOTREACHED() << "eglCreateImageKHR, image_id < 0";

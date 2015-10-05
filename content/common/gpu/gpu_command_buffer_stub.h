@@ -305,6 +305,10 @@ class GpuCommandBufferStub
   scoped_ptr<WaitForCommandState> wait_for_token_;
   scoped_ptr<WaitForCommandState> wait_for_get_offset_;
 
+#if defined(USE_GSTREAMER)
+  std::vector<int32> dmabuf_fds_;
+#endif
+
   DISALLOW_COPY_AND_ASSIGN(GpuCommandBufferStub);
 };
 
