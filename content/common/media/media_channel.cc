@@ -307,9 +307,10 @@ void MediaChannel::SendSetCurrentFrame(int player_id,
                                        int width,
                                        int height,
                                        unsigned texture_id,
+                                       unsigned target,
                                        const std::vector<int32_t>& name) {
   Send(new MediaPlayerMsg_SetCurrentFrame(player_id, width, height, texture_id,
-                                          name));
+                                          target, name));
 }
 
 void MediaChannel::SendSourceSelected(int player_id) {
