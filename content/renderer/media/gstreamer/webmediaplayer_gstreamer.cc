@@ -496,6 +496,7 @@ void WebMediaPlayerGStreamer::OnSetCurrentFrame(
     int width,
     int height,
     unsigned texture_id,
+    unsigned target,
     const std::vector<int32_t>& v_name) {
   gpu::gles2::GLES2Interface* gl = ::gles2::GetGLContext();
 
@@ -515,8 +516,7 @@ void WebMediaPlayerGStreamer::OnSetCurrentFrame(
   // TODO: use ubercompositor to avoid inheriting from cc::VideoFrameProvider
   // and to avoid creating media::VideoFrame::WrapNativeTexture here.
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapNativeTexture(
-      media::PIXEL_FORMAT_ARGB,
-      gpu::MailboxHolder(mailbox, GL_TEXTURE_2D, sync_point),
+      media::PIXEL_FORMAT_ARGB, gpu::MailboxHolder(mailbox, target, sync_point),
       media::BindToCurrentLoop(base::Bind(
           &WebMediaPlayerGStreamer::OnReleaseTexture, AsWeakPtr(), texture_id)),
       gfx::Size(width, height), gfx::Rect(width, height),
