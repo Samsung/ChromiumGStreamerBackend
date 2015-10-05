@@ -258,6 +258,20 @@ bool IsGL_REDSupportedOnFBOs() {
   GLubyte data[1] = {0};
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RED_EXT, 1, 1, 0, GL_RED_EXT,
                GL_UNSIGNED_BYTE, data);
+
+#if defined(USE_GSTREAMER)
+  // Workaround glCheckFramebufferStatusEXT that may
+  // returns true even if glTexImage2D failed.
+  GLenum gl_error = glGetError();
+  if (gl_error != GL_NO_ERROR) {
+    LOG(INFO) << "RED not supported on FBO";
+    glDeleteTextures(1, &textureId);
+    glBindFramebufferEXT(GL_FRAMEBUFFER, static_cast<GLuint>(fb_binding));
+    glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(tex_binding));
+    return false;
+  }
+#endif
+
   GLuint textureFBOID = 0;
   glGenFramebuffersEXT(1, &textureFBOID);
   glBindFramebufferEXT(GL_FRAMEBUFFER, textureFBOID);
