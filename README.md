@@ -24,7 +24,8 @@ We are open to any change related to the design or to the implementation.
 There are choices we made that need to be discussed or re-considered, see [issues](#issues) and [roadmap](#roadmap).
 
 ### Status ###
-20/07/2015: Can play classic html5 videos and Youtube. It supports MSE without seeking for now like WebKitGTK.
+20/07/2015: Can play classic html5 videos and Youtube. It supports MSE without seeking for now like WebKitGTK.  
+05/10/2015: EME is working. Zerocopy too (dmabuf export from Media Process, EGLImage_dmabuf import from GPU Process).
 
 ``` bash
 # Progressive streaming:
@@ -44,9 +45,9 @@ http://www.w3schools.com/html/html5_video.asp
 ```
 
 ### List of modified and added files ###
-21/08/2015: (just to give an idea of the delta from official chromium/src)  
-53 files modified, 642 insertions(+), 13 deletions(-)  
-51 files added, 9187 insertions(+)  
+05/10/2015: (just to give an idea of the delta from official chromium/src)  
+79 files modified, 996 insertions(+), 23 deletions(-)  
+64 files added, 10474 insertions(+)  
 git diff --diff-filter=AM --stat sha-1 HEAD  
 
 ### Build ###
