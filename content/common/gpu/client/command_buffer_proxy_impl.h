@@ -116,7 +116,8 @@ class CommandBufferProxyImpl
 #if defined(USE_GSTREAMER)
   int32_t CreateEGLImage(size_t width,
                          size_t height,
-                         const std::vector<int32_t>& attributes);
+                         const std::vector<int32_t>& attributes,
+                         const std::vector<int32_t>& dmabuf_fds);
 #endif
 
   uint32 InsertSyncPoint() override;
