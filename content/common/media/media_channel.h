@@ -115,6 +115,7 @@ class MediaChannel : public IPC::Listener, public IPC::Sender {
                            int width,
                            int height,
                            unsigned texture_id,
+                           unsigned target,
                            const std::vector<int32_t>& name);
   void SendSourceSelected(int player_id);
   void SendDidAddSourceId(int player_id, const std::string& source_id);
