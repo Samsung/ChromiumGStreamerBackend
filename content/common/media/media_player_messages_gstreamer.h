@@ -139,10 +139,11 @@ IPC_MESSAGE_ROUTED0(MediaPlayerMsg_DidMediaPlayerPlay)
 IPC_MESSAGE_ROUTED0(MediaPlayerMsg_DidMediaPlayerPause)
 
 // The player is ready to use the current frame
-IPC_MESSAGE_ROUTED4(MediaPlayerMsg_SetCurrentFrame,
+IPC_MESSAGE_ROUTED5(MediaPlayerMsg_SetCurrentFrame,
                     int /* width */,
                     int /* height */,
                     unsigned /* texture_id */,
+                    unsigned /* target */,
                     std::vector<int32_t> /* name */)
 
 // The player has setup its source element.
