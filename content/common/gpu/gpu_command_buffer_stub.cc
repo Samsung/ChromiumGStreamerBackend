@@ -214,6 +214,9 @@ GpuCommandBufferStub::GpuCommandBufferStub(
       waiting_for_sync_point_(false),
       previous_processed_num_(0),
       preemption_flag_(preempt_by_flag),
+#if defined(USE_GSTREAMER)
+      dmabuf_fds_(3, 0),
+#endif
       active_url_(active_url) {
   active_url_hash_ = base::Hash(active_url.possibly_invalid_spec());
   FastSetActiveURL(active_url_, active_url_hash_);
@@ -291,6 +294,21 @@ bool GpuCommandBufferStub::OnMessageReceived(const IPC::Message& message) {
       return false;
     have_context = true;
   }
+
+#if defined(USE_GSTREAMER)
+  if (message.type() == GpuCommandBufferMsg_CreateEGLImage::ID) {
+    scoped_refptr<IPC::MessageAttachment> attachment;
+    base::PickleIterator iter(message);
+    if (iter.SkipBytes(68)) {
+      for (int i = 0; i < 3; ++i) {
+        if (message.ReadAttachment(&iter, &attachment))
+          dmabuf_fds_[i] = attachment->TakePlatformFile();
+        else
+          break;
+      }
+    }
+  }
+#endif
 
   // Always use IPC_MESSAGE_HANDLER_DELAY_REPLY for synchronous message handlers
   // here. This is so the reply can be delayed if the scheduler is unscheduled.
@@ -1122,7 +1140,8 @@ void GpuCommandBufferStub::OnCreateEGLImage(
   }
 
   scoped_refptr<gfx::GLImage> image =
-      channel()->CreateEGLImage(size, attributes);
+      channel()->CreateEGLImage(size, attributes, dmabuf_fds_);
+  dmabuf_fds_[0] = dmabuf_fds_[1] = dmabuf_fds_[2] = 0;
   if (!image.get()) {
     LOG(ERROR) << "channel()->CreateEGLImage failed.";
     return;
