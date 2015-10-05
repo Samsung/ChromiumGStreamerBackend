@@ -30,6 +30,9 @@
 #include "gpu/ipc/common/gpu_param_traits.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
+#if defined(USE_GSTREAMER) && defined(OS_POSIX)
+#include "ipc/ipc_platform_file_attachment_posix.h"
+#endif
 
 #if defined(OS_MACOSX)
 #include "gpu/ipc/client/gpu_process_hosted_ca_layer_tree_params.h"
@@ -555,7 +558,8 @@ uint32_t CommandBufferProxyImpl::CreateStreamTexture(uint32_t texture_id) {
 int32_t CommandBufferProxyImpl::CreateEGLImage(
     size_t width,
     size_t height,
-    const std::vector<int32_t>& attributes) {
+    const std::vector<int32_t>& attributes,
+    const std::vector<int32_t>& dmabuf_fds) {
   CheckLock();
   if (last_state_.error != gpu::error::kNoError)
     return -1;
@@ -565,8 +569,17 @@ int32_t CommandBufferProxyImpl::CreateEGLImage(
 
   int32 new_id = channel_->ReserveImageId();
 
-  if (!Send(new GpuCommandBufferMsg_CreateEGLImage(
-          route_id_, new_id, gfx::Size(width, height), attributes))) {
+  IPC::Message* msg = new GpuCommandBufferMsg_CreateEGLImage(
+      route_id_, new_id, gfx::Size(width, height), attributes);
+
+  for (size_t i = 0; i < dmabuf_fds.size(); ++i) {
+    bool write_ret = msg->WriteAttachment(
+        new IPC::internal::PlatformFileAttachment(dmabuf_fds[i]));
+    if (!write_ret)
+      return -1;
+  }
+
+  if (!Send(msg)) {
     return -1;
   }
 
