@@ -510,6 +510,7 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
   guint texture_id = 0;
   GstBuffer* buf = gst_sample_get_buffer(sample);
   GstCaps* caps = gst_sample_get_caps(sample);
+  guint target = 0;
 
   gst_video_info_from_caps(&v_info, caps);
 
@@ -542,11 +543,13 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
 
   samples_[texture_id] = gst_sample_ref(sample);
 
+  target = ((GstGLMemory*)(gst_buffer_peek_memory(buf, 0)))->tex_target;
+
   gpu::gles2::GLES2Interface* gl = ::gles2::GetGLContext();
 
   gpu::Mailbox mailbox;
   gl->GenMailboxCHROMIUM(mailbox.name);
-  gl->ProduceTextureDirectCHROMIUM(texture_id, GL_TEXTURE_2D, mailbox.name);
+  gl->ProduceTextureDirectCHROMIUM(texture_id, target, mailbox.name);
   gl->Flush();
 
   std::vector<int32_t> name(mailbox.name,
@@ -558,7 +561,7 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
   // In other words, media::VideoFrame::WrapNativeTexture has to be created
   // here.
   media_channel_->SendSetCurrentFrame(player_id_, v_info.width, v_info.height,
-                                      texture_id, name);
+                                      texture_id, target, name);
 
   gst_video_frame_unmap(&v_frame);
 
