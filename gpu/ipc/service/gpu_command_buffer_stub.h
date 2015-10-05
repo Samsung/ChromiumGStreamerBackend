@@ -252,6 +252,10 @@ class GPU_EXPORT GpuCommandBufferStub
 
   LatencyInfoCallback latency_info_callback_;
 
+#if defined(USE_GSTREAMER)
+  std::vector<int32> dmabuf_fds_;
+#endif
+
   GURL active_url_;
   size_t active_url_hash_;
 
