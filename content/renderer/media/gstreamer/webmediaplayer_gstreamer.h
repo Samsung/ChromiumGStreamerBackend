@@ -237,6 +237,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   void OnSetCurrentFrame(int width,
                          int height,
                          unsigned texture_id,
+                         unsigned target,
                          const std::vector<int32_t>& name);
   void OnMediaDurationChanged(const base::TimeDelta& duration);
   void OnMediaPlaybackCompleted();
