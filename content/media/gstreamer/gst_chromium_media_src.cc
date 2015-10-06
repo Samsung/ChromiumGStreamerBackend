@@ -151,7 +151,10 @@ static void chromiumMediaSrcFinalize(GObject* object) {
     priv->sources = NULL;
   }
 
-  g_free(priv->location);
+  if (priv->location) {
+    g_free(priv->location);
+    priv->location = NULL;
+  }
 
   GST_CALL_PARENT(G_OBJECT_CLASS, finalize, (object));
 }
@@ -325,7 +328,8 @@ static gboolean chromiumMediaSrcSetUri(GstURIHandler* handler,
 
   GST_OBJECT_LOCK(src);
   g_free(priv->location);
-  priv->location = 0;
+  priv->location = NULL;
+
   if (!uri) {
     GST_OBJECT_UNLOCK(src);
     return TRUE;
