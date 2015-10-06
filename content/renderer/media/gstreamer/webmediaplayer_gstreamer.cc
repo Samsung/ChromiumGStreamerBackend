@@ -677,22 +677,30 @@ void WebMediaPlayerGStreamer::OnSourceSelected() {
   client_->mediaSourceOpened(media_source_);
 }
 
+void WebMediaPlayerGStreamer::OnSourceDeleted(WebMediaSourceGStreamer* media_source) {
+  if (media_source_ == media_source)
+    media_source_ = nullptr;
+}
+
 void WebMediaPlayerGStreamer::OnAddSourceId(const std::string& id) {
   DVLOG(1) << __FUNCTION__;
 
-  media_source_->OnAddSourceId(id);
+  if (media_source_)
+    media_source_->OnAddSourceId(id);
 }
 
 void WebMediaPlayerGStreamer::OnRemoveSourceId(const std::string& id) {
   DVLOG(1) << __FUNCTION__;
 
-  media_source_->OnRemoveSourceId(id);
+  if (media_source_)
+    media_source_->OnRemoveSourceId(id);
 }
 
 void WebMediaPlayerGStreamer::OnInitSegmentReceived(const std::string& id) {
   DVLOG(1) << __FUNCTION__;
 
-  media_source_->OnInitSegmentReceived(id);
+  if (media_source_)
+    media_source_->OnInitSegmentReceived(id);
 }
 
 void WebMediaPlayerGStreamer::OnBufferedRangeUpdate(
@@ -705,7 +713,8 @@ void WebMediaPlayerGStreamer::OnBufferedRangeUpdate(
   for (auto& iter : raw_ranges)
     ranges.Add(base::TimeDelta(), iter);
 
-  media_source_->OnBufferedRangeUpdate(id, ranges);
+  if (media_source_)
+    media_source_->OnBufferedRangeUpdate(id, ranges);
 }
 
 void WebMediaPlayerGStreamer::OnTimestampOffsetUpdate(
@@ -713,7 +722,8 @@ void WebMediaPlayerGStreamer::OnTimestampOffsetUpdate(
     const base::TimeDelta& timestamp_offset) {
   DVLOG(1) << __FUNCTION__;
 
-  media_source_->OnTimestampOffsetUpdate(id, timestamp_offset);
+  if (media_source_)
+    media_source_->OnTimestampOffsetUpdate(id, timestamp_offset);
 }
 
 void WebMediaPlayerGStreamer::OnNeedKey(const std::string& system_id,
