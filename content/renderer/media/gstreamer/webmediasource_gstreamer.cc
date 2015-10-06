@@ -38,7 +38,9 @@ WebMediaSourceGStreamer::WebMediaSourceGStreamer(
   DCHECK(message_dispatcher_);
 }
 
-WebMediaSourceGStreamer::~WebMediaSourceGStreamer() {}
+WebMediaSourceGStreamer::~WebMediaSourceGStreamer() {
+  player_->OnSourceDeleted(this);
+}
 
 WebMediaSource::AddStatus WebMediaSourceGStreamer::addSourceBuffer(
     const blink::WebString& type,
