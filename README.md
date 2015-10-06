@@ -152,6 +152,8 @@ __
 ``` bash
 # GStreamer
 gstreamer >= 1.5.2 is required because of GstGL dependency. Required GstGL feature is not present in 1.5.1
+For EME tests to work a patch from https://bug705991.bugzilla-attachments.gnome.org/attachment.cgi?id=309139
+has to be applied manually in gst-plugins-good.
 GstPlayer: git clone https://github.com/sdroege/gst-player.git
 
 # clone official chromium repositories
