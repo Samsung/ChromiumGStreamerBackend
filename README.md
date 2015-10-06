@@ -193,6 +193,11 @@ ninja -C out/Release chrome chrome_sandbox -jN # if icecc -j60
 
 # Run with sandbox
 CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./out/Release/chrome http://www.w3schools.com/html/mov_bbb.ogg
+
+# Run with EME enabled
+Use additional flag to run EME tests: --enable-prefixed-encrypted-media
+For example:
+./out/Release/chrome --disable-media-sandbox --disable-setuid-sandbox --enable-prefixed-encrypted-media http://yt-dash-mse-test.commondatastorage.googleapis.com/unit-tests/2015.html
 ```
 
 ### Proxy ###
