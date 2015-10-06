@@ -252,6 +252,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   void OnPlayerPause();
 
   void OnSourceSelected();
+  void OnSourceDeleted(WebMediaSourceGStreamer*);
   void OnAddSourceId(const std::string& id);
   void OnRemoveSourceId(const std::string& id);
   void OnInitSegmentReceived(const std::string& id);
