@@ -263,9 +263,12 @@ ResultExpr MediaProcessPolicy::EvaluateSyscall(int sysno) const {
       return Allow();
 
     // Pulse audio, see pulsecore/core-utils.c::pa_make_secure_dir
+    case __NR_fchown:
+#if defined(__i386__) || defined(__arm__)
+    case __NR_fchown32:
+#endif
     case __NR_lstat:
     case __NR_mkdir:
-    case __NR_fchown:
       return Allow();
 
 // SECCOMP_RET_TRAP:
@@ -435,15 +438,14 @@ void MediaProcessPolicy::InitMediaBrokerProcess(
 
   // Pulse audio
   permissions.push_back(
-      BrokerFilePermission::ReadWriteCreateUnlinkRecursive(kDevShmPath));
+      BrokerFilePermission::ReadWriteCreateRecursive(kDevShmPath));
   permissions.push_back(
       BrokerFilePermission::ReadOnlyRecursive(kUsrLibPulseModulesPath));
   permissions.push_back(BrokerFilePermission::ReadOnlyRecursive(kEtcPulsePath));
-  permissions.push_back(
-      BrokerFilePermission::ReadWriteCreate(kDevRunUserPulse));
   permissions.push_back(BrokerFilePermission::ReadWriteCreateUnlinkRecursive(
       kDevRunUserPulsePath));
-
+  permissions.push_back(
+      BrokerFilePermission::ReadWriteCreate(kDevRunUserPulse));
   permissions.push_back(
       BrokerFilePermission::ReadOnlyRecursive(kHomePulsePath));
   permissions.push_back(
