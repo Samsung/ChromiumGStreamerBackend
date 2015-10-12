@@ -29,6 +29,19 @@ bool GLImageEGL::Initialize(EGLenum target,
     return false;
   }
 
+#if defined(USE_GSTREAMER)
+  dmabuf_fds_.clear();
+  for (size_t i = 0; i < 30; ++i) {
+    if (attrs[i] == EGL_DMA_BUF_PLANE0_FD_EXT ||
+        attrs[i] == EGL_DMA_BUF_PLANE1_FD_EXT ||
+        attrs[i] == EGL_DMA_BUF_PLANE2_FD_EXT) {
+      dmabuf_fds_.push_back(new base::ScopedFD(attrs[i + 1]));
+    } else if (attrs[i] == EGL_NONE) {
+      break;
+    }
+  }
+#endif
+
   return true;
 }
 
