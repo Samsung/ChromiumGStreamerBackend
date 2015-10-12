@@ -10,6 +10,11 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image.h"
 
+#if defined(USE_GSTREAMER)
+#include "base/files/scoped_file.h"
+#include "base/memory/scoped_vector.h"
+#endif
+
 namespace gl {
 
 class GL_EXPORT GLImageEGL : public GLImage {
@@ -46,6 +51,10 @@ class GL_EXPORT GLImageEGL : public GLImage {
   EGLImageKHR egl_image_;
   const gfx::Size size_;
   base::ThreadChecker thread_checker_;
+
+#if defined(USE_GSTREAMER)
+  ScopedVector<base::ScopedFD> dmabuf_fds_;
+#endif
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GLImageEGL);
