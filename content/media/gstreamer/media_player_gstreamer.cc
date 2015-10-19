@@ -622,6 +622,7 @@ void MediaPlayerGStreamer::AddSourceId(const std::string& source_id,
                                        const std::string& type,
                                        const std::vector<std::string>& codecs) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_source_);
 
   blink::WebMediaSource::AddStatus ret = chromiumMediaSrcAddSourceBufferId(
       CHROMIUM_MEDIA_SRC(media_source_), source_id, type, codecs);
@@ -644,22 +645,26 @@ void MediaPlayerGStreamer::RemoveSourceId(const std::string& source_id) {
 
 void MediaPlayerGStreamer::SetDuration(const base::TimeDelta& duration) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_source_);
   chromiumMediaSrcSetDuration(CHROMIUM_MEDIA_SRC(media_source_), duration);
 }
 
 void MediaPlayerGStreamer::MarkEndOfStream() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_source_);
   chromiumMediaSrcMarkEndOfStream(CHROMIUM_MEDIA_SRC(media_source_));
 }
 
 void MediaPlayerGStreamer::UnmarkEndOfStream() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_source_);
   chromiumMediaSrcUnmarkEndOfStream(CHROMIUM_MEDIA_SRC(media_source_));
 }
 
 void MediaPlayerGStreamer::SetSequenceMode(const std::string& source_id,
                                            bool sequence_mode) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_source_);
   chromiumMediaSrcSetSequenceMode(CHROMIUM_MEDIA_SRC(media_source_), source_id,
                                   sequence_mode);
 }
@@ -669,6 +674,7 @@ void MediaPlayerGStreamer::AppendData(
     const std::vector<unsigned char>& data,
     const std::vector<base::TimeDelta>& times) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_source_);
 
   base::TimeDelta timestamp_offset;
   chromiumMediaSrcAppendData(CHROMIUM_MEDIA_SRC(media_source_), source_id, data,
@@ -679,6 +685,8 @@ void MediaPlayerGStreamer::AppendData(
 }
 
 void MediaPlayerGStreamer::Abort(const std::string& source_id) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_source_);
   chromiumMediaSrcAbort(CHROMIUM_MEDIA_SRC(media_source_), source_id);
 }
 
@@ -686,6 +694,7 @@ void MediaPlayerGStreamer::SetGroupStartTimestampIfInSequenceMode(
     const std::string& source_id,
     const base::TimeDelta& timestamp_offset) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_source_);
   chromiumMediaSrcSetGroupStartTimestampIfInSequenceMode(
       CHROMIUM_MEDIA_SRC(media_source_), source_id, timestamp_offset);
 }
@@ -694,6 +703,7 @@ void MediaPlayerGStreamer::RemoveSegment(const std::string& source_id,
                                          const base::TimeDelta& start,
                                          const base::TimeDelta& end) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_source_);
   chromiumMediaSrcRemoveSegment(CHROMIUM_MEDIA_SRC(media_source_), source_id,
                                 start, end);
 }
