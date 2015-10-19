@@ -298,6 +298,12 @@ MediaPlayerGStreamer::~MediaPlayerGStreamer() {
 
   // 2. Destroy the pipeline. Note that some cleanup callbacks will be called later in this task runner.
   gst_object_unref(player_);
+  player_ = nullptr;
+
+  if (media_source_) {
+      gst_object_unref(media_source_);
+      media_source_ = nullptr;
+  }
 
   // 3. Clean up the context finally.
   {
