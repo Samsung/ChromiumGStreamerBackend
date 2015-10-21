@@ -50,6 +50,9 @@
 #include "content/common/set_process_title.h"
 #include "content/common/url_schemes.h"
 #include "content/gpu/in_process_gpu_thread.h"
+#if defined(USE_GSTREAMER)
+#include "content/media/in_process_media_thread.h"
+#endif
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/browser/content_browser_client.h"
@@ -72,6 +75,17 @@
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
 #include "gin/v8_initializer.h"
+#endif
+
+#if defined(USE_GSTREAMER)
+#include "content/browser/media/media_process_host.h"
+#endif
+#include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/utility_process_host_impl.h"
+#include "content/public/gpu/content_gpu_client.h"
+#include "content/public/plugin/content_plugin_client.h"
+#include "content/public/renderer/content_renderer_client.h"
+#include "content/public/utility/content_utility_client.h"
 #endif
 
 #if defined(OS_WIN)
@@ -362,6 +376,10 @@ static void RegisterMainThreadFactories() {
       CreateInProcessRendererThread);
   GpuProcessHost::RegisterGpuMainThreadFactory(
       CreateInProcessGpuThread);
+#if defined(USE_GSTREAMER)
+  MediaProcessHost::RegisterMediaMainThreadFactory(
+      CreateInProcessMediaThread);
+#endif
 #else
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kSingleProcess)) {
@@ -372,6 +390,12 @@ static void RegisterMainThreadFactories() {
     LOG(FATAL) <<
         "--in-process-gpu is not supported in chrome multiple dll browser.";
   }
+#if defined(USE_GSTREAMER)
+  if (command_line.HasSwitch(switches::kInProcessMedia)) {
+      LOG(FATAL) <<
+          "--in-process-media is not supported in chrome multiple dll browser.";
+  }
+#endif
 #endif  // !CHROME_MULTIPLE_DLL_BROWSER && !CHROME_MULTIPLE_DLL_CHILD
 }
 
