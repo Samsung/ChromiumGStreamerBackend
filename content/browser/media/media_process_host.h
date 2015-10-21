@@ -32,8 +32,10 @@ class BrowserChildProcessHostImpl;
 class GpuMessageFilter;
 class MediaMainThread;
 class RenderWidgetHelper;
+class InProcessChildThreadParams;
 
-typedef base::Thread* (*MediaMainThreadFactoryFunction)(const std::string& id);
+typedef base::Thread* (*MediaMainThreadFactoryFunction)(
+    const InProcessChildThreadParams&);
 
 class MediaProcessHost : public BrowserChildProcessHostDelegate,
                          public IPC::Sender,
