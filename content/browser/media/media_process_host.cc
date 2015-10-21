@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/child_process_host_impl.h"
+#include "content/common/in_process_child_thread_params.h"
 #include "content/common/resource_messages.h"
 #include "content/common/media/media_messages.h"
 #include "content/common/view_messages.h"
@@ -363,6 +364,7 @@ bool MediaProcessHost::Init() {
     return false;
 
   if (in_process_) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
     DCHECK(g_media_main_thread_factory);
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -370,8 +372,9 @@ bool MediaProcessHost::Init() {
         MediaDataManagerImpl::GetInstance();
     DCHECK(media_data_manager);
     media_data_manager->AppendMediaCommandLine(command_line);
-
-    in_process_media_thread_.reset(g_media_main_thread_factory(channel_id));
+    in_process_media_thread_.reset(
+            g_media_main_thread_factory(InProcessChildThreadParams(
+                channel_id, base::MessageLoop::current()->task_runner())));
     in_process_media_thread_->Start();
 
     OnProcessLaunched();  // Fake a callback that the process is ready.
