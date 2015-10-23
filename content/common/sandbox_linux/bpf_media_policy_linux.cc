@@ -20,6 +20,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "content/common/sandbox_linux/sandbox_bpf_base_policy_linux.h"
 #include "content/common/sandbox_linux/sandbox_seccomp_bpf_linux.h"
@@ -378,6 +379,27 @@ bool MediaProcessPolicy::PreSandboxHook() {
   return true;
 }
 
+static void splitAndAddReadOnlyPermission(const char* path,
+    const std::string& delimiter,
+    std::vector<BrokerFilePermission>& permissions)
+{
+  if (path) {
+    std::vector<std::string> results;
+    base::SplitStringUsingSubstr(path, delimiter, &results);
+    for (auto it = results.begin(); it != results.end(); ++it) {
+      if (!it->empty()) {
+        if (*(it->rbegin()) != '/') {
+          permissions.push_back(
+              BrokerFilePermission::ReadOnly(*it));
+          it->append("/");
+        }
+        permissions.push_back(
+            BrokerFilePermission::ReadOnlyRecursive(*it));
+      }
+    }
+  }
+}
+
 void MediaProcessPolicy::InitMediaBrokerProcess(
     sandbox::bpf_dsl::Policy* (*broker_sandboxer_allocator)(void),
     const std::vector<BrokerFilePermission>& permissions_extra) {
@@ -387,6 +409,14 @@ void MediaProcessPolicy::InitMediaBrokerProcess(
 #if !defined(NDEBUG)
   // Core dumps. Can be chromium/src too. Use ulimit -c unlimited.
   static const char kVarCrashPath[] = "/var/crash/";
+#endif
+
+#if !defined(OFFICIAL_BUILD)
+  // Gst plugins path
+  static const char* kGstPluginPath = getenv("GST_PLUGIN_PATH");
+  static const char* kGstPluginScanner = getenv("GST_PLUGIN_SCANNER");
+  static const char* kGstRegistry = getenv("GST_REGISTRY");
+  static const char* kLdLibraryPath = getenv("LD_LIBRARY_PATH");
 #endif
 
   // Pulse audio.
@@ -434,6 +464,16 @@ void MediaProcessPolicy::InitMediaBrokerProcess(
 #if !defined(NDEBUG)
   permissions.push_back(
       BrokerFilePermission::ReadWriteCreateRecursive(kVarCrashPath));
+#endif
+
+#if !defined(OFFICIAL_BUILD)
+  if (kGstRegistry)
+    permissions.push_back(
+        BrokerFilePermission::ReadOnly(kGstRegistry));
+
+  splitAndAddReadOnlyPermission(kGstPluginPath, ":", permissions);
+  splitAndAddReadOnlyPermission(kLdLibraryPath, ":", permissions);
+  splitAndAddReadOnlyPermission(kGstPluginScanner, ":", permissions);
 #endif
 
   // Pulse audio
