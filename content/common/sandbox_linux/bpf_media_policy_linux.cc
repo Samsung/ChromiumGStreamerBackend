@@ -251,8 +251,6 @@ ResultExpr MediaProcessPolicy::EvaluateSyscall(int sysno) const {
     // We also hit this on the linux_chromeos bot but don't yet know what
     // weird flags were involved.
     case __NR_mprotect:
-    // TODO(jln): restrict prctl.
-    case __NR_prctl:
 #if defined(__i386__) || defined(__arm__) || defined(__mips__)
     case __NR_stat64:
     case __NR_statfs64:
