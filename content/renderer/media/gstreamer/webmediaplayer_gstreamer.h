@@ -37,6 +37,7 @@
 #include "third_party/WebKit/public/platform/WebContentDecryptionModuleResult.h"
 #include "third_party/WebKit/public/platform/WebMediaPlayer.h"
 #include "third_party/WebKit/public/platform/WebMediaPlayerClient.h"
+#include "third_party/WebKit/public/platform/WebSetSinkIdCallbacks.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -150,8 +151,9 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   virtual void seek(double seconds);
   virtual void setRate(double rate);
   virtual void setVolume(double volume);
-  virtual void setSinkId(const blink::WebString& device_id,
-                         WebSetSinkIdCB* web_callbacks);
+  virtual void setSinkId(const blink::WebString& sink_id,
+                         const blink::WebSecurityOrigin& security_origin,
+                         blink::WebSetSinkIdCallbacks* web_callback);
   virtual void setPreload(blink::WebMediaPlayer::Preload preload);
   virtual blink::WebTimeRanges buffered() const;
   virtual blink::WebTimeRanges seekable() const;
