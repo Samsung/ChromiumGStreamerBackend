@@ -856,10 +856,13 @@ void WebMediaPlayerGStreamer::setVolume(double volume) {
   NOTIMPLEMENTED();
 }
 
-void WebMediaPlayerGStreamer::setSinkId(const blink::WebString& device_id,
-                                        WebSetSinkIdCB* web_callbacks) {
+void WebMediaPlayerGStreamer::setSinkId(
+    const blink::WebString& sink_id,
+    const blink::WebSecurityOrigin& security_origin,
+    blink::WebSetSinkIdCallbacks* web_callback) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  NOTIMPLEMENTED();
+  scoped_ptr<blink::WebSetSinkIdCallbacks> callback(web_callback);
+  callback->onError(blink::WebSetSinkIdError::NotSupported);
 }
 
 #define STATIC_ASSERT_MATCHING_ENUM(webkit_name, chromium_name)          \
