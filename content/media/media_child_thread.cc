@@ -143,7 +143,7 @@ MediaChildThread::CreateSharedContextProvider() {
   // Created in the main thread but likely to be bind in another thread.
   DCHECK(IsMainThread());
 
-  if (!provider_.get() || provider_->DestroyedOnMainThread()) {
+  if (!provider_.get()) {
     provider_ = NULL;
 
     if (!provider_.get()) {
@@ -228,17 +228,8 @@ CreateCommandBufferResult MediaChildThread::CreateViewCommandBuffer(
     int32 surface_id,
     const GPUCreateCommandBufferConfig& init_params,
     int32 route_id) {
-  TRACE_EVENT1("media", "MediaChildThread::CreateViewCommandBuffer",
-               "surface_id", surface_id);
-
-  CreateCommandBufferResult result = CREATE_COMMAND_BUFFER_FAILED;
-  IPC::Message* message = new GpuHostMsg_CreateViewCommandBuffer(
-      surface_id, init_params, route_id, &result);
-
-  // Allow calling this from the compositor thread.
-  thread_safe_sender()->Send(message);
-
-  return result;
+  NOTREACHED();
+  return CREATE_COMMAND_BUFFER_FAILED;
 }
 
 class MessagePumpGlibLocal : public base::MessagePumpGlib {
