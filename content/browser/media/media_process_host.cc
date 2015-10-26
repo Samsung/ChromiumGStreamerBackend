@@ -305,7 +305,7 @@ void MediaProcessHost::CreateGpuMessageFilter() {
 
   if (!gpu_message_filter_) {
     gpu_message_filter_ =
-        new GpuMessageFilter(gpu_client_id_, widget_helper_.get());
+        new GpuMessageFilter(gpu_client_id_);
     process_->AddFilter(gpu_message_filter_);
   }
 }
