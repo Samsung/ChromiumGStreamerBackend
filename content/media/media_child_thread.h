@@ -14,6 +14,7 @@
 #include "base/memory/scoped_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/child/blink_platform_impl.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/gpu/client/gpu_channel_host.h"
 #include "content/common/gpu/gpu_result_codes.h"
@@ -125,6 +126,8 @@ class MediaChildThread : public ChildThreadImpl, public GpuChannelHostFactory {
   scoped_refptr<base::SingleThreadTaskRunner> gl_task_runner_;
 
   scoped_refptr<cc::ContextProvider> provider_;
+
+  scoped_ptr<content::BlinkPlatformImpl> blink_platform_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaChildThread);
 };
