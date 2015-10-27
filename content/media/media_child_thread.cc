@@ -33,6 +33,7 @@
 #include "ipc/ipc_sync_message_filter.h"
 #include "media/base/audio_hardware_config.h"
 #include "media/base/media.h"
+#include "public/web/WebKit.h"
 
 using base::ThreadRestrictions;
 
@@ -79,8 +80,10 @@ MediaChildThread::MediaChildThread(bool dead_on_arrival,
     : ChildThreadImpl(GetOptions()),
       dead_on_arrival_(dead_on_arrival),
       deferred_messages_(deferred_messages),
-      in_browser_process_(false) {
+      in_browser_process_(false),
+      blink_platform_(new content::BlinkPlatformImpl) {
   g_thread_safe_sender.Get() = thread_safe_sender();
+  blink::initializeWithoutV8(blink_platform_.get());
 }
 
 MediaChildThread::MediaChildThread(const InProcessChildThreadParams& params)
@@ -88,7 +91,8 @@ MediaChildThread::MediaChildThread(const InProcessChildThreadParams& params)
                           .InBrowserProcess(params)
                           .Build()),
       dead_on_arrival_(false),
-      in_browser_process_(true) {
+      in_browser_process_(true),
+      blink_platform_(nullptr) {
   DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kSingleProcess) ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -96,7 +100,11 @@ MediaChildThread::MediaChildThread(const InProcessChildThreadParams& params)
   g_thread_safe_sender.Get() = thread_safe_sender();
 }
 
-MediaChildThread::~MediaChildThread() {}
+MediaChildThread::~MediaChildThread()
+{
+  if (blink_platform_)
+      blink::shutdownWithoutV8();
+}
 
 void MediaChildThread::Shutdown() {
   ChildThreadImpl::Shutdown();
