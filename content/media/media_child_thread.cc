@@ -270,7 +270,7 @@ void MediaChildThread::OnInitialize() {
 
   if (dead_on_arrival_) {
     LOG(ERROR) << "Exiting media process due to errors during initialization";
-    base::MessageLoop::current()->Quit();
+    base::MessageLoop::current()->QuitWhenIdle();
     return;
   }
 
