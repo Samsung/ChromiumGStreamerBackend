@@ -1,0 +1,146 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Keep in sync with targets in remoting/remoting_client.gypi.
+
+import("//build/config/features.gni")
+import("//remoting/webapp/build_template.gni")
+import("//remoting/webapp/files.gni")
+
+# GYP version: remoting/remoting_client:remoting_credits
+action("credits") {
+  about_credits_file = "$target_gen_dir/credits.html"
+  script = "//tools/licenses.py"
+
+  inputs = [
+    "base/html/credits.tmpl",
+    "base/html/credits_entry.tmpl",
+  ]
+
+  outputs = [
+    about_credits_file,
+  ]
+
+  args = [
+    "credits",
+    rebase_path(about_credits_file, root_build_dir),
+    "--file-template",
+    rebase_path("base/html/credits.tmpl", root_build_dir),
+    "--entry-template",
+    rebase_path("base/html/credits_entry.tmpl", root_build_dir),
+  ]
+}
+
+desktop_remoting_webapp("webapp") {
+  webapp_type = "desktop"
+  output_dir = "$root_build_dir/remoting/remoting-webapp.v2"
+  zip_path = "$root_build_dir/remoting/remoting-webapp.v2.zip"
+  extra_files = [
+    "crd/remoting_client_pnacl.nmf.jinja2",
+    # TODO(garykac): Get correct path to this.
+    #"<(PRODUCT_DIR)/remoting_client_plugin_newlib.pexe",
+  ]
+}
+
+app_remoting_webapp("ar_sample_app") {
+  app_key = "Sample_App"
+  app_id = "ljacajndfccfgnfohlgkdphmbnpkjflk"
+  app_client_id = "sample_client_id"
+  app_vendor = ""
+  app_name = "sample_app"
+  app_fullname = "App Remoting Client"
+  app_description = "App Remoting client"
+  app_capabilities = [ "GOOGLE_DRIVE" ]
+  manifest_key = "remotingdevbuild"
+}
+
+app_remoting_shared_module("ar_shared_module") {
+  #app_client_id = "sample_client_id"
+  app_name = "shared_module"
+}
+
+# GYP version: remoting/remoting_tests.gypi:remoting_browser_test_resources
+copy("browser_test_resources") {
+  sources = remoting_webapp_browsertest_main_html_extra_files
+  outputs = [
+    "$root_out_dir/remoting/browser_test_resources/{{source_file_part}}",
+  ]
+}
+
+remoting_unit_test_out_dir = "$root_out_dir/remoting/unittests"
+
+group("unit_tests") {
+  data_deps = [
+    ":blanketjs",
+    ":build_unittest",
+    ":js_files",
+    ":qunit",
+    ":sinonjs",
+  ]
+}
+
+copy("js_files") {
+  # This list corresponds to webapp_js_files in remoting_webapp_unittests
+  # target in GYP.
+  sources = webapp_js_files + remoting_webapp_unittests_all_files
+  outputs = [
+    "$remoting_unit_test_out_dir/{{source_file_part}}",
+  ]
+}
+
+copy("blanketjs") {
+  sources = [
+    "//third_party/blanketjs/src/blanket.js",
+    "//third_party/blanketjs/src/qunit_adapter.js",
+  ]
+  outputs = [
+    "$remoting_unit_test_out_dir/blanketjs/{{source_file_part}}",
+  ]
+}
+
+copy("sinonjs") {
+  sources = [
+    "//third_party/sinonjs/src/sinon-qunit.js",
+    "//third_party/sinonjs/src/sinon.js",
+  ]
+  outputs = [
+    "$remoting_unit_test_out_dir/sinonjs/{{source_file_part}}",
+  ]
+}
+
+copy("qunit") {
+  sources = [
+    "//third_party/qunit/src/browser_test_harness.js",
+    "//third_party/qunit/src/qunit.css",
+    "//third_party/qunit/src/qunit.js",
+  ]
+  outputs = [
+    "$remoting_unit_test_out_dir/qunit/{{source_file_part}}",
+  ]
+}
+
+action("build_unittest") {
+  script = "build-html.py"
+  outputs = [
+    "$remoting_unit_test_out_dir/unittests.html",
+  ]
+
+  # Create a file that contains a list of all the JavaScript files needed
+  # to build the unit test page. This is needed to avoid problems on platforms
+  # that limit the size of a command line.
+  file_list = "$target_gen_dir/remoting_webapp_unittest_files.txt"
+  files = rebase_path(remoting_webapp_unittests_all_js_files, root_build_dir)
+  write_file(file_list, files)
+
+  args =
+      rebase_path(outputs, root_build_dir) + [
+        rebase_path(remoting_webapp_unittests_template_main, root_build_dir),
+        "--exclude-js",
+      ] +
+      rebase_path(remoting_webapp_unittests_exclude_js_files, root_build_dir) +
+      [
+        "--js-list-file",
+        rebase_path(file_list, root_build_dir),
+      ] + [ "--instrument-js" ] + rebase_path(webapp_js_files, root_build_dir)
+}

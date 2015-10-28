@@ -1,0 +1,87 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/repack.gni")
+
+source_set("mus") {
+  sources = [
+    "aura_init.cc",
+    "aura_init.h",
+    "input_method_mus.cc",
+    "input_method_mus.h",
+    "native_widget_mus.cc",
+    "native_widget_mus.h",
+    "native_widget_view_manager.cc",
+    "native_widget_view_manager.h",
+    "surface_binding.cc",
+    "surface_binding.h",
+    "surface_context_factory.cc",
+    "surface_context_factory.h",
+    "window_manager_connection.cc",
+    "window_manager_connection.h",
+    "window_tree_host_mus.cc",
+    "window_tree_host_mus.h",
+  ]
+
+  public_deps = [
+    ":resources",
+    "//components/mus/public/cpp",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//base/third_party/dynamic_annotations",
+    "//cc",
+    "//cc/surfaces",
+    "//components/mus/gles2:lib",
+    "//components/mus/public/cpp",
+    "//components/mus/public/interfaces",
+    "//components/resource_provider/public/cpp",
+    "//components/resource_provider/public/interfaces",
+    "//skia",
+    "//mojo/application/public/cpp",
+    "//mojo/application/public/interfaces",
+    "//mojo/converters/geometry",
+    "//mojo/converters/ime",
+    "//mojo/converters/input_events",
+    "//mojo/converters/network",
+    "//mojo/converters/surfaces",
+    "//third_party/mojo/src/mojo/public/c/gles2",
+    "//third_party/mojo/src/mojo/public/cpp/bindings",
+    "//third_party/icu",
+    "//ui/aura",
+    "//ui/compositor",
+    "//ui/events",
+    "//ui/events:events_base",
+    "//ui/gl",
+    "//ui/mojo/ime:interfaces_cpp_sources",
+    "//ui/mojo/init",
+    "//ui/views",
+    "//ui/wm",
+  ]
+
+  data_deps = [
+    "//components/resource_provider",
+  ]
+
+  if (is_linux && !is_android) {
+    deps += [ "//components/font_service/public/cpp" ]
+    data_deps += [ "//components/font_service" ]
+  }
+}
+
+repack("resources") {
+  sources = [
+    "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    "$root_gen_dir/ui/views/resources/views_resources_100_percent.pak",
+  ]
+  output = "$root_out_dir/views_mus_resources.pak"
+  deps = [
+    "//ui/strings",
+    "//ui/resources",
+    "//ui/views/resources",
+  ]
+}

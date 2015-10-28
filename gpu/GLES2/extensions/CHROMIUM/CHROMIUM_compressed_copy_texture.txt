@@ -1,0 +1,131 @@
+Name
+
+    CHROMIUM_copy_compressed_texture
+
+Name Strings
+
+    GL_CHROMIUM_copy_compressed_texture
+
+Version
+
+    Last Modifed Date: August 5, 2015
+
+Dependencies
+
+    OpenGL ES 2.0 is required.
+
+    GL_AMD_compressed_ATC_texture, GL_ATI_texture_compression_atitc,
+    GL_EXT_texture_compression_dxt1, GL_ANGLE_texture_compression_dxt5,
+    GL_EXT_texture_compression_s3tc and GL_OES_compressed_ETC1_RGB8_texture
+    affects the definition of this extension.
+
+Overview
+
+    This extension provides functionality for copying compressed textures. It
+    adds a new function glCompressedCopyTextureCHROMIUM that works similarily
+    to glCopyTextureCHROMIUM, but for compressed textures.
+
+    Which compressed texture formats that this extension supports depends on
+    the supported texture compression formats of the host GPU.
+
+Issues
+
+    glCompressedCopyTextureCHROMIUM will first try to copy into a compressed
+    texture of the same format as the source texture. If unsucessful, the
+    destination texture format will be changed to GL_RGBA and the texture will
+    be stored uncompressed.
+
+New Procedures and Functions
+
+    The command
+
+        void glCompressedCopyTextureCHROMIUM (GLenum target, GLenum source_id,
+                                              GLenum dest_id)
+
+    Copies the contents of a compressed texture referred to by <source_id> to
+    <dest_id> texture.
+
+    Texture level 0 is copied from the source image to level 0 of the
+    destination texture.
+
+    The internal format of the source texture must be one of the following
+    symbolic constants: GL_ATC_RGB_AMD, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD,
+    GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+    GL_ETC1_RGB8_OES
+
+    The destination texture will be created or replaced with the same internal
+    format as the source texture.
+
+    <target> uses the same parameters as TexImage2D.
+
+    INVALID_OPERATION is generated if internal format of source texture is not
+    one of the valid formats described above.
+
+    INVALID_OPERATION is generated if destination texture is immutable.
+
+    INVALID_VALUE is generated if <source_id> or <dest_id> are not valid texture
+    objects.
+
+    INVALID_VALUE is generated if textures corresponding to <dest_id> have not
+    been bound as GL_TEXTURE_2D object.
+
+    INVALID_VALUE is generated if level 0 of the source texture is not defined.
+
+    The command
+
+        void glCompressedCopySubTextureCHROMIUM (GLenum target,
+                                                 GLenum source_id,
+                                                 GLenum dest_id,
+                                                 GLint xoffset, GLint yoffset,
+                                                 GLint x, GLint y,
+                                                 GLsizei width, GLsizei height)
+
+    Copies the sub contents of texture referred to by <source_id> to <dest_id>
+    texture without redefining <dest_id> texture.
+
+    <target> uses the same parameters as TexImage2D.
+
+    <xoffset> and <yoffset> specify a texel offset in the x and y direction
+    respectively within the destination texture.
+
+    <x> and <y> specify a texel offset in the x and y direction respectively
+    within the source texture.
+
+    <width> specifies the width of the texture subimage.
+
+    <height> specifies the width of the texture subimage.
+
+    INVALID_OPERATION is generated if internal format of source texture is not
+    one of the following: GL_ATC_RGB_AMD, GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD,
+    GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+    GL_ETC1_RGB8_OES
+
+    INVALID_VALUE is generated if <target> is not GL_TEXTURE_2D.
+
+    INVALID_OPERATION is generated if the destination texture has not been
+    defined.
+
+    INVALID_VALUE is generated if level 0 of the source texture or
+    the destination texture is not defined.
+
+    INVALID_VALUE is generated if <xoffset> < 0 , or <yoffset> < 0.
+
+    INVALID_VALUE is generated if (<xoffset> + <width>) > dest_width,
+    or (<yoffset> + <height>) > dest_height.
+
+Errors
+
+    None.
+
+New Tokens
+
+    None.
+
+New State
+
+    None.
+
+Revision History
+
+    15/6/2015    Documented the extension.
+    5/8/2015     Added glCompressedCopySubTextureCHROMIUM.

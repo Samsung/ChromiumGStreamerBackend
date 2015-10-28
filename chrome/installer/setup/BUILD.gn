@@ -1,0 +1,85 @@
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+if (is_win) {
+  executable("setup") {
+    sources = [
+      "setup.ico",
+      "setup.rc",
+      "setup_exe_version.rc.version",
+      "setup_main.cc",
+      "setup_main.h",
+      "setup_resource.h",
+      "uninstall.cc",
+      "uninstall.h",
+    ]
+
+    configs -= [ "//build/config/win:console" ]
+    configs += [ "//build/config/win:windowed" ]
+
+    deps = [
+      ":lib",
+      "//build/config/sanitizers:deps",
+      "//chrome/common:version_header",
+    ]
+  }
+
+  source_set("lib") {
+    sources = [
+      "app_launcher_installer.cc",
+      "app_launcher_installer.h",
+      "archive_patch_helper.cc",
+      "archive_patch_helper.h",
+      "install.cc",
+      "install.h",
+      "install_worker.cc",
+      "install_worker.h",
+      "setup_constants.cc",
+      "setup_constants.h",
+      "setup_util.cc",
+      "setup_util.h",
+      "update_active_setup_version_work_item.cc",
+      "update_active_setup_version_work_item.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//breakpad:breakpad_handler",
+      "//chrome/common:constants",
+      "//chrome/installer/util",
+      "//chrome_elf:constants",
+      "//courgette:courgette_lib",
+      "//rlz:rlz_lib",
+      "//third_party/bspatch",
+      "//third_party/zlib",
+    ]
+  }
+
+  # This test covers the mini installer and setup tests.
+  test("setup_unittests") {
+    sources = [
+      "archive_patch_helper_unittest.cc",
+      "install_unittest.cc",
+      "install_worker_unittest.cc",
+      "run_all_unittests.cc",
+      "setup_util_unittest.cc",
+      "setup_util_unittest.h",
+      "update_active_setup_version_work_item_unittest.cc",
+    ]
+
+    deps = [
+      ":lib",
+      "//base",
+      "//base:i18n",
+      "//base/test:test_support",
+      "//chrome/installer/mini_installer:unit_tests",
+      "//chrome/installer/util:strings",
+      "//chrome/installer/util:util",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

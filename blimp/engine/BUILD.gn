@@ -1,0 +1,104 @@
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build/config/ui.gni")
+import("//tools/grit/repack.gni")
+import("//tools/grit/grit_rule.gni")
+
+repack("pak") {
+  sources = [
+    "$root_gen_dir/blink/public/resources/blink_image_resources_100_percent.pak",
+    "$root_gen_dir/blink/public/resources/blink_resources.pak",
+    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
+    "$root_gen_dir/content/app/strings/content_strings_en-US.pak",
+    "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
+    "$root_gen_dir/content/content_resources.pak",
+    "$root_gen_dir/net/net_resources.pak",
+    "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
+    "$root_gen_dir/ui/resources/webui_resources.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+  ]
+
+  deps = [
+    "//content:resources",
+    "//content/app/resources",
+    "//content/app/strings",
+    "//content/browser/tracing:resources",
+    "//net:net_resources",
+    "//third_party/WebKit/public:image_resources",
+    "//third_party/WebKit/public:resources",
+    "//ui/resources",
+    "//ui/strings",
+  ]
+
+  if (toolkit_views) {
+    deps += [ "//ui/views/resources" ]
+    sources +=
+        [ "$root_gen_dir/ui/views/resources/views_resources_100_percent.pak" ]
+  }
+
+  output = "$root_out_dir/blimp_engine.pak"
+}
+
+if (is_linux) {
+  executable("blimp_engine_app") {
+    sources = [
+      "app/blimp_main.cc",
+    ]
+
+    deps = [
+      ":pak",
+      "//blimp/engine/app",
+    ]
+  }
+
+  group("blimp_engine") {
+    data_deps = [
+      ":blimp_engine_app",
+      ":pak",
+      "//sandbox/linux:chrome_sandbox",
+
+      # TODO(maniscalco): Get rid of osmesa once we no longer depend on X
+      # (crbug.com/540932, crbug.com/541203).
+      "//third_party/mesa:osmesa",
+    ]
+  }
+
+  # Builds and bundles the engine into a tarball that can be used to build a
+  # Docker image.
+  action("bundle_blimp_engine") {
+    script = "//blimp/tools/bundle-engine.py"
+    target = "//blimp/engine:blimp_engine"
+
+    # These form the arguments to the script.
+    build_dir = rebase_path(root_out_dir)
+    dockerfile = rebase_path("//blimp/engine/Dockerfile")
+    manifest = rebase_path("//blimp/engine/engine-manifest.txt")
+    bundle = "$root_out_dir/blimp_engine_bundle.tar"
+
+    deps = [
+      target,
+    ]
+    inputs = [
+      dockerfile,
+      manifest,
+    ]
+    outputs = [
+      bundle,
+    ]
+    args = [
+      "--build-dir",
+      build_dir,
+      "--dockerfile",
+      dockerfile,
+      "--manifest",
+      manifest,
+      "--output",
+      rebase_path(bundle),
+    ]
+  }
+}

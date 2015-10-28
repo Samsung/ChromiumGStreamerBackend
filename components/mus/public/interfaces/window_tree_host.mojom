@@ -1,0 +1,48 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mus.mojom;
+
+import "components/mus/public/interfaces/window_manager.mojom";
+import "components/mus/public/interfaces/window_tree.mojom";
+import "ui/mojo/events/input_event_constants.mojom";
+import "ui/mojo/events/input_event_matcher.mojom";
+import "ui/mojo/events/input_events.mojom";
+import "ui/mojo/events/input_key_codes.mojom";
+import "ui/mojo/geometry/geometry.mojom";
+
+// WindowTreeHost encapsulates a unique underlying platform window, with a tree
+// of windows.
+interface WindowTreeHost {
+  // Sets the size of the platform window.
+  SetSize(mojo.Size size);
+
+  // Sets a title string to be displayed on the platform window.
+  SetTitle(string title);
+
+  // Add and remove accelerators. When accelerators are registered the
+  // WindowTreeHostClient receives the event via OnAccelerator() rather than the
+  // target window. The id is defined by the client and can be used to more
+  // easily identify the accelerator's action.
+  AddAccelerator(uint32 id, mojo.EventMatcher matcher);
+  RemoveAccelerator(uint32 id);
+
+  // If set pointer events in the non-client area of child windows of
+  // |window_id| start a move or resize. The move is handled entirely by the
+  // window service. Clients see the changes by way of the bounds of the
+  // window changing (WindowTreeClient::OnWindowBoundsChanged()).
+  EnableWindowDraggingForChildren(uint32 window_id);
+};
+
+interface WindowTreeHostClient {
+  // An accelerator registered via AddAccelerator() has been triggered.
+  OnAccelerator(uint32 id, mojo.Event event);
+};
+
+interface WindowTreeHostFactory {
+  CreateWindowTreeHost(WindowTreeHost& window_tree_host,
+                       WindowTreeHostClient? host_client,
+                       WindowTreeClient tree_client,
+                       WindowManager? window_manager);
+};

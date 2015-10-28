@@ -1,0 +1,159 @@
+{
+    "AutofillClassifier": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "AutofillFieldMetadata": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "AutofillProfileOrderByFrecency": [
+        {
+            "group_name": "EnabledLimitTo3",
+            "params": {
+                "limit": "3"
+            }
+        }
+    ],
+    "AutomaticTabDiscarding": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "CaptivePortalInterstitial": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "ChromotingQUIC": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "EnableGoogleCachedCopyTextExperiment": [
+        {
+            "group_name": "Button"
+        }
+    ],
+    "ExtensionActionRedesign": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "ExtensionDeveloperModeWarning": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "ExtensionInstallVerification": [
+        {
+            "group_name": "Enforce"
+        }
+    ],
+    "InstanceID": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "IntelligentSessionRestore": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "MaterialDesignDownloads": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "QUIC": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "alternate_protocol_probability_threshold": "0.01"
+            }
+        }
+    ],
+    "RefreshTokenDeviceId": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "ReportCertificateErrors": [
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "1.0"
+            }
+        },
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "-1.0"
+            }
+        },
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "0.0"
+            }
+        },
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "abcdef"
+            }
+        },
+        {
+            "group_name": "DontShowAndDontSend"
+        }
+    ],
+    "SafeBrowsingReportPhishingErrorLink": [
+        {
+            "group_name": "Enabled"
+        },
+        {
+            "group_name": "Control"
+        },
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "SdchPersistence": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "SyncHttpContentCompression": [
+        {
+            "group_name": "Enabled"
+        },
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "TabSyncByRecency": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "UseDelayAgnosticAEC": [
+        {
+            "group_name": "DefaultEnabled"
+        }
+    ],
+    "VarationsServiceControl": [
+        {
+            "group_name": "Interval_30min",
+            "params": {
+                "fetch_period_min": "30"
+            }
+        }
+    ],
+    "WebRTC-PeerConnectionDTLS1.2": [
+        {
+            "group_name": "Enabled"
+        }
+    ]
+}

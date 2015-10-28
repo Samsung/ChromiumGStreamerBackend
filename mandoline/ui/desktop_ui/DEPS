@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/mus",
+  "+components/web_view/public",
+  "+mandoline/services",
+  "+mojo/application",
+  "+mojo/common",
+  "+mojo/converters",
+  "+mojo/runner",
+  "+mojo/services/network/public",
+  "+mojo/services/tracing/public",
+  "+third_party/mojo/src/mojo/public",
+  "+third_party/mojo_services",
+  "+ui",
+]

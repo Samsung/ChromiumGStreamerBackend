@@ -1,0 +1,5 @@
+include_rules = [
+  "+device/core",
+  "+device/devices_app/usb/public",
+  "+device/usb",
+]

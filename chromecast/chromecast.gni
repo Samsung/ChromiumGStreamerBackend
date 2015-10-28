@@ -1,0 +1,21 @@
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This args block should contain arguments used within the //chromecast
+# directory. Arguments which are used in other Chrome components should
+# be instead declared in //build/config/chromecast_build.gni.
+declare_args() {
+  # chromecast_branding is used to include or exclude Google-branded components.
+  # Set it to "public" for a Chromium build.
+  chromecast_branding = "public"
+
+  # True if Chromecast build is targetted for linux desktop.
+  is_chromecast_desktop_build = is_linux && target_cpu != "arm"
+
+  # Use Playready CDMs.
+  use_playready = false
+
+  # Set this true to perform an audio-only build.
+  disable_display = false
+}

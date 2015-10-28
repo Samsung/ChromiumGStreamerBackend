@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/crx_file",
+  "+courgette",
+  "+crypto",
+  "+libxml",
+  "+net",
+  "+ui/base/win",
+  "+third_party/libxml",
+  "+third_party/zlib",
+]

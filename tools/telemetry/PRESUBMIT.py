@@ -1,0 +1,93 @@
+# Copyright 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+
+def _CommonChecks(input_api, output_api):
+  results = []
+
+  # TODO(nduca): This should call update_docs.IsUpdateDocsNeeded().
+  # Disabled due to crbug.com/255326.
+  if False:
+    update_docs_path = input_api.os_path.join(
+      input_api.PresubmitLocalPath(), 'update_docs')
+    assert input_api.os_path.exists(update_docs_path)
+    results.append(output_api.PresubmitError(
+      'Docs are stale. Please run:\n' +
+      '$ %s' % input_api.os_path.abspath(update_docs_path)))
+
+  pylint_checks = input_api.canned_checks.GetPylint(
+    input_api, output_api, extra_paths_list=_GetPathsToPrepend(input_api),
+    pylintrc='pylintrc')
+
+  results.extend(_CheckNoMoreUsageOfDeprecatedCode(
+    input_api, output_api, deprecated_code='GetChromiumSrcDir()',
+    crbug_number=511332))
+  results.extend(input_api.RunTests(pylint_checks))
+  return results
+
+
+def _CheckNoMoreUsageOfDeprecatedCode(
+    input_api, output_api, deprecated_code, crbug_number):
+  results = []
+  # These checks are not perfcet but should be good enough for most of our
+  # usecases.
+  def _IsAddedLine(line):
+    return line.startswith('+') and not line.startswith('+++ ')
+  def _IsRemovedLine(line):
+    return line.startswith('-') and not line.startswith('--- ')
+
+  presubmit_dir = input_api.os_path.join(
+      input_api.PresubmitLocalPath(), 'PRESUBMIT.py')
+
+  added_calls = 0
+  removed_calls = 0
+  for affected_file in input_api.AffectedFiles():
+    # Do not do the check on PRESUBMIT.py itself.
+    if affected_file.AbsoluteLocalPath() == presubmit_dir:
+      continue
+    for line in affected_file.GenerateScmDiff().splitlines():
+      if _IsAddedLine(line) and deprecated_code in line:
+        added_calls += 1
+      elif _IsRemovedLine(line) and deprecated_code in line:
+        removed_calls += 1
+
+  if added_calls > removed_calls:
+    results.append(output_api.PresubmitError(
+        'Your patch adds more instances of %s. Please see crbug.com/%i for'
+        'how to proceed.' % (deprecated_code, crbug_number)))
+  return results
+
+
+def _GetPathsToPrepend(input_api):
+  telemetry_dir = input_api.PresubmitLocalPath()
+  chromium_src_dir = input_api.os_path.join(telemetry_dir, '..', '..')
+  return [
+      telemetry_dir,
+      input_api.os_path.join(telemetry_dir, 'third_party', 'altgraph'),
+      input_api.os_path.join(telemetry_dir, 'third_party', 'mock'),
+      input_api.os_path.join(telemetry_dir, 'third_party', 'modulegraph'),
+      input_api.os_path.join(telemetry_dir, 'third_party', 'pexpect'),
+      input_api.os_path.join(telemetry_dir, 'third_party', 'png'),
+      input_api.os_path.join(telemetry_dir, 'third_party', 'pyfakefs'),
+      input_api.os_path.join(telemetry_dir, 'third_party', 'pyserial'),
+      input_api.os_path.join(telemetry_dir, 'third_party', 'typ'),
+      input_api.os_path.join(telemetry_dir, 'third_party', 'webpagereplay'),
+      input_api.os_path.join(telemetry_dir, 'third_party', 'websocket-client'),
+
+      input_api.os_path.join(chromium_src_dir, 'build', 'android'),
+      input_api.os_path.join(chromium_src_dir,
+                             'third_party', 'catapult', 'tracing'),
+  ]
+
+
+def CheckChangeOnUpload(input_api, output_api):
+  results = []
+  results.extend(_CommonChecks(input_api, output_api))
+  return results
+
+
+def CheckChangeOnCommit(input_api, output_api):
+  results = []
+  results.extend(_CommonChecks(input_api, output_api))
+  return results

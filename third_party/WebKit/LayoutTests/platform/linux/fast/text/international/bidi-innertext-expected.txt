@@ -1,0 +1,85 @@
+layer at (0,0) size 800x600
+  LayoutView at (0,0) size 800x600
+layer at (0,0) size 800x600
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (8,8) size 784x576
+      LayoutBlockFlow (anonymous) at (0,0) size 784x20
+        LayoutText {#text} at (0,0) size 783x19
+          text run at (0,0) width 440: "The following tests text iteration over RTL text embedded with LTR text. "
+          text run at (439,0) width 344: "TextIterators are used for find, spellcheck, and .innerText"
+      LayoutBlockFlow {HR} at (0,28) size 784x2 [border: (1px inset #EEEEEE)]
+      LayoutBlockFlow (anonymous) at (0,38) size 784x20
+        LayoutText {#text} at (0,0) size 129x19
+          text run at (0,0) width 129: "Embedded Numbers:"
+      LayoutBlockFlow {DIV} at (0,58) size 784x20 [color=#0000FF]
+        LayoutText {#text} at (0,0) size 103x19
+          text run at (0,0) width 51: "Testing ("
+          text run at (50,0) width 13 RTL: "\x{5DF}\x{5DE}"
+          text run at (62,0) width 9: "3"
+          text run at (70,0) width 28 RTL: "\x{5D7}\x{5D5}\x{5D3}\x{5D0}"
+          text run at (97,0) width 6: ")"
+      LayoutBlockFlow (anonymous) at (0,78) size 784x20
+        LayoutText {#text} at (0,0) size 100x19
+          text run at (0,0) width 100: "Embedded LTR:"
+      LayoutBlockFlow {DIV} at (0,98) size 784x20 [color=#0000FF]
+        LayoutText {#text} at (0,0) size 123x19
+          text run at (0,0) width 51: "Testing ("
+          text run at (50,0) width 28 RTL: "\x{5D7}\x{5D5}\x{5D3}\x{5D0}"
+          text run at (77,0) width 29: "hello"
+          text run at (105,0) width 13 RTL: "\x{5DF}\x{5DE}"
+          text run at (117,0) width 6: ")"
+      LayoutBlockFlow (anonymous) at (0,118) size 784x20
+        LayoutText {#text} at (0,0) size 183x19
+          text run at (0,0) width 183: "Embedded Numbers and LTR"
+      LayoutBlockFlow {DIV} at (0,138) size 784x20 [color=#0000FF]
+        LayoutText {#text} at (0,0) size 122x19
+          text run at (0,0) width 51: "Testing ("
+          text run at (50,0) width 25 RTL: "\x{5E7}\x{5E7}\x{5E8}"
+          text run at (74,0) width 9: "3"
+          text run at (82,0) width 28 RTL: "\x{5D9}\x{5E7}\x{5DD}\x{5DC}"
+          text run at (109,0) width 13: "h)"
+      LayoutBlockFlow (anonymous) at (0,158) size 784x20
+        LayoutText {#text} at (0,0) size 207x19
+          text run at (0,0) width 207: "Embedded Numbers with spacing:"
+      LayoutBlockFlow {DIV} at (0,178) size 784x20 [color=#0000FF]
+        LayoutText {#text} at (0,0) size 228x19
+          text run at (0,0) width 51: "Testing ("
+          text run at (50,0) width 32 RTL: " \x{5D7}\x{5D5}\x{5D3}\x{5D0}"
+          text run at (81,0) width 25: "300"
+          text run at (105,0) width 44 RTL: "\x{5D7}\x{5D5}\x{5D3}\x{5D0}\x{5DF}\x{5DE} "
+          text run at (148,0) width 41: "34023"
+          text run at (188,0) width 35 RTL: "\x{5D9}\x{5E7}\x{5DA}\x{5DA}\x{5DD}"
+          text run at (222,0) width 6: ")"
+      LayoutBlockFlow (anonymous) at (0,198) size 784x20
+        LayoutText {#text} at (0,0) size 63x19
+          text run at (0,0) width 63: "Plain LTR:"
+      LayoutBlockFlow {DIV} at (0,218) size 784x20 [color=#0000FF]
+        LayoutText {#text} at (0,0) size 84x19
+          text run at (0,0) width 84: "Testing (hello)"
+      LayoutBlockFlow (anonymous) at (0,238) size 784x20
+        LayoutText {#text} at (0,0) size 178x19
+          text run at (0,0) width 178: "Embedded LTR with spacing:"
+      LayoutBlockFlow {DIV} at (0,258) size 784x20 [color=#0000FF]
+        LayoutText {#text} at (0,0) size 161x19
+          text run at (0,0) width 51: "Testing ("
+          text run at (50,0) width 54 RTL: "\x{5D7}\x{5D5}\x{5D3}\x{5D9}\x{5E7}\x{5DA}\x{5DA}\x{5DD}"
+          text run at (103,0) width 37: " hello "
+          text run at (139,0) width 17 RTL: "\x{5DF}\x{5DE}\x{5D9}"
+          text run at (155,0) width 6: ")"
+      LayoutBlockFlow (anonymous) at (0,278) size 784x20
+        LayoutText {#text} at (0,0) size 156x19
+          text run at (0,0) width 156: "Mixed but not embedded:"
+      LayoutBlockFlow {DIV} at (0,298) size 784x20 [color=#0000FF]
+        LayoutText {#text} at (0,0) size 115x19
+          text run at (0,0) width 79: "Testing (hello"
+          text run at (78,0) width 32 RTL: "\x{5D7}\x{5D5}\x{5D3}\x{5DF}\x{5DE}"
+          text run at (109,0) width 6: ")"
+      LayoutBlockFlow (anonymous) at (0,318) size 784x20
+        LayoutText {#text} at (0,0) size 156x19
+          text run at (0,0) width 156: "Mixed but not embedded:"
+      LayoutBlockFlow {DIV} at (0,338) size 784x20 [color=#0000FF]
+        LayoutText {#text} at (0,0) size 115x19
+          text run at (0,0) width 51: "Testing ("
+          text run at (50,0) width 32 RTL: "\x{5D7}\x{5D5}\x{5D3}\x{5DF}\x{5DE}"
+          text run at (81,0) width 34: "hello)"
+      LayoutBlockFlow {OL} at (0,374) size 784x0

@@ -1,0 +1,72 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_CLIENT_H_
+#define COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_CLIENT_H_
+
+#include <string>
+
+#include "base/memory/scoped_ptr.h"
+#include "components/proximity_auth/cryptauth/proto/cryptauth_api.pb.h"
+#include "components/proximity_auth/screenlock_state.h"
+
+class PrefService;
+
+namespace proximity_auth {
+
+class CryptAuthClientFactory;
+class CryptAuthDeviceManager;
+class CryptAuthEnrollmentManager;
+class SecureMessageDelegate;
+
+// An interface that needs to be supplied to the Proximity Auth component by its
+// embedder. There should be one |ProximityAuthClient| per
+// |content::BrowserContext|.
+class ProximityAuthClient {
+ public:
+  virtual ~ProximityAuthClient() {}
+
+  // Returns the authenticated username.
+  virtual std::string GetAuthenticatedUsername() const = 0;
+
+  // Updates the user pod on the signin or lock screen to reflect the provided
+  // screenlock state.
+  virtual void UpdateScreenlockState(ScreenlockState state) = 0;
+
+  // Finalizes an unlock attempt initiated by the user. If |success| is true,
+  // the screen is unlocked; otherwise, the auth attempt is rejected. An auth
+  // attempt must be in progress before calling this function.
+  virtual void FinalizeUnlock(bool success) = 0;
+
+  // Finalizes a sign-in attempt initiated by the user. If |success| is true,
+  // the user is signed in; otherwise, the auth attempt is rejected. An auth
+  // attempt must be in progress before calling this function.
+  virtual void FinalizeSignin(const std::string& secret) = 0;
+
+  // Returns the PrefService used by the profile.
+  virtual PrefService* GetPrefService() = 0;
+
+  // Returns the SecureMessageDelegate used by the system.
+  virtual scoped_ptr<SecureMessageDelegate> CreateSecureMessageDelegate() = 0;
+
+  // Constructs the CryptAuthClientFactory that can be used for API requests.
+  virtual scoped_ptr<CryptAuthClientFactory> CreateCryptAuthClientFactory() = 0;
+
+  // Constructs the DeviceClassifier message that is sent to CryptAuth for all
+  // API requests.
+  virtual cryptauth::DeviceClassifier GetDeviceClassifier() = 0;
+
+  // Returns the account id of the user.
+  virtual std::string GetAccountId() = 0;
+
+  virtual proximity_auth::CryptAuthEnrollmentManager*
+  GetCryptAuthEnrollmentManager() = 0;
+
+  virtual proximity_auth::CryptAuthDeviceManager*
+  GetCryptAuthDeviceManager() = 0;
+};
+
+}  // namespace proximity_auth
+
+#endif  // COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_CLIENT_H_

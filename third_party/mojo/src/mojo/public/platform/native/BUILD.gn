@@ -1,0 +1,73 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!defined(is_nacl) || !is_nacl)
+
+import("../../mojo_sdk.gni")
+
+mojo_sdk_source_set("system") {
+  sources = [
+    "system_thunks.cc",
+    "system_thunks.h",
+  ]
+  defines = [ "MOJO_SYSTEM_IMPLEMENTATION" ]
+  mojo_sdk_deps = [ "mojo/public/c/system" ]
+
+  # The GYP target analogous to this one builds this code into a
+  # static library.  When building for Android, both the GYP and GN
+  # builds add --exclude-libs=ALL globally, which means that all
+  # symbols in static libraries are excluded from export.  That's a
+  # problem, as code outside this target needs to be able to call
+  # MojoSetSystemThunks(). Therefore, the GYP target needs to specifiy
+  # that all dependent targets remove that link flag. Since GN uses a
+  # source_set here, this flag change is not needed.
+}
+
+mojo_sdk_source_set("gles2") {
+  sources = [
+    "gles2_impl_chromium_extension_thunks.cc",
+    "gles2_impl_chromium_extension_thunks.h",
+    "gles2_impl_thunks.cc",
+    "gles2_impl_thunks.h",
+    "gles2_thunks.cc",
+    "gles2_thunks.h",
+  ]
+
+  defines = [ "MOJO_GLES2_IMPLEMENTATION" ]
+
+  configs = [ "//third_party/khronos:khronos_headers" ]
+
+  mojo_sdk_deps = [
+    "mojo/public/c/gles2:headers",
+    "mojo/public/c/environment",
+    "mojo/public/c/system",
+  ]
+
+  if (is_mac) {
+    # TODO(GYP): Make it a run-path dependent library.
+    # 'DYLIB_INSTALL_NAME_BASE': '@loader_path',
+  }
+}
+
+mojo_sdk_source_set("gpu_thunks") {
+  sources = []
+}
+
+mojo_sdk_source_set("mgl_thunks") {
+  sources = [
+    "mgl_thunks.c",
+    "mgl_thunks.h",
+  ]
+
+  mojo_sdk_deps = [ "mojo/public/c/gpu:MGL" ]
+}
+
+mojo_sdk_source_set("mgl_onscreen_thunks") {
+  sources = [
+    "mgl_onscreen_thunks.c",
+    "mgl_onscreen_thunks.h",
+  ]
+
+  mojo_sdk_deps = [ "mojo/public/c/gpu:MGL_onscreen" ]
+}

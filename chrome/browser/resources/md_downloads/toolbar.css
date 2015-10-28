@@ -1,0 +1,112 @@
+/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+:host {
+  align-items: center;
+  background: rgb(63, 85, 102);
+  color: white;
+  content-sizing: padding-box;
+  display: flex;
+  height: 56px;
+}
+
+#title h1 {
+  -webkit-margin-end: 0;
+  -webkit-margin-start: 24px;
+  font-size: 107.7%;
+  font-weight: normal;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+#actions {
+  display: flex;
+  flex: none;
+  width: var(--downloads-item-width);
+}
+
+:host-context(.loading) #actions {
+  visibility: hidden;
+}
+
+:host(:not([downloads-showing])) #actions {
+  justify-content: center;
+}
+
+#actions paper-button:first-of-type {
+  -webkit-margin-start: -0.57em;  /* Matches paper-button padding. */
+}
+
+#actions paper-button:not(:last-of-type) {
+  -webkit-margin-end: 8px;  /* Margin between items. */
+}
+
+#actions paper-button:last-of-type {
+  -webkit-margin-end: -0.57em;  /* Matches paper-button padding. */
+}
+
+/* TODO(dbeam): use --paper-button-flat-keyboard-focus when possible.
+ * https://github.com/PolymerElements/paper-button/pull/54 */
+#actions paper-button /deep/ .keyboard-focus {
+  color: white;
+}
+
+#actions {
+  color: rgb(192, 199, 205);
+}
+
+#search {
+  -webkit-padding-end: 10px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#title,
+#search {
+  /* (1024 total width - 622 item width) / 2 = 201 room to play. */
+  flex: 1 0 201px;
+}
+
+paper-icon-button {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  --paper-icon-button: {
+    height: 20px;
+    padding: 6px;
+    width: 20px;
+  };
+}
+
+#more {
+  --paper-menu-button: {
+    padding: 0;
+  };
+  -webkit-margin-start: 16px;
+}
+
+paper-item {
+  -webkit-user-select: none;
+  cursor: pointer;
+  font: inherit;
+  min-height: 40px;
+}
+
+paper-item:hover {
+  background: #eaeaea;  /* TODO(dbeam): real color? */
+}
+
+@media not all and (max-width: 1024px) {
+  /* Hide vertical dot menu when there's enough room for #actions. */
+  paper-menu-button {
+    display: none;
+  }
+}
+
+@media all and (max-width: 1024px) {
+  /* Hide #actions for narrow windows; they're shown in a vertical dot menu. */
+  #actions {
+    display: none;
+  }
+}

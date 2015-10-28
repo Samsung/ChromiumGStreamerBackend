@@ -1,0 +1,49 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Types for CrSettingsPrefsElement.
+ */
+
+/**
+ * Global state for prefs status.
+ */
+var CrSettingsPrefs = (function() {
+  var CrSettingsPrefsInternal = {
+    /**
+     * Resolves the CrSettingsPrefs.initialized promise.
+     */
+    setInitialized: function() {
+      /** @public {boolean} */
+      CrSettingsPrefsInternal.isInitialized = true;
+      CrSettingsPrefsInternal.resolve_();
+    },
+
+    /**
+     * Restores state for testing.
+     */
+    resetForTesting: function() {
+      CrSettingsPrefsInternal.setup_();
+    },
+
+    /**
+     * Called to set up the promise and resolve methods.
+     * @private
+     */
+    setup_: function() {
+      CrSettingsPrefsInternal.isInitialized = false;
+      /**
+       * Promise to be resolved when all settings have been initialized.
+       * @type {!Promise}
+       */
+      CrSettingsPrefsInternal.initialized = new Promise(function(resolve) {
+        CrSettingsPrefsInternal.resolve_ = resolve;
+      });
+    },
+  };
+
+  CrSettingsPrefsInternal.setup_();
+
+  return CrSettingsPrefsInternal;
+})();

@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/scheduler/ppapi",
+  "+content/child",
+  "+content/public/plugin",
+  "+ppapi/c",
+  "+ppapi/proxy",
+]

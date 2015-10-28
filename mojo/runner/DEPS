@@ -1,0 +1,13 @@
+include_rules = [
+  "+components/devtools_service/public",
+  "+components/mus",
+  "+components/mus/gles2",
+  "+components/mus/native_viewport",
+  "+components/mus/vm/public",
+  "+components/tracing",
+  "+crypto",
+  "+jni",
+  "+sandbox",
+  "+third_party/mojo_services",
+  "+ui",
+]

@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<script src="../../../resources/js-test.js"></script>
+<script src="../resources/input-modifiers.js"></script>
+<style>
+div.box {
+  margin: 10px;
+  padding: 50px;
+  float: left;
+}
+</style>
+
+<div id="target" class="box" style="background-color:red">
+</div>
+
+<div id="console"></div>
+
+<script>
+description("Verifies that pointer event parameters are correct when fired for mouse events.");
+
+// TODO(mustaq): Grow the list as we add support for more PEs
+var testEventList = ["mouseenter", "mouseleave", "mouseover", "mouseout", "mouseup", "mousedown",
+                   "pointerenter", "pointerleave", "pointerover", "pointerout", "pointerup", "pointerdown"];
+var lastPointerEvent = null;
+
+var checkKeyModifiers = false;
+
+var numericAttributes = [
+    "clientX",
+    "clientY",
+    "layerX",
+    "layerY",
+    "movementX",
+    "movementY",
+    "offsetX",
+    "offsetY",
+    "pageX",
+    "pageY",
+    "screenX",
+    "screenY",
+    "x",
+    "y",
+    "button",
+    "buttons",
+];
+
+function init() {
+  var targetDiv = document.getElementById("target");
+
+  testEventList.forEach(function(eventName) {
+
+    targetDiv.addEventListener(eventName, function(event) {
+
+      debug("Received " + event.type);
+
+      if (event.type.startsWith("pointer"))
+        lastPointerEvent = event;
+      else {
+        shouldBeNonNull("lastPointerEvent");
+        shouldBeEqualToString("lastPointerEvent.type", event.type.replace("mouse", "pointer"));
+
+        if (!checkKeyModifiers) {
+
+          if (lastPointerEvent.type=="pointerenter" || lastPointerEvent.type=="pointerleave") {
+            shouldBeFalse("lastPointerEvent.bubbles");
+            shouldBeFalse("lastPointerEvent.cancelable");
+          } else {
+            shouldBeTrue("lastPointerEvent.bubbles");
+            shouldBeTrue("lastPointerEvent.cancelable");
+          }
+
+          shouldBeEqualToNumber("lastPointerEvent.pointerId", 0);
+          shouldBeEqualToString("lastPointerEvent.pointerType", "mouse");
+          shouldBeTrue("lastPointerEvent.isPrimary");
+
+          numericAttributes.forEach(function(attribute) {
+            shouldBeEqualToNumber("lastPointerEvent." + attribute, eval("event." + attribute));
+          });
+
+        } else {
+
+          forEachModifier(function(attr, modifierName) {
+            var getModifierStateStr = ".getModifierState('" + modifierName + "');"
+            if (eval("event" + getModifierStateStr))
+              shouldBeTrue("lastPointerEvent" + getModifierStateStr);
+            else
+              shouldBeFalse("lastPointerEvent" + getModifierStateStr);
+          });
+
+        }
+
+        lastPointerEvent = null;
+      }
+    });
+
+  });
+}
+
+function runTests() {
+  var rect = document.getElementById("target").getBoundingClientRect();
+
+  debug("--- move mouse into target ---");
+  eventSender.mouseMoveTo(rect.left + 5, rect.top + 5);
+  debug("");
+
+  debug("--- click each button ---");
+  for (var button = 0; button <=2; button++) {
+    eventSender.mouseDown(button);
+    eventSender.mouseUp(button);
+    // TODO(crbug.com/548226): Investigate missing events in win_chromium_rel_ng on 3rd down/up.
+  }
+  debug("");
+
+  debug("--- click with each modifier ---");
+  checkKeyModifiers = true;
+  forEachModifier(function(attr, modifierName, eventSenderName) {
+    eventSender.mouseDown(0, [eventSenderName]);
+    eventSender.mouseUp(0, [eventSenderName]);
+  });
+  checkKeyModifiers = false;
+  debug("");
+
+  debug("--- move mouse out of target ---");
+  eventSender.mouseMoveTo(rect.left - 5, rect.top - 5);
+}
+
+init();
+if (window.eventSender)
+  runTests();
+else
+  debug("This test requires eventSender");
+
+</script>

@@ -1,0 +1,28 @@
+General build instructions:
+
+  1. If you are building from cloned Git repository, you will need to update
+     the git sub modules, as well as run autoreconf. A convenience script is
+     provided:
+
+     $ ./autogen.sh
+
+  2. Build OTS
+
+     $ ./configure
+     $ make
+
+  3. Run the tests (if you wish)
+
+     $ make check
+
+Building on Windows:
+
+   1. A POSIX-compatible environment is required to build OTS, MSYS2 is
+      recommended. Follow the installation instructions on
+	  https://msys2.github.io/.
+
+   2. Install the required packages:
+
+      $ pacman -S autoconf automake pkg-config gcc make zlib-devel
+
+   3. Follow the general build instructions above.

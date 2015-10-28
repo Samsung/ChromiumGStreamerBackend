@@ -1,0 +1,71 @@
+/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/**
+ * @fileoverview
+ * Common styles for Settings pages.
+ */
+:host > paper-material {
+  -webkit-padding-start: 80px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+}
+
+.soft-border {
+  border: 1px solid #c4c4c4;
+  border-radius: 2px;
+}
+
+.page-content {
+  width: 760px;
+}
+
+settings-checkbox {
+  -webkit-margin-end: 10px;
+  -webkit-margin-start: 0;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+paper-button {
+  margin: 0;
+  min-width: auto;
+}
+
+paper-button[toggles][active] {
+  background-color: lightgrey;
+}
+
+h2 {
+  color: #9e9e9e;
+  font-weight: normal;
+  font-size: 100%;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.item-list {
+  @apply(--layout-vertical);
+}
+
+.item-list paper-item {
+  border-bottom: 1px solid #e0e0e0;
+  height: 40px;  /* 24px + 2x8px padding. */
+}
+
+.item-list paper-item:last-of-type {
+  border-bottom: none;
+}
+
+.item-list paper-item iron-icon {
+  /* Same padding as paper-icon-button. */
+  padding: 8px;
+}
+
+.button-row {
+  display: flex;
+  margin-top: 25px;
+}

@@ -1,0 +1,97 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+group("common") {
+  public_deps = [
+    ":common_base",
+    ":url_type_converters",
+  ]
+}
+
+# GYP version: mojo/mojo_base.gyp:mojo_common_lib
+component("common_base") {
+  output_name = "mojo_common_lib"
+
+  sources = [
+    "common_type_converters.cc",
+    "common_type_converters.h",
+    "data_pipe_drainer.cc",
+    "data_pipe_drainer.h",
+    "data_pipe_file_utils.cc",
+    "data_pipe_utils.cc",
+    "data_pipe_utils.h",
+    "user_agent.cc",
+    "user_agent.h",
+    "weak_binding_set.h",
+    "weak_interface_ptr_set.h",
+  ]
+
+  defines = [ "MOJO_COMMON_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//base/third_party/dynamic_annotations",
+    "//mojo/environment:chromium",
+    "//mojo/message_pump",
+    "//third_party/mojo/src/mojo/public/c/system:for_component",
+    "//third_party/mojo/src/mojo/public/cpp/bindings",
+    "//third_party/mojo/src/mojo/public/cpp/environment",
+    "//third_party/mojo/src/mojo/public/cpp/system",
+  ]
+}
+
+# GYP version: mojo/mojo_base.gyp:mojo_url_type_converters
+source_set("url_type_converters") {
+  sources = [
+    "url_type_converters.cc",
+    "url_type_converters.h",
+  ]
+
+  include_dirs = [ "//third_party/mojo/src/" ]
+
+  deps = [
+    ":common_base",
+    "//base",
+    "//base/third_party/dynamic_annotations",
+    "//third_party/mojo/src/mojo/public/cpp/bindings",
+    "//url",
+  ]
+}
+
+# TODO(GYP): Delete this after we've converted everything to GN.
+# The _run targets exist only for compatibility w/ GYP.
+group("mojo_common_unittests_run") {
+  testonly = true
+  deps = [
+    ":mojo_common_unittests",
+  ]
+}
+
+# GYP version: mojo/mojo_base.gyp:mojo_common_unittests
+test("mojo_common_unittests") {
+  deps = [
+    ":common",
+    "//base",
+    "//base:message_loop_tests",
+    "//base/test:test_support",
+    "//mojo/environment:chromium",
+    "//mojo/message_pump",
+    "//testing/gtest",
+    "//third_party/mojo/src/mojo/edk/test:run_all_unittests",
+    "//third_party/mojo/src/mojo/edk/test:test_support",
+    "//third_party/mojo/src/mojo/public/cpp/bindings",
+    "//third_party/mojo/src/mojo/public/cpp/test_support:test_utils",
+    "//url",
+  ]
+
+  sources = [
+    # The message_pump tests are so small and some what related to this code
+    # that we put them here.
+    "../message_pump/handle_watcher_unittest.cc",
+    "../message_pump/message_pump_mojo_unittest.cc",
+    "common_type_converters_unittest.cc",
+  ]
+}

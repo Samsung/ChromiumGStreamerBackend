@@ -1,0 +1,71 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/signin/account_tracker_service_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/gaia_cookie_manager_service_factory.h"
+#include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
+#include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/signin/core/browser/fake_signin_manager.h"
+
+#if defined(USE_ASH)
+#include "ash/shell.h"
+#endif
+
+using content::RenderViewHostTester;
+using content::RenderViewHostTestHarness;
+
+namespace {
+
+scoped_ptr<KeyedService> BuildSigninManagerFake(
+    content::BrowserContext* context) {
+  Profile* profile = static_cast<Profile*>(context);
+  SigninClient* signin_client =
+      ChromeSigninClientFactory::GetForProfile(profile);
+  AccountTrackerService* account_tracker_service =
+      AccountTrackerServiceFactory::GetForProfile(profile);
+#if defined (OS_CHROMEOS)
+  scoped_ptr<SigninManagerBase> signin(
+      new SigninManagerBase(signin_client, account_tracker_service));
+  signin->Initialize(NULL);
+  return signin.Pass();
+#else
+  scoped_ptr<FakeSigninManager> manager(new FakeSigninManager(
+      signin_client, ProfileOAuth2TokenServiceFactory::GetForProfile(profile),
+      account_tracker_service,
+      GaiaCookieManagerServiceFactory::GetForProfile(profile)));
+  manager->Initialize(g_browser_process->local_state());
+  return manager.Pass();
+#endif
+}
+
+}  // namespace
+
+ChromeRenderViewHostTestHarness::ChromeRenderViewHostTestHarness() {
+}
+
+ChromeRenderViewHostTestHarness::~ChromeRenderViewHostTestHarness() {
+}
+
+TestingProfile* ChromeRenderViewHostTestHarness::profile() {
+  return static_cast<TestingProfile*>(browser_context());
+}
+
+void ChromeRenderViewHostTestHarness::TearDown() {
+  RenderViewHostTestHarness::TearDown();
+#if defined(USE_ASH)
+  ash::Shell::DeleteInstance();
+#endif
+}
+
+content::BrowserContext*
+ChromeRenderViewHostTestHarness::CreateBrowserContext() {
+  TestingProfile::Builder builder;
+  builder.AddTestingFactory(SigninManagerFactory::GetInstance(),
+                            BuildSigninManagerFake);
+  return builder.Build().release();
+}

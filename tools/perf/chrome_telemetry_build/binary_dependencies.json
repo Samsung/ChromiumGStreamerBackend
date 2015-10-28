@@ -1,0 +1,40 @@
+{
+  "config_type": "BaseConfig",
+  "dependencies": {
+    "crash_service": {
+      "file_info": {
+        "win_AMD64": {
+          "local_paths": [
+            "../../../out/Debug/crash_service.exe",
+            "../../../out/Release/crash_service.exe"
+          ]
+        }
+      }
+    },
+    "generate_breakpad_symbols": {
+      "file_info": {
+        "win_AMD64": {
+          "local_paths": [
+            "../../../components/crash/content/tools/generate_breakpad_symbols.py"
+          ]
+        }
+      }
+    },
+    "memtrack_helper": {
+      "file_info": {
+        "android_armeabi-v7a": {
+          "local_paths": [
+            "../../../out/Debug/memtrack_helper",
+            "../../../out/Release/memtrack_helper"
+          ]
+        },
+        "arm64-v8a": {
+          "local_paths": [
+            "../../../out/Debug/memtrack_helper",
+            "../../../out/Release/memtrack_helper"
+          ]
+        }
+      }
+    }
+  }
+}

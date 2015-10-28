@@ -1,0 +1,167 @@
+Lunch Options
+
+Thai
+Subway
+Jimmy Johns
+Radio Maria
+Rainbow Gardens
+Drink Options
+
+Water
+Tea
+Coffee
+Cola
+Ginger Ale
+{
+  "id": "<int>",
+  "result": {
+    "accessibilityNode": {
+      "nodeId": "<string>",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "radiogroup"
+      },
+      "properties": [
+        {
+          "name": "required",
+          "value": {
+            "type": "boolean",
+            "value": false
+          }
+        },
+        {
+          "name": "activedescendant",
+          "value": {
+            "type": "idref",
+            "relatedNodes": [
+              {
+                "idref": "rg1-r4",
+                "nodeResult": "li#rg1-r4"
+              }
+            ]
+          }
+        },
+        {
+          "name": "labelledby",
+          "value": {
+            "type": "idrefList",
+            "relatedNodes": [
+              {
+                "idref": "rg1_label",
+                "nodeResult": "h3#rg1_label"
+              }
+            ],
+            "value": "rg1_label"
+          }
+        }
+      ],
+      "name": {
+        "type": "computedString",
+        "value": "Lunch Options",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "value": {
+              "type": "idrefList",
+              "relatedNodes": [
+                {
+                  "idref": "rg1_label",
+                  "text": "Lunch Options",
+                  "nodeResult": "h3#rg1_label"
+                }
+              ],
+              "value": "rg1_label"
+            },
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label",
+            "superseded": true
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "description": {
+        "type": "computedString",
+        "value": "Lunch Options"
+      }
+    }
+  }
+}
+{
+  "id": "<int>",
+  "result": {
+    "accessibilityNode": {
+      "nodeId": "<string>",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "radiogroup"
+      },
+      "properties": [
+        {
+          "name": "required",
+          "value": {
+            "type": "boolean",
+            "value": false
+          }
+        },
+        {
+          "name": "labelledby",
+          "value": {
+            "type": "idrefList",
+            "relatedNodes": [
+              {
+                "idref": "rg2_label",
+                "nodeResult": "h3#rg2_label"
+              }
+            ],
+            "value": "rg2_label"
+          }
+        }
+      ],
+      "name": {
+        "type": "computedString",
+        "value": "Drink Options",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "value": {
+              "type": "idrefList",
+              "relatedNodes": [
+                {
+                  "idref": "rg2_label",
+                  "text": "Drink Options",
+                  "nodeResult": "h3#rg2_label"
+                }
+              ],
+              "value": "rg2_label"
+            },
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label",
+            "superseded": true
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "description": {
+        "type": "computedString",
+        "value": "Drink Options"
+      }
+    }
+  }
+}
+

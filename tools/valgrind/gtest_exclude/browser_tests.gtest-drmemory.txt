@@ -1,0 +1,85 @@
+# http://crbug.com/400503
+InterstitialUITest.OpenInterstitial
+
+# http://crbug.com/400509
+CustomLauncherPageBrowserTest.LoadPageAndOpenLauncher
+
+# http://crbug.com/403628
+RangeHistoryWebUITest.monthViewGrouped
+
+# http://crbug.com/403687
+ContentScriptCssInjectionTest.ContentScriptInjectsStyles
+MediaFileValidatorTest.UnsupportedExtension
+MessageCenterNotificationsTest.RetrieveBaseParts
+RequirementsCheckerBrowserTest.Check3DExtension
+SSLUITest.TestBadFrameNavigation
+SSLUITest.TestInterstitialJavaScriptProceeds
+SSLUITest.TestRefNavigation
+SSLUITest.TestWSSInvalidCertAndGoForward
+
+# http://crbug.com/403007
+WorkerDevToolsSanityTest.InspectSharedWorker
+
+# http://crbug.com/451991
+AppViewTest.TestAppViewMultipleConnects
+BrowserViewTest.DevToolsUpdatesBrowserWindow
+
+# http://crbug.com/451992
+ExtensionLoadingTest.UpgradeAfterNavigatingFromOverriddenNewTabPage
+
+# http://crbug.com/459000
+ClipboardApiTest.HostedAppNoPermission
+
+# http://crbug.com/475172
+BasicExtensionSettingsWebUITest.testUninstall
+
+# https://crbug.com/501106
+CrElementsBrowserTest.CrElementsTest
+
+# https://crbug.com/504192
+NaClBrowserTestGLibc.ExitStatus0
+NaClBrowserTestGLibc.ExitStatusNeg2
+NaClBrowserTestGLibc.PPAPIPPBInstance
+NaClBrowserTestGLibc.PPAPIPPPInstance
+NaClBrowserTestGLibc.SimpleLoad
+NaClBrowserTestGLibc.SuccessfulLoadUMA
+
+# https://crbug.com/512140
+PluginPowerSaverBrowserTest.BackgroundTabPlugins
+PluginPowerSaverBrowserTest.LargeCrossOriginObscured
+
+# https://crbug.com/504885
+# The test takes too long.
+SmartSessionRestoreMRUTest.PRE_CorrectLoadingOrder
+SmartSessionRestoreMRUTest.CorrectLoadingOrder
+
+# https://crbug.com/516368
+PushMessagingBrowserTest.PushEventSuccess
+
+# https://crbug.com/519039
+AppViewTest.KillGuestCommunicatingWithWrongAppView
+
+# https://crbug.com/519087
+ExtensionTabsTest.GetAllWindowsAllTypes
+
+# https://crbug.com/530404
+WakeEventPageTest.ClosedEventPage
+WakeEventPageTest.OpenEventPage
+
+# https://crbug.com/530696
+PolicyTest.ForceSafeSearch
+PolicyTest.URLBlacklist
+
+# https://crbug.com/530727
+MaterialPDFExtensionTest.Bookmark
+MaterialPDFExtensionTest.WhitespaceTitle
+MaterialPDFExtensionTest.ZoomManager
+PDFExtensionTest.WhitespaceTitle
+
+# https://crbug.com/530729
+SiteDetailsBrowserTest.ManyCrossSiteIframes
+
+# https://crbug.com/542521
+PhishingClassifierDelegateTest.*
+PhishingClassifierTest.*
+PhishingDOMFeatureExtractorTest.*

@@ -1,0 +1,52 @@
+include_rules = [
+  "-android_webview",
+  "+android_webview/browser",
+  "+android_webview/common",
+  "+android_webview/native/public",
+  "+android_webview/public/browser",
+
+  "+cc",
+  "-cc/blink",
+
+  "+components/auto_login_parser",
+  "+components/autofill/content/browser",
+  "+components/autofill/core/browser",
+  "+components/autofill/core/common",
+  "+components/cdm/browser",
+  "+components/data_reduction_proxy/core/browser",
+  "+components/navigation_interception",
+  "+components/policy/core/browser",
+  "+components/policy/core/common",
+  "+components/pref_registry",
+  "+components/printing/browser",
+  "+components/printing/common",
+  "+components/url_formatter",
+  "+components/user_prefs",
+  "+components/visitedlink/browser",
+  "+components/webdata/common",
+
+  "+content/public/browser",
+  "+content/public/test",
+
+  # Explicitly disallow using SyncMessageFilter to prevent browser from
+  # sending synchronous IPC messages on non-UI threads.
+  "-ipc/ipc_sync_message_filter.h",
+
+  "+media/base/android",
+
+  "+policy/policy_constants.h",
+
+  "+printing",
+
+  "+ui/gfx",
+  "+ui/gl",
+
+  # Temporary until we bundle our own favicon. See
+  # AwContentBrowserClient::GetDefaultFavicon
+  "!ui/resources/grit/ui_resources.h",
+
+  # POD structure required by the find-in-page IPC messages.
+  "+third_party/WebKit/public/web/WebFindOptions.h",
+  # Interface required for in-process input event handling.
+  "+third_party/WebKit/public/web/WebCompositorInputHandler.h"
+]

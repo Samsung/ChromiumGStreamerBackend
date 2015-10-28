@@ -1,0 +1,59 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("tracing") {
+  sources = [
+    "child_memory_dump_manager_delegate_impl.cc",
+    "child_memory_dump_manager_delegate_impl.h",
+    "child_trace_message_filter.cc",
+    "child_trace_message_filter.h",
+    "graphics_memory_dump_provider_android.cc",
+    "graphics_memory_dump_provider_android.h",
+    "tracing_export.h",
+    "tracing_messages.cc",
+    "tracing_messages.h",
+  ]
+
+  defines = [ "TRACING_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//ipc",
+  ]
+}
+
+component("startup_tracing") {
+  sources = [
+    "trace_config_file.cc",
+    "trace_config_file.h",
+    "tracing_export.h",
+    "tracing_switches.cc",
+    "tracing_switches.h",
+  ]
+
+  defines = [ "TRACING_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "graphics_memory_dump_provider_android_unittest.cc",
+  ]
+
+  deps = [
+    ":tracing",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    sources += [ "trace_config_file_unittest.cc" ]
+    deps += [ ":startup_tracing" ]
+  }
+}

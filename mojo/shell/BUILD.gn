@@ -1,0 +1,100 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/mojo/src/mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
+
+source_set("shell") {
+  output_name = "mojo_shell"
+  sources = [
+    "application_instance.cc",
+    "application_instance.h",
+    "application_loader.h",
+    "application_manager.cc",
+    "application_manager.h",
+    "capability_filter.cc",
+    "capability_filter.h",
+    "connect_to_application_params.cc",
+    "connect_to_application_params.h",
+    "connect_util.cc",
+    "connect_util.h",
+    "data_pipe_peek.cc",
+    "data_pipe_peek.h",
+    "fetcher.cc",
+    "fetcher.h",
+    "identity.cc",
+    "identity.h",
+    "native_runner.h",
+    "package_manager.h",
+    "query_util.cc",
+    "query_util.h",
+    "static_application_loader.cc",
+    "static_application_loader.h",
+    "switches.cc",
+    "switches.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//mojo/application/public/interfaces",
+    "//mojo/common",
+    "//third_party/mojo/src/mojo/public/cpp/bindings",
+    "//mojo/services/network/public/interfaces",
+    "//mojo/services/updater",
+    "//url",
+  ]
+  deps = [
+    "//base/third_party/dynamic_annotations",
+    "//crypto:crypto",
+    "//mojo/application/public/cpp:sources",
+    "//url",
+    "//third_party/mojo/src/mojo/edk/system",
+    "//mojo/environment:chromium",
+    "//mojo/util:filename_util",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "capability_filter_test.cc",
+    "capability_filter_test.h",
+    "test_package_manager.cc",
+    "test_package_manager.h",
+  ]
+
+  deps = [
+    ":shell",
+    ":test_bindings",
+    "//mojo/application/public/cpp",
+    "//mojo/application/public/interfaces",
+    "//testing/gtest",
+  ]
+}
+
+test("mojo_shell_unittests") {
+  sources = [
+    "application_manager_unittest.cc",
+    "capability_filter_unittest.cc",
+    "query_util_unittest.cc",
+  ]
+
+  deps = [
+    ":shell",
+    ":test_bindings",
+    ":test_support",
+    "//base",
+    "//mojo/application/public/cpp",
+    "//third_party/mojo/src/mojo/edk/test:run_all_unittests",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+mojom("test_bindings") {
+  sources = [
+    "capability_filter_unittest.mojom",
+    "test.mojom",
+  ]
+}

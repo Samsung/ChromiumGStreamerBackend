@@ -1,0 +1,32 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content") {
+  sources = [
+    "precache_manager.cc",
+    "precache_manager.h",
+  ]
+
+  configs += [ "//components/precache/core:precache_config" ]
+
+  deps = [
+    "//base",
+    "//components/precache/core",
+    "//components/sync_driver",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "precache_manager_unittest.cc",
+  ]
+  deps = [
+    ":content",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

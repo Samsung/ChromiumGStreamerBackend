@@ -1,0 +1,38 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mus.mojom;
+
+import "components/mus/public/interfaces/window_manager_constants.mojom";
+import "components/mus/public/interfaces/window_tree.mojom";
+import "ui/mojo/geometry/geometry.mojom";
+
+// Represents a core interface that should be implemented by any window manager
+// built on top of Mus.
+// For security reasons, methods that take window_ids can only pass window ids
+// created by calls to OpenWindow() from the *same connection* to the window
+// manager. The callback indicates success or failure.
+interface WindowManager {
+  // The window bounds as set by user input. Type: mojo::Rect.
+  const string kUserSetBounds_Property = "prop:user-set-bounds";
+  // The window's preferred size as defined by its content. Type: mojo::Size.
+  const string kPreferredSize_Property = "prop:preferred-size";
+  // The window's show state. Type: ShowState.
+  const string kShowState_Property = "prop:show-state";
+
+  OpenWindow(WindowTreeClient client);
+
+  // Updates the window's preferred size and triggers a relayout of the window
+  // within its container.
+  SetPreferredSize(uint32 window_id, mojo.Size size) =>
+      (WindowManagerErrorCode result);
+
+  SetBounds(uint32 window_id, mojo.Rect bounds) =>
+      (WindowManagerErrorCode result);
+
+  SetShowState(uint32 window_id, ShowState show_state) =>
+      (WindowManagerErrorCode result);
+
+  GetDisplays() => (array<Display> displays);
+};

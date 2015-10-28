@@ -1,0 +1,238 @@
+{
+    "AsyncSetAsDefault": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "AutofillClassifier": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "AutofillFieldMetadata": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "AutofillProfileOrderByFrecency": [
+        {
+            "group_name": "EnabledLimitTo3",
+            "params": {
+                "limit": "3"
+            }
+        }
+    ],
+    "AutomaticTabDiscarding": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "BrowserBlacklist": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "CaptivePortalInterstitial": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "ChildAccountDetection": [
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "ChromeDashboard": [
+        {
+            "group_name": "Default"
+        }
+    ],
+    "ChromotingQUIC": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "EnableGoogleCachedCopyTextExperiment": [
+        {
+            "group_name": "Button"
+        }
+    ],
+    "EnableSessionCrashedBubbleUI": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "ExtensionActionRedesign": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "ExtensionContentVerification": [
+        {
+            "group_name": "Enforce"
+        }
+    ],
+    "ExtensionInstallVerification": [
+        {
+            "group_name": "Enforce"
+        }
+    ],
+    "GoogleNow": [
+        {
+            "group_name": "Enable"
+        }
+    ],
+    "IconNTP": [
+        {
+            "group_name": "Default"
+        }
+    ],
+    "InstanceID": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "IntelligentSessionRestore": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "MaterialDesignDownloads": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "NetworkQualityEstimator": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "2G.DefaultMedianKbps": "81",
+                "2G.DefaultMedianRTTMsec": "1337",
+                "3G.DefaultMedianKbps": "658",
+                "3G.DefaultMedianRTTMsec": "297",
+                "4G.DefaultMedianKbps": "1756",
+                "4G.DefaultMedianRTTMsec": "159",
+                "Bluetooth.DefaultMedianKbps": "449",
+                "Bluetooth.DefaultMedianRTTMsec": "135",
+                "Ethernet.DefaultMedianKbps": "3263",
+                "Ethernet.DefaultMedianRTTMsec": "106",
+                "HalfLifeSeconds": "60",
+                "None.DefaultMedianKbps": "567",
+                "None.DefaultMedianRTTMsec": "272",
+                "Unknown.DefaultMedianKbps": "1916",
+                "Unknown.DefaultMedianRTTMsec": "121",
+                "WiFi.DefaultMedianKbps": "2736",
+                "WiFi.DefaultMedianRTTMsec": "168"
+            }
+        }
+    ],
+    "NewProfileManagement": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "PasswordGeneration": [
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "QUIC": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "alternate_protocol_probability_threshold": "0.01"
+            }
+        }
+    ],
+    "RefreshTokenDeviceId": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "ReportCertificateErrors": [
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "1.0"
+            }
+        },
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "-1.0"
+            }
+        },
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "0.0"
+            }
+        },
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "abcdef"
+            }
+        },
+        {
+            "group_name": "DontShowAndDontSend"
+        }
+    ],
+    "SRTPromptFieldTrial": [
+        {
+            "group_name": "Default"
+        }
+    ],
+    "SafeBrowsingReportPhishingErrorLink": [
+        {
+            "group_name": "Enabled"
+        },
+        {
+            "group_name": "Control"
+        },
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "SdchPersistence": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "SettingsEnforcement": [
+        {
+            "group_name": "enforce_always_with_extensions_and_dse"
+        }
+    ],
+    "SyncHttpContentCompression": [
+        {
+            "group_name": "Enabled"
+        },
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "TabSyncByRecency": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "UseDelayAgnosticAEC": [
+        {
+            "group_name": "DefaultEnabled"
+        }
+    ],
+    "VarationsServiceControl": [
+        {
+            "group_name": "Interval_30min",
+            "params": {
+                "fetch_period_min": "30"
+            }
+        }
+    ],
+    "WebRTC-PeerConnectionDTLS1.2": [
+        {
+            "group_name": "Enabled"
+        }
+    ]
+}

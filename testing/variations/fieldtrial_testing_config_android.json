@@ -1,0 +1,310 @@
+{
+    "AndroidSessionNotifications": [
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "AutofillClassifier": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "AutofillFieldMetadata": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "AutofillProfileOrderByFrecency": [
+        {
+            "group_name": "EnabledLimitTo3",
+            "params": {
+                "limit": "3"
+            }
+        }
+    ],
+    "ChromotingQUIC": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "ContextualSearch": [
+        {
+            "group_name": "OptOut",
+            "params": {
+                "enabled": "true",
+                "promo_on_limited_taps": "true",
+                "promo_opt_out": "true",
+                "tap_prefetch_limit_for_decided": "50",
+                "tap_prefetch_limit_for_undecided": "20",
+                "tap_resolve_limit_for_decided": "50",
+                "tap_resolve_limit_for_undecided": "20",
+                "tap_triggered_promo_limit": "50"
+            }
+        }
+    ],
+    "CustomTabs": [
+        {
+            "group_name": "Enabled"
+        },
+        {
+            "group_name": "DisablePrerender"
+        },
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "DataCompressionProxyDevRollout": [
+        {
+            "group_name": "Control"
+        },
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "DataCompressionProxyLoFi": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "hysteresis_period_seconds": "120",
+                "rtt_msec": "2000"
+            }
+        }
+    ],
+    "DataCompressionProxyPromoVisibility": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "DataReductionProxyConfigService": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "minimum_refresh_interval_on_success_msec": "21600000"
+            }
+        }
+    ],
+    "DataReductionProxyUseQuic": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "EnableMediaThreadForMediaPlayback": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "EnhancedBookmarks": [
+        {
+            "group_name": "EnableEnhancedBookmarks",
+            "params": {
+                "id": "Fake_id_to_trigger_experiment_code"
+            }
+        },
+        {
+            "group_name": "EnableEnhancedBookmarksGrid",
+            "params": {
+                "DefaultViewMode": "Grid",
+                "id": "Fake_id_to_trigger_experiment_code"
+            }
+        },
+        {
+            "group_name": "EnableEnhancedBookmarksList",
+            "params": {
+                "DefaultViewMode": "List",
+                "id": "Fake_id_to_trigger_experiment_code"
+            }
+        }
+    ],
+    "IconNTP": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "state": "enabled"
+            }
+        }
+    ],
+    "InvalidationsGCMUpstream": [
+        {
+            "group_name": "Enabled"
+        },
+        {
+            "group_name": "Control"
+        },
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "LimitSyncPassphrasePrompt": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "LowPriorityIFrames": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "lowPriorityIframes": "true"
+            }
+        }
+    ],
+    "NetworkQualityEstimator": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "2G.DefaultMedianKbps": "81",
+                "2G.DefaultMedianRTTMsec": "1337",
+                "3G.DefaultMedianKbps": "658",
+                "3G.DefaultMedianRTTMsec": "297",
+                "4G.DefaultMedianKbps": "1756",
+                "4G.DefaultMedianRTTMsec": "159",
+                "Bluetooth.DefaultMedianKbps": "449",
+                "Bluetooth.DefaultMedianRTTMsec": "135",
+                "Ethernet.DefaultMedianKbps": "3263",
+                "Ethernet.DefaultMedianRTTMsec": "106",
+                "HalfLifeSeconds": "60",
+                "None.DefaultMedianKbps": "567",
+                "None.DefaultMedianRTTMsec": "272",
+                "Unknown.DefaultMedianKbps": "1916",
+                "Unknown.DefaultMedianRTTMsec": "121",
+                "WiFi.DefaultMedianKbps": "2736",
+                "WiFi.DefaultMedianRTTMsec": "168"
+            }
+        }
+    ],
+    "Precache": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "QUIC": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "alternate_protocol_probability_threshold": "0.001"
+            }
+        }
+    ],
+    "ReaderModeUIFeedback": [
+        {
+            "group_name": "Show"
+        },
+        {
+            "group_name": "DoNotShow"
+        }
+    ],
+    "ReportCertificateErrors": [
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "1.0"
+            }
+        },
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "-1.0"
+            }
+        },
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "0.0"
+            }
+        },
+        {
+            "group_name": "ShowAndPossiblySend",
+            "params": {
+                "sendingThreshold": "abcdef"
+            }
+        },
+        {
+            "group_name": "DontShowAndDontSend"
+        }
+    ],
+    "SafeBrowsingAndroid": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "enabled": "true"
+            }
+        },
+        {
+            "group_name": "Control"
+        }
+    ],
+    "SafeBrowsingReportPhishingErrorLink": [
+        {
+            "group_name": "Enabled"
+        },
+        {
+            "group_name": "Control"
+        },
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "SdchPersistence": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "SpeculativeResourcePrefetching": [
+        {
+            "group_name": "v=1a:Prefetching=Enabled:Predictor=Url"
+        },
+        {
+            "group_name": "v=1b:Prefetching=Enabled:Predictor=Url:Confidence=High"
+        },
+        {
+            "group_name": "v=1c:Prefetching=Enabled:Predictor=Url:Confidence=Low"
+        },
+        {
+            "group_name": "v=1d:Prefetching=Enabled:Predictor=Host"
+        },
+        {
+            "group_name": "v=1e:Prefetching=Enabled:Predictor=Host:Confidence=High"
+        },
+        {
+            "group_name": "v=1f:Prefetching=Enabled:Predictor=Host:Confidence=Low"
+        },
+        {
+            "group_name": "v=1:Prefetching=Learning"
+        }
+    ],
+    "SyncHttpContentCompression": [
+        {
+            "group_name": "Enabled"
+        },
+        {
+            "group_name": "Disabled"
+        }
+    ],
+    "TabSyncByRecency": [
+        {
+            "group_name": "Enabled"
+        }
+    ],
+    "UMA_EnableCellularLogUpload": [
+        {
+            "group_name": "Enabled",
+            "params": {
+                "Enabled": "true",
+                "Optimize": "true",
+                "Sample_Probability": "100"
+            }
+        }
+    ],
+    "VarationsServiceControl": [
+        {
+            "group_name": "Interval_30min",
+            "params": {
+                "fetch_period_min": "30"
+            }
+        }
+    ],
+    "WebRTC-PeerConnectionDTLS1.2": [
+        {
+            "group_name": "Enabled"
+        }
+    ]
+}

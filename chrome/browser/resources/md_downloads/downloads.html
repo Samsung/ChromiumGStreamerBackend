@@ -1,0 +1,41 @@
+<!doctype html>
+<html i18n-values="dir:textdirection;lang:language">
+<head>
+  <meta charset="utf-8">
+  <title i18n-content="title"></title>
+  <link rel="stylesheet" href="chrome://resources/css/roboto.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="import" href="chrome://resources/html/polymer_config.html">
+  <link rel="import" href="chrome://downloads/manager.html">
+  <style>
+    html {
+      background: #f2f2f2;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      font-family: Roboto;
+      font-size: 81.25%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <downloads-manager></downloads-manager>
+  <command id="clear-all-command" shortcut="Alt-U+0043"><!-- Alt+C -->
+<if expr="is_macosx">
+  <command id="undo-command" shortcut="Meta-U+005A"><!-- Command+Z -->
+</if>
+<if expr="not is_macosx">
+  <command id="undo-command" shortcut="Ctrl-U+005A"><!-- Ctrl+Z -->
+</if>
+  <link rel="import" href="chrome://resources/html/load_time_data.html">
+  <link rel="import" href="chrome://downloads/strings.html">
+  <link rel="import" href="chrome://resources/html/i18n_template.html">
+</body>
+</html>

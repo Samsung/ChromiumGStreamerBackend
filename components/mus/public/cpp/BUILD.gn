@@ -1,0 +1,85 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/mojo/src/mojo/public/mojo_sdk.gni")
+
+mojo_sdk_source_set("cpp") {
+  restrict_external_deps = false
+  sources = [
+    "context_provider.h",
+    "event_matcher.h",
+    "lib/context_provider.cc",
+    "lib/event_matcher.cc",
+    "lib/output_surface.cc",
+    "lib/property_type_converters.cc",
+    "lib/scoped_window_ptr.cc",
+    "lib/window.cc",
+    "lib/window_observer.cc",
+    "lib/window_private.cc",
+    "lib/window_private.h",
+    "lib/window_surface.cc",
+    "lib/window_tree_client_impl.cc",
+    "lib/window_tree_client_impl.h",
+    "lib/window_tree_delegate.cc",
+    "lib/window_tree_host_factory.cc",
+    "output_surface.h",
+    "property_type_converters.h",
+    "scoped_window_ptr.h",
+    "window.h",
+    "window_observer.h",
+    "window_property.h",
+    "window_surface.h",
+    "window_surface_client.h",
+    "window_tracker.cc",
+    "window_tracker.h",
+    "window_tree_connection.h",
+    "window_tree_delegate.h",
+    "window_tree_host_factory.h",
+  ]
+
+  public_deps = [
+    ":common",
+    "../interfaces",
+    "//mojo/services/network/public/interfaces",
+  ]
+
+  deps = [
+    "//base",
+    "//cc",
+    "//cc/surfaces",
+    "//cc/surfaces:surface_id",
+    "//mojo/application/public/cpp",
+    "//mojo/application/public/interfaces",
+    "//mojo/converters/geometry",
+    "//mojo/converters/surfaces",
+    "//mojo/gles2:headers",
+    "//mojo/gpu:mojo_gles2_implementation",
+    "//third_party/mojo/src/mojo/public/cpp/environment",
+    "//third_party/mojo/src/mojo/public/cpp/system",
+    "//ui/gfx/geometry",
+    "//ui/mojo/events:interfaces",
+    "//ui/mojo/geometry:interfaces",
+  ]
+
+  mojo_sdk_deps = [
+    "mojo/public/c/gles2:headers",
+    "mojo/public/cpp/bindings:bindings",
+    "mojo/public/cpp/system",
+  ]
+
+  data_deps = [
+    "//components/mus",
+  ]
+}
+
+source_set("common") {
+  sources = [
+    "args.h",
+    "keys.cc",
+    "keys.h",
+    "lib/args.cc",
+    "types.h",
+    "util.h",
+  ]
+}

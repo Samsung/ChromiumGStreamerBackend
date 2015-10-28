@@ -1,0 +1,19 @@
+include_rules = [
+  "+components/constrained_window",
+  "+components/drive/drive_pref_names.h",
+  "+components/pairing",
+  "+components/onc",
+  "+components/ownership",
+  "+components/user_manager",
+  "+components/wallpaper",
+  "+cros",
+  "+dbus",
+  "+device/bluetooth",
+  "+media/audio/sounds",  # For system sounds
+  "+media/base/media_switches.h",  # For media command line switches.
+  "+media/mojo/interfaces",  # For platform verification mojom interface.
+  "+ui/ozone/public",
+
+  # Other libraries.
+  "+third_party/libjingle",
+]

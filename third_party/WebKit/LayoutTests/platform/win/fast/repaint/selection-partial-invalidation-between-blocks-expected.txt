@@ -1,0 +1,27 @@
+{
+  "bounds": [800, 600],
+  "children": [
+    {
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "repaintRects": [
+        [11, 33, 79, 17],
+        [11, 11, 61, 17],
+        [11, 11, 57, 17]
+      ],
+      "paintInvalidationClients": [
+        "LayoutBlockFlow HTML",
+        "LayoutBlockFlow BODY",
+        "LayoutTable TABLE",
+        "LayoutTableCell TD id='firstCell'",
+        "LayoutText #text",
+        "InlineTextBox 'First cell'",
+        "LayoutTableCell TD id='secondCell'",
+        "LayoutText #text",
+        "InlineTextBox 'Second cell'"
+      ]
+    }
+  ]
+}
+

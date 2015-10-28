@@ -1,0 +1,21 @@
+<!--
+@MAC-ALLOW:AXRole*
+@MAC-ALLOW:AXPlaceholder*
+@WIN-ALLOW:text-input-type*
+@WIN-ALLOW:IA2_STATE*
+@WIN-ALLOW:caret_offset*
+@WIN-ALLOW:n_selections*
+@WIN-ALLOW:selection_start*
+@WIN-ALLOW:selection_end*
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+    <input type="text" value="Selection">
+    <script>
+      var input = document.querySelector("input");
+      input.focus();
+      input.setSelectionRange(3, 5);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/mojo_application.gni")
+import("//third_party/mojo/src/mojo/public/tools/bindings/mojom.gni")
+
+mojo_native_application("phone_ui") {
+  sources = [
+    "main.cc",
+  ]
+
+  deps = [
+    ":lib",
+    "//mojo/application/public/cpp",
+    "//components/web_view:web_view",
+  ]
+}
+
+source_set("lib") {
+  sources = [
+    "phone_browser_application_delegate.cc",
+    "phone_browser_application_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/mus/public/cpp",
+    "//components/mus/public/interfaces",
+    "//components/web_view/public/cpp",
+    "//components/web_view/public/interfaces",
+    "//mandoline/ui/desktop_ui/public/interfaces",
+    "//mojo/application/public/cpp",
+    "//mojo/common",
+    "//mojo/converters/geometry",
+    "//third_party/mojo/src/mojo/public/cpp/bindings",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+}

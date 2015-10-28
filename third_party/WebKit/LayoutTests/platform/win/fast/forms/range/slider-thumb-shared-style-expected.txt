@@ -1,0 +1,31 @@
+layer at (0,0) size 800x600
+  LayoutView at (0,0) size 800x600
+layer at (0,0) size 800x600
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (8,8) size 784x584
+      LayoutBlockFlow {P} at (0,0) size 784x18
+        LayoutText {#text} at (0,0) size 54x17
+          text run at (0,0) width 54: "Test for "
+        LayoutInline {I} at (0,0) size 717x17
+          LayoutInline {A} at (0,0) size 305x17 [color=#0000EE]
+            LayoutText {#text} at (53,0) size 305x17
+              text run at (53,0) width 305: "http://bugs.webkit.org/show_bug.cgi?id=13800"
+          LayoutText {#text} at (357,0) size 413x17
+            text run at (357,0) width 5: " "
+            text run at (361,0) width 409: "REGRESSION: Moving a slider moves another unrelated slider"
+        LayoutText {#text} at (769,0) size 5x17
+          text run at (769,0) width 5: "."
+      LayoutBlockFlow {P} at (0,34) size 784x18
+        LayoutText {#text} at (0,0) size 289x17
+          text run at (0,0) width 289: "The first slider\x{2019}s thumb should be on the left."
+      LayoutBlockFlow {DIV} at (0,68) size 784x50
+        LayoutSlider {INPUT} at (2,2) size 129x21 [color=#C4C4C4] [bgcolor=#FFFFFF]
+          LayoutFlexibleBox {DIV} at (0,0) size 129x21
+            LayoutBlockFlow {DIV} at (0,0) size 129x21
+              LayoutBlockFlow {DIV} at (0,0) size 11x21
+        LayoutBR {BR} at (133,23) size 0x0
+        LayoutSlider {INPUT} at (2,27) size 129x21 [color=#C4C4C4] [bgcolor=#FFFFFF]
+          LayoutFlexibleBox {DIV} at (0,0) size 129x21
+            LayoutBlockFlow {DIV} at (0,0) size 129x21
+              LayoutBlockFlow {DIV} at (118,0) size 11x21
+        LayoutText {#text} at (0,0) size 0x0

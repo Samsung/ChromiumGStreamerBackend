@@ -1,0 +1,47 @@
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="chrome://md-settings/controls/settings_checkbox.html">
+<link rel="import" href="chrome://md-settings/controls/settings_input.html">
+<link rel="import" href="chrome://md-settings/controls/settings_radio_group.html">
+
+<dom-module id="settings-appearance-page">
+  <link rel="import" type="css"
+      href="chrome://md-settings/settings_page/settings_page.css">
+  <link rel="import" type="css"
+      href="chrome://md-settings/appearance_page/appearance_page.css">
+  <link rel="import" type="css" href="chrome://resources/css/widgets.css">
+  <link rel="import" href="chrome://resources/html/action_link.html">
+  <template>
+    <div id="action-container">
+      <paper-button i18n-content="setWallpaper"></paper-button>
+      <paper-button id="get-themes" i18n-content="getThemes"
+          on-tap="openThemesGallery_">
+      </paper-button>
+      <paper-button id="resetTheme" i18n-content="resetToDefaultTheme" disabled
+          on-tap="resetTheme_">
+      </paper-button>
+    </div>
+    <hr>
+    <settings-checkbox pref="{{prefs.browser.show_home_button}}"
+        i18n-values="label:showHomeButton">
+    </settings-checkbox>
+    <template is="dom-if" if="{{prefs.browser.show_home_button.value}}">
+      <settings-radio-group pref="{{prefs.homepage_is_newtabpage}}">
+        <paper-radio-button name="true"
+            >[[i18n_.homePageNtp]]</paper-radio-button>
+        <paper-radio-button name="false"
+            >[[i18n_.openThisPage]]</paper-radio-button>
+      </settings-radio-group>
+      <div class="radio-extended">
+        <settings-input no-label-float pref="{{prefs.homepage}}"
+            label="[[i18n_.onStartupEnterUrl]]">
+        </settings-input>
+      </div>
+    </template>
+    <settings-checkbox pref="{{prefs.bookmark_bar.show_on_all_tabs}}"
+        i18n-values="label:showBookmarksBar">
+    </settings-checkbox>
+  </template>
+  <script src="appearance_page.js"></script>
+</dom-module>

@@ -1,0 +1,104 @@
+<link rel="import" href="chrome://resources/polymer/v1_0/polymer/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/neon-animation/neon-animatable.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="chrome://md-settings/certificate_manager_page/certificate_manager_page.html">
+<link rel="import" href="chrome://md-settings/clear_browsing_data_page/clear_browsing_data_page.html">
+<link rel="import" href="chrome://md-settings/controls/settings_checkbox.html">
+<link rel="import" href="chrome://md-settings/settings_page/settings_animated_pages.html">
+<link rel="import" href="chrome://md-settings/settings_page/settings_subheader.html">
+<link rel="import" href="chrome://md-settings/site_settings_page/site_settings_page.html">
+
+<dom-module id="settings-privacy-page">
+  <link rel="import" type="css"
+      href="chrome://md-settings/settings_page/settings_page.css">
+  <link rel="import" type="css" href="privacy_page.css">
+  <template>
+    <settings-animated-pages id="pages" current-route="{{currentRoute}}"
+        section="privacy">
+      <neon-animatable id="main">
+        <p class="privacy-explanation"
+            i18n-values=".innerHTML:improveBrowsingExperience">
+        </p>
+        <settings-checkbox
+            pref="{{prefs.alternate_error_pages.enabled}}"
+            i18n-values="label:linkDoctorPref">
+        </settings-checkbox>
+        <settings-checkbox
+            pref="{{prefs.search.suggest_enabled}}"
+            i18n-values="label:searchSuggestPref">
+        </settings-checkbox>
+        <settings-checkbox
+            pref="{{prefs.net.network_prediction_options}}"
+            i18n-values="label:networkPredictionEnabled">
+        </settings-checkbox>
+        <settings-checkbox
+            pref="{{prefs.safebrowsing.extended_reporting_enabled}}"
+            i18n-values="label:safeBrowsingEnableExtendedReporting">
+        </settings-checkbox>
+        <settings-checkbox pref="{{prefs.safebrowsing.enabled}}"
+            i18n-values="label:safeBrowsingEnableProtection">
+        </settings-checkbox>
+<if expr="_google_chrome">
+        <settings-checkbox
+            pref="{{prefs.spellcheck.use_spelling_service}}"
+            i18n-values="label:spellingPref">
+        </settings-checkbox>
+<if expr="chromeos">
+        <settings-checkbox
+            pref="{{prefs.cros.metrics.reportingEnabled}}"
+            i18n-values="label:enableLogging">
+        </settings-checkbox>
+</if>
+        <!-- TODO(jlklein): Add non-chromeos metrics box. -->
+</if>
+        <settings-checkbox pref="{{prefs.enable_do_not_track}}"
+            i18n-values="label:doNotTrack">
+        </settings-checkbox>
+<if expr="chromeos">
+        <settings-checkbox
+            pref="{{prefs.cros.device.attestation_for_content_protection_enabled}}"
+            i18n-values="label:enableContentProtectionAttestation">
+        </settings-checkbox>
+        <settings-checkbox
+            pref="{{prefs.settings.internet.wake_on_wifi_ssid}}"
+            i18n-values="label:wakeOnWifi">
+        </settings-checkbox>
+</if>
+        <div class="privacy-buttons layout horizontal end-justified">
+          <paper-button
+              on-tap="onManageCertificatesTap_"
+              i18n-content="manageCertificates">
+          </paper-button>
+          <paper-button
+              on-tap="onSiteSettingsTap_"
+              i18n-content="siteSettings">
+          </paper-button>
+          <paper-button
+              on-tap="onClearBrowsingDataTap_"
+              raised i18n-content="clearBrowsingData">
+          </paper-button>
+        </div>
+      </neon-animatable>
+      <neon-animatable id="manage-certificates">
+        <settings-subheader i18n-values="page-title:manageCertificates">
+        </settings-subheader>
+        <settings-certificate-manager-page>
+        </settings-certificate-manager-page>
+      </neon-animatable>
+      <neon-animatable id="site-settings">
+        <settings-subheader i18n-values="page-title:siteSettings">
+        </settings-subheader>
+        <settings-site-settings-page></settings-site-settings-page>
+      </neon-animatable>
+      <neon-animatable id="clear-browsing-data">
+        <settings-subheader i18n-values="page-title:clearBrowsingData">
+        </settings-subheader>
+        <settings-clear-browsing-data-page prefs="{{prefs}}">
+        </settings-clear-browsing-data-page>
+      </neon-animatable>
+    </settings-animated-pages>
+  </template>
+  <script src="privacy_page.js"></script>
+</dom-module>

@@ -1,0 +1,93 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file can be empty. Its purpose is to contain the relatively short lived
+// definitions required for experimental flags.
+
+#include "ios/chrome/browser/experimental_flags.h"
+
+#import <Foundation/Foundation.h>
+
+#include <string>
+
+#include "base/command_line.h"
+#include "base/strings/string_util.h"
+#include "components/enhanced_bookmarks/enhanced_bookmark_features.h"
+#include "components/variations/variations_associated_data.h"
+#include "ios/chrome/browser/chrome_switches.h"
+#include "ios/web/public/web_view_creation_util.h"
+
+namespace {
+NSString* const kEnableAlertOnBackgroundUpload =
+    @"EnableAlertsOnBackgroundUpload";
+NSString* const kEnableViewCopyPasswords = @"EnableViewCopyPasswords";
+}  // namespace
+
+namespace experimental_flags {
+
+bool IsAlertOnBackgroundUploadEnabled() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kEnableAlertOnBackgroundUpload];
+}
+
+bool IsExternalURLBlockingEnabled() {
+  std::string group_name =
+      base::FieldTrialList::FindFullName("IOSBlockUnpromptedExternalURLs");
+
+  // Check if the experimental flag is turned on.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          switches::kEnableIOSBlockUnpromptedExternalURLs)) {
+    return true;
+  } else if (command_line->HasSwitch(
+                 switches::kDisableIOSBlockUnpromptedExternalURLs)) {
+    return false;
+  }
+
+  // Check if the finch experiment is turned on.
+  return !base::StartsWith(group_name, "Disabled",
+                           base::CompareCase::INSENSITIVE_ASCII);
+}
+
+bool IsBookmarkCollectionEnabled() {
+  return enhanced_bookmarks::IsEnhancedBookmarksEnabled();
+}
+
+bool IsWKWebViewEnabled() {
+  // If WKWebView isn't supported, don't activate the experiment at all. This
+  // avoids someone being slotted into the WKWebView bucket (and thus reporting
+  // as WKWebView), but actually running UIWebView.
+  if (!web::IsWKWebViewSupported())
+    return false;
+
+  std::string group_name =
+      base::FieldTrialList::FindFullName("IOSUseWKWebView");
+
+  // First check if the experimental flag is turned on.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kEnableIOSWKWebView)) {
+    return true;
+  } else if (command_line->HasSwitch(switches::kDisableIOSWKWebView)) {
+    return false;
+  }
+
+  // Check if the finch experiment is turned on.
+  return base::StartsWith(group_name, "Enabled",
+                          base::CompareCase::INSENSITIVE_ASCII);
+}
+
+bool AreKeyboardCommandsEnabled() {
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kDisableKeyboardCommands);
+}
+
+bool IsViewCopyPasswordsEnabled() {
+  NSString* viewCopyPasswordFlag = [[NSUserDefaults standardUserDefaults]
+      objectForKey:kEnableViewCopyPasswords];
+  if ([viewCopyPasswordFlag isEqualToString:@"Enabled"])
+    return true;
+  return false;
+}
+
+}  // namespace experimental_flags

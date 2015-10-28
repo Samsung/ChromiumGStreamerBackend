@@ -1,0 +1,142 @@
+/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+#gaia-signin {
+  height: 528px;
+  width: 448px;
+}
+
+#gaia-signin.full-width {
+  padding: 47px 0 0;
+  width: 562px;
+}
+
+#saml-info-container {
+  font-size: 12px;
+}
+
+#close-button-item,
+#back-button-item {
+  color: white;
+  position: absolute;
+  top: 10px;
+  z-index: 1;
+}
+
+#close-button-item[disabled],
+#back-button-item[disabled] {
+  color: rgb(127, 127, 127);
+}
+
+#close-button-item {
+  right: 10px;
+}
+
+#back-button-item {
+  left: 10px;
+}
+
+html[dir=rtl] #close-button-item {
+  left: 10px;
+  right: auto;
+}
+
+html[dir=rtl] #back-button-item {
+  -webkit-transform: scaleX(-1);
+  left: auto;
+  right: 10px;
+}
+
+.loading #close-button-item,
+.full-width #close-button-item {
+  color: rgba(0, 0, 0, .54);
+}
+
+.full-width #back-button-item {
+  display: none;
+}
+
+.loading.auth-completed #close-button-item {
+  display: none;
+}
+
+.signin-link {
+  color: rgb(37, 79, 155);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.signin-link:focus {
+  -webkit-transition: outline-color 200ms;
+  /* Note: May use 1px solid here. */
+  outline-color: rgb(77, 144, 254);
+}
+
+#gaia-signin-form-container,
+#signin-frame {
+  height: 100%;
+  width: 100%;
+}
+
+.gaia-signin #step-logo {
+  display: none;
+}
+
+#signin-frame {
+  display: block;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 500ms ease-in;
+}
+
+#signin-frame.show {
+  opacity: 1;
+  transition: opacity 500ms ease-out;
+}
+
+#gaia-signin .step-contents {
+  -webkit-box-pack: center;
+  display: -webkit-box;
+  height: 100%;
+}
+
+#saml-notice-container {
+  -webkit-margin-start: 19px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  text-align: start;
+  top: 15px;
+}
+
+#saml-notice-message {
+  color: rgb(106, 106, 106);
+  font-size: 13px;
+  margin: 0 auto;
+}
+
+#gaia-whitelist-error {
+  bottom: 0;
+  display: block;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  visibility: hidden;
+}
+
+.whitelist-error #gaia-whitelist-error {
+  visibility: visible;
+}
+
+#gaia-signin.whitelist-error .step-contents {
+  visibility: hidden;
+}
+
+#gaia-signin.whitelist-error .step-loading {
+  visibility: hidden;
+}
+

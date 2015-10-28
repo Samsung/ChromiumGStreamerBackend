@@ -1,0 +1,50 @@
+/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.blocking {
+  background-color: white;
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+}
+
+.blocking > #buttons {
+  padding-bottom: 24px;
+  padding-top: 20px;
+}
+
+.blocking > div > #title {
+  color: rgba(0, 0, 0, 0.87);
+  line-height: 1.125em;
+  padding: 10px;
+  vertical-align: middle;
+}
+
+#blocking-icon {
+  color: rgb(219, 68, 55);
+  height: 75px;
+  padding-top: 24px;
+  width: 75px;
+}
+
+.non-blocking {
+  background-color: rgb(66, 66, 66);
+  overflow: hidden;
+  padding: 16px;
+}
+
+.non-blocking > #buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.non-blocking > div > #title {
+  color: rgba(255, 255, 255, 0.87);
+}
+
+paper-button {
+  margin: 0;
+}
