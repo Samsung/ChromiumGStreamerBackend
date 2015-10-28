@@ -4,7 +4,7 @@ Chromium GStreamer Backend
 [Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [MSE](#mse), [GstPlayer](https://github.com/sdroege/gst-player/commits/master), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Tips](#tips), [Maintenance](#maintenance), [Issues](#issues), [Roadmap](#roadmap)
 
 ### Current branching point from official chromium/src  ###
-d5ac7d52b323d04178bba9cc746c623438d48751 (Thu Oct 22)
+1c62327db90915de73cecf256f06cffc567a0be1 (Tue Oct 27)
 
 ### Project description ###
 This is an experimental project that aims to have GStreamer as media player in Chromium browser.
@@ -227,12 +227,12 @@ NO_AUTH_BOTO_CONFIG=~/.boto gclient runhooks
 # We use "git replace" to allow rebasing between our truncated branch and original branch.
 
 # fake our branch point because we truncated the history
-git replace 841b94e0dcafb5a983060fb1413f7a222f9bc768 d5ac7d52b323d04178bba9cc746c623438d48751
+git replace 2b332f507cc9739715b523778183ad20e64a8fcd 1c62327db90915de73cecf256f06cffc567a0be1
 
 # replay chromium original upstream commits on top of our branch with truncated history
 git checkout NEW_ORIGIN_SHA
 git checkout -b master_new
-git rebase 841b94e0dcafb5a983060fb1413f7a222f9bc768
+git rebase 2b332f507cc9739715b523778183ad20e64a8fcd
 git replace $(git rev-parse HEAD) NEW_ORIGIN_SHA
 
 # replay gst backend
