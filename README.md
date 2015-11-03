@@ -1,7 +1,7 @@
 Chromium GStreamer Backend
 ==========================
 
-[Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [MSE](#mse), [GstPlayer](https://github.com/sdroege/gst-player/commits/master), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Tips](#tips), [Maintenance](#maintenance), [Issues](#issues), [Roadmap](#roadmap)
+[Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [MSE](#mse), [EME](#eme), [Zero-Copy](#zero-copy), [GstPlayer](https://github.com/sdroege/gst-player/commits/master), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Tips](#tips), [Maintenance](#maintenance), [UnitTests](#build-and-run-unit-tests), [Upstream](#contributing-to-upstream-chromium), [Issues](#issues-and-roadmap), [GstConf2015](#talk-at-gstreamer-conference-2015)
 
 ### Current branching point from official chromium/src  ###
 1c62327db90915de73cecf256f06cffc567a0be1 (Tue Oct 27)
@@ -16,33 +16,18 @@ Each [HTML5 video tag](http://www.w3schools.com/html/html5_video.asp) is backed 
 ### Licence ###
 Same as official chromium/src source code: [here](https://chromium.googlesource.com/chromium/src.git/+/master/LICENSE).
 
-### Warning ###
-Please do not take this project as ready to use and full featured. There is a lot of work to do to reach that point.
-We wanted to opensource our researches as soon as we could play basic videos with sandbox activated.
-We want to discuss the architecture with anyone interested in this project.
-We are open to any change related to the design or to the implementation.
-There are choices we made that need to be discussed or re-considered, see [issues](#issues) and [roadmap](#roadmap).
+### Current supported features ###
+* Progressive streaming (http)  
+* Adaptive streaming (hls, dash)  
+* Media Source Extension (Youtube)  
+* Encrypted Media Extension (Protected content)  
+* Zero-copy (dmabuf export / EGLImage import / Cross process)  
 
-### Status ###
-20/07/2015: Can play classic html5 videos and Youtube. It supports MSE without seeking for now like WebKitGTK.  
-05/10/2015: EME is working. Zerocopy too (dmabuf export from Media Process, EGLImage_dmabuf import from GPU Process).
-
-``` bash
-# Progressive streaming:
-http://www.w3schools.com/html/mov_bbb.ogg
-http://www.w3schools.com/html/html5_video.asp
-
-<video width="560" height="320" controls>
-    <source src="http://video.webmfiles.org/big-buck-bunny_trailer.webm" type="video/webm">
-</video>
-
-# Adaptive streaming
-<!-- HLS -->
-<video width="480" height="360" controls>
-    <source src="http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8" type="application/x-mpegURL">
-</video>
-
-```
+### Talk at GStreamer Conference 2015 ###
+* Live: [Link1](https://gstconf.ubicast.tv/videos/chromium-a-new-media-backend-based-on-gstreamer_/)
+[Link2](https://gstconf.ubicast.tv/permalink/v1253c6ef409dqo1vb5r/)  
+* Slides: [Link1](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_gstreamer_backend.pdf)
+[Link2](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_gstreamer_backend.odp)
 
 ### List of modified and added files ###
 05/10/2015: (just to give an idea of the delta from official chromium/src)  
@@ -51,7 +36,7 @@ http://www.w3schools.com/html/html5_video.asp
 git diff --diff-filter=AM --stat sha-1 HEAD  
 
 ### Build ###
-Start from a working build of official [Chromium Browser](https://code.google.com/p/chromium/wiki/LinuxBuildInstructions).
+Start from a working build of official [Chromium Browser](https://chromium.googlesource.com/chromium/src/+/master/docs/linux_build_instructions.md).
 Then refer to this [section](#build-steps) to build the Chromium GStreamer Backend.
 
 ### Media Process overview ###
@@ -146,15 +131,60 @@ to ChromiumCommonEncryptionDecrypt element, which unblocks and starts decrypting
 
 ![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_media_process_eme.png?raw=true)
 
+__  
+
+### Zero-Copy ###
+
+[Khronos specification](https://www.khronos.org/registry/egl/extensions/EXT/EGL_EXT_image_dma_buf_import.txt).
+
+The main idea is to keep decoded frames in GPU memory all the time. In other words, any round trip to CPU memory has to be avoided.
+As the rendering is done through OpenGL, the decoded surface has to be converted to a GL texture.
+
+2 solutions depending on the HW:
+* Export the HW decoded surface as a DMA buffer in Media Process. Then import the DMA buffer into an EGLImage in GPU Process.
+When using [VA-API](http://cgit.freedesktop.org/libva/) and [gstreamer-vaapi](https://github.com/01org/gstreamer-vaapi/commits/master)
+it means exporting the surface using VaAcquireBufferHandle and importing the DMA buffer using EGL_EXT_image_dma_buf_import in the GPU Process.
+* Export from GPU Process using [EGL_MESA_image_dma_buf_export](https://www.khronos.org/registry/egl/extensions/MESA/EGL_MESA_image_dma_buf_export.txt)
+and import in Media Process. This second way is required when using [gst-omx](http://cgit.freedesktop.org/gstreamer/gst-omx/)
+that wraps [OpenMAX](https://www.khronos.org/openmax/il/)
+
+In our experimentation we have selected the first solution because EGL_EXT_image_dma_buf_import is in EXT.  
+Whereas EGL_MESA_image_dma_buf_export is still under MESA specific extension. Though it should move to EXT as some point.
+To experiment that on desktop openmax backend provided by Gallium3D needs to support [Tizonia](https://github.com/tizonia/tizonia-openmax-il/issues/116) first instead of Bellagio.
+It will be similar improvements we made for [vaapi backend provided by Gallium3D](http://cgit.freedesktop.org/mesa/mesa/log/?qt=author&q=Julien+Isorce).
+
+For additional information see slides 17, 18, 19, 20 and the Demo2 from [live](https://gstconf.ubicast.tv/permalink/v1253c6ef409dqo1vb5r/) or
+[slides](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_gstreamer_backend.pdf)
+
+The following diagram exposes the call stack using Gallium drivers ("nouveau" in this case) but we also support intel vaapi driver.
+In theory it should work on AMD gpu because our solution is generic in a sense that we support all Gallium drivers.
+![](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_media_process_zero_copy.png?raw=true)
+
 __
+
+### HTML5 video element ###
+``` bash
+# Progressive streaming:
+http://www.w3schools.com/html/mov_bbb.ogg
+http://www.w3schools.com/html/html5_video.asp
+
+<video width="560" height="320" controls>
+    <source src="http://video.webmfiles.org/big-buck-bunny_trailer.webm" type="video/webm">
+</video>
+
+# Adaptive streaming
+<!-- HLS -->
+<video width="480" height="360" controls>
+    <source src="http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8" type="application/x-mpegURL">
+</video>
+
+```
 
 ### Build steps ###
 ``` bash
 # GStreamer
-gstreamer >= 1.5.2 is required because of GstGL dependency. Required GstGL feature is not present in 1.5.1
-For EME tests to work a patch from https://bug705991.bugzilla-attachments.gnome.org/attachment.cgi?id=309139
-has to be applied manually in gst-plugins-good.
-GstPlayer: git clone https://github.com/sdroege/gst-player.git
+gstreamer >= 1.6 is required.
+GstPlayer: git clone https://github.com/sdroege/gst-player.git (should be merged in gstreamer 1.8)
 
 # clone official chromium repositories
 git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git (then add it in front of your PATH)
@@ -167,37 +197,42 @@ gclient sync # see proxy section
 gclient runhooks # see proxy section
 build/install-build-deps.sh
 
-# go to chromium/src
+# go to chromium/src and build everything.
 cd src
 build/install-build-deps.sh
+ninja -C out/Release chrome
 
-# checkout GStreamer Chromium Backend
+# checkout Chromium GStreamer Backend
 git remote add github_gstbackend https://github.com/Samsung/ChromiumGStreamerBackend
 git fetch github_gstbackend
 git checkout -b gstbackend --track github_gstbackend/master
-Then re-run the 2 previous blocks (rebase, sync, deps)
+git replace 2b332f507cc9739715b523778183ad20e64a8fcd 1c62327db90915de73cecf256f06cffc567a0be1
 
-# or replay it on top of your working branch (it creates a detached branch)
-echo "$(git rev-parse 2553ff05b802a94ef281e647874d37941eefd154~1) 64334b71ec2d2e4a8bf0cf5ca7e2dd18d90db0cb" >> .git/info/grafts
-git merge-base origin/master github_samsung/master
-git rebase --onto my_working_branch origin/master github_samsung/master
-
-# configure GYP (equivalent to ./autogen.sh or ./configure)
-GYP_DEFINES="linux_use_debug_fission=0 linux_use_bundled_binutils=0 clang=0 proprietary_codecs=1" build/gyp_chromium -D component=shared_library
-
-# build (we recommend to use icecc. We can do a fresh build of chromium browser in less than 10 min in release mode)
+# build Chromium GStreamer Backend
+cd .. # to go to root chromium directory
+git rebase-update
+gclient sync # see proxy section
+gclient runhooks # see proxy section
+cd src
+GYP_DEFINES="proprietary_codecs=1" build/gyp_chromium -D component=shared_library # if icecc then add linux_use_debug_fission=0 linux_use_bundled_binutils=0 clang=0
 ninja -C out/Release chrome chrome_sandbox -jN # if icecc -j60
 
 # Run without any sandbox
+./out/Release/chrome --no-sandbox http://www.w3schools.com/html/mov_bbb.ogg
+
+# Run while disabling setuid and media sandbox
 ./out/Release/chrome --disable-media-sandbox --disable-setuid-sandbox http://www.w3schools.com/html/mov_bbb.ogg
 
-# Run with sandbox
+# Run with all sandbox
 CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./out/Release/chrome http://www.w3schools.com/html/mov_bbb.ogg
 
-# Run with EME enabled
-Use additional flag to run EME tests: --enable-prefixed-encrypted-media
-For example:
-./out/Release/chrome --disable-media-sandbox --disable-setuid-sandbox --enable-prefixed-encrypted-media http://yt-dash-mse-test.commondatastorage.googleapis.com/unit-tests/2015.html
+# Run with EME enabled:
+./out/Release/chrome --no-sandbox --enable-prefixed-encrypted-media http://yt-dash-mse-test.commondatastorage.googleapis.com/unit-tests/2015.html
+
+# Run with zero-copy decoding/rendering:
+gst-inspect-1.0 vaapi
+LIBVA_DRIVER_NAME=gallium vainfo # or LIBVA_DRIVER_NAME=i965 if you have an intel gpu, uses gallium otherwise
+./out/Release/chrome --no-sandbox --use-gl=egl  http://www.w3schools.com/html/html5_video.asp
 ```
 
 ### Proxy ###
@@ -220,7 +255,7 @@ NO_AUTH_BOTO_CONFIG=~/.boto gclient runhooks
 # This file is not there anymore but it was there in the past.
 # Even using tools like "bfg --strip-blobs-bigger-than 50M" it will change all the next SHA
 # from the point it strips a file.
-# Also there no official chromium/src repo on github that we could fork.
+# Also there is no official chromium/src repo on github that we could fork.
 
 # solution: truncate history to a point where there is not file bigger than 100.00 MB in order
 # to push to github.
@@ -241,7 +276,8 @@ git rebase master_new
 git push github_gstbackend gstbackend:master --force
 
 # replace are located in .git/refs/replace/
-
+git replace -l
+git replace -d SHA
 ```
 
 ### Tips ###
@@ -268,8 +304,15 @@ CHROME_DEVEL_SANDBOX=out/Debug/chrome_sandbox ./out/Debug/chrome --media-startup
 ./out/Release/chrome --disable-media-sandbox --disable-setuid-sandbox --allow-sandbox-debugging --media-launcher='xterm -title renderer -e gdb --args'
 CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./out/Release/chrome --disable-render-sandbox --disable-gpu --disable-hang-monitor --media-startup-dialog --allow-sandbox-debugging  about:blank
 
+# Enable / disable gpu workarounds
+./out/Release/chrome --no-sandbox --use-gl=egl --use_virtualized_gl_contexts=0
+All workarounds are listed in chromium/src/gpu/config/gpu_driver_bug_workaround_type.h
+
 # disable all processes, i.e. make all processes running as in-process mode in browser process.
 --single-process
+
+# Run media process as in-process mode, so it will be thread in Browser Process
+--in-media-process
 
 # logs in debug mode
 DVLOG(level) in debug mode, DVLOG(1)
@@ -286,18 +329,34 @@ In gdb type: signal SIGUSR1 to resume pause and type c to continue
 Just run: git cl format, to indent latest commit.
 ```
 
-### Issues ###
-* Pulse audio client crashes when filtering system calls.
-* GstChromiumHttpSrc design has to be discussed regarding media::BufferedDataSource usage.
-* Registering ResourceMessageFilter in MediaProcessHost has to be discussed regarding setting-up its content::StoragePartition.
-* Random crashes regarding seeking. We suspect it highly depends on GstChromiumHttpSrc.
-* chrome://flags, kEnableGStreamerMediaBackend dynamic flag sometimes make the browser to crash when enabling, disabling.
-* Playing video from disk (file://) shows black frame.
-* Media Process can work as "In Process" mode when passing --in-process-media command line argument but it currently crashes.
+### Build and run unit tests ###
+```bash
+# build and run "content" unit tests
+ninja -C out/Release content_unittest
+./out/Release/content_unittests
 
-### Roadmap ###
-* Add seeking support for MSE. Need to review and try [multiappsrc](https://bugzilla.gnome.org/show_bug.cgi?id=725187).
-* Add support for gn build. (we only support gyp for now)
-* For development, pull and build GStreamer locally like it is done for WebKit using jhbuild. (For now we use system wide GStreamer)
-* Use ubercompositor in Media Process
+# build more group of unit tests at a time
+ninja -C out/Release media_blink_unittests content_unittests media_unittests base_unittests gl_unittests gpu_unittests
+
+# find other group of unit tests and run one
+find chromium/src -name "*unittests.isolate" :  ./media/blink/media_blink_unittests.isolate
+ninja -C out/Release media_blink_unittests
+
+# list all tests within "gpu" unit tests group
+./out/Release/gpu_unittests --gtest_list_tests
+
+# run all tests in "gpu" unit tests group that contains "TexSubImage2DFloatDoesClearOnGLES3"
+./out/Release/gpu_unittests --gtest_filter=*TexSubImage2DFloatDoesClearOnGLES3* --single-process-tests
+```
+
+### Contributing to upstream Chromium ###
+If you signed the CLA with a non gmail account then create a google account from that external email: [SignUpWithoutGmail](https://accounts.google.com/SignUpWithoutGmail)  
+Then sign in to codereview.chromium.org using the google account you just created.  
+Before uploading the patch run "depot-tools-auth login https://codereview.chromium.org" to authentificate using "OAuth2".  
+It should open a new tab in your browser starting by "localhost:8090" and after logged in it should be written: "The authentication flow has completed."
+Then you are ready to upload your patch by running "git cl upload".  
+
+### Issues and roadmap ###
+* Pulseaudio crashes when running in sandbox mode: [resolved](http://cgit.freedesktop.org/pulseaudio/pulseaudio/commit/?id=9817f396d5451070ba5c7ae7d11f7cc376911105)
+* See [issues tracker](https://github.com/Samsung/ChromiumGStreamerBackend/issues)
 
