@@ -214,8 +214,30 @@ git rebase-update
 gclient sync # see proxy section
 gclient runhooks # see proxy section
 cd src
+
+# 2 ways to generate ninja build files:
+GYP (old but stable so we recommend it for now) and GN (new from a few months)
+
+# Using GYP to generate ninja build files
 GYP_DEFINES="proprietary_codecs=1" build/gyp_chromium -D component=shared_library # if icecc then add linux_use_debug_fission=0 linux_use_bundled_binutils=0 clang=0
 ninja -C out/Release chrome chrome_sandbox -jN # if icecc -j60
+
+# Using GN to generate ninja build files
+gn clean out/mybuild/
+gn args out/mybuild --list
+gn args out/mybuild
+It should open a file then put the following flags inside:
+  is_debug = false
+  use_debug_fission = false
+  linux_use_bundled_binutils = false
+  is_clang = false
+  proprietary_codecs = true
+  is_component_build = true
+  enable_nacl = false
+  media_use_ffmpeg = false
+  media_use_libvpx = false
+  media_use_libwebm = false
+ninja -C out/mybuild chrome chrome_sandbox -jN # if icecc -j60
 
 # Run without any sandbox
 ./out/Release/chrome --no-sandbox http://www.w3schools.com/html/mov_bbb.ogg
@@ -347,14 +369,27 @@ ninja -C out/Release media_blink_unittests
 
 # run all tests in "gpu" unit tests group that contains "TexSubImage2DFloatDoesClearOnGLES3"
 ./out/Release/gpu_unittests --gtest_filter=*TexSubImage2DFloatDoesClearOnGLES3* --single-process-tests
+
+# list py tests
+./content/test/gpu/run_gpu_test.py list
+
+# run py tests
+CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./content/test/gpu/run_unittests.py
+CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./content/test/gpu/run_gpu_test.py gpu_process
 ```
 
 ### Contributing to upstream Chromium ###
+
+##### Contributor License Agreements (CLA) #####
 If you signed the CLA with a non gmail account then create a google account from that external email: [SignUpWithoutGmail](https://accounts.google.com/SignUpWithoutGmail)  
-Then sign in to codereview.chromium.org using the google account you just created.  
+
+##### Submitting a patch #####
+Sign in to codereview.chromium.org using the email account which one you used to sign the CLA.  
 Before uploading the patch run "depot-tools-auth login https://codereview.chromium.org" to authentificate using "OAuth2".  
 It should open a new tab in your browser starting by "localhost:8090" and after logged in it should be written: "The authentication flow has completed."
 Then you are ready to upload your patch by running "git cl upload".  
+To submit to a patch to an existing CL just type "git cl issue 1415793003" before uploading.  
+
 
 ### Issues and roadmap ###
 * Pulseaudio crashes when running in sandbox mode: [resolved](http://cgit.freedesktop.org/pulseaudio/pulseaudio/commit/?id=9817f396d5451070ba5c7ae7d11f7cc376911105)
