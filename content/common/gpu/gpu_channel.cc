@@ -1073,11 +1073,11 @@ scoped_refptr<gl::GLImage> GpuChannel::CreateImageForGpuMemoryBuffer(
 }
 
 #if defined(USE_GSTREAMER)
-scoped_refptr<gfx::GLImage> GpuChannel::CreateEGLImage(
+scoped_refptr<gl::GLImage> GpuChannel::CreateEGLImage(
     const gfx::Size& size,
     const std::vector<int32>& attributes,
     const std::vector<int32>& dmabuf_fds) {
-  scoped_refptr<gfx::GLImageEGL> image(new gfx::GLImageEGL(size));
+  scoped_refptr<gl::GLImageEGL> image(new gl::GLImageEGL(size));
 
   EGLint* attrs = const_cast<EGLint*>(attributes.data());
   for (size_t i = 0; i < 20; ++i) {
@@ -1094,7 +1094,7 @@ scoped_refptr<gfx::GLImage> GpuChannel::CreateEGLImage(
 
   if (!image->Initialize(EGL_LINUX_DMA_BUF_EXT,
                          static_cast<EGLClientBuffer>(nullptr), attrs))
-    return scoped_refptr<gfx::GLImageEGL>();
+    return scoped_refptr<gl::GLImageEGL>();
 
   return image;
 }
