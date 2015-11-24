@@ -20,6 +20,7 @@
 #include "content/common/media/media_channel_host.h"
 #include "content/common/media/media_player_messages_gstreamer.h"
 #include "content/common/media/media_process_launch_causes.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message_macros.h"
 #include "media/base/cdm_factory.h"
@@ -234,7 +235,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   void OnAddTextTrack(const TextTrackConfig& config,
                       const AddTextTrackDoneCB& done_cb);
 
-  void OnReleaseTexture(unsigned texture_id, uint32 release_sync_point);
+  void OnReleaseTexture(uint32 texture_id, const gpu::SyncToken& sync_token);
 
   void OnSetCurrentFrame(int width,
                          int height,
