@@ -478,8 +478,8 @@ scoped_refptr<media::VideoFrame> WebMediaPlayerGStreamer::GetCurrentFrame() {
 
 void WebMediaPlayerGStreamer::PutCurrentFrame() {}
 
-void WebMediaPlayerGStreamer::OnReleaseTexture(unsigned texture_id,
-                                               uint32 release_sync_point) {
+void WebMediaPlayerGStreamer::OnReleaseTexture(uint32 texture_id,
+                                               const gpu::SyncToken& sync_token) {
   gpu::gles2::GLES2Interface* gl = ::gles2::GetGLContext();
 
   if (!gl) {
@@ -487,7 +487,7 @@ void WebMediaPlayerGStreamer::OnReleaseTexture(unsigned texture_id,
     return;
   }
 
-  gl->WaitSyncPointCHROMIUM(release_sync_point);
+  gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
 
   message_dispatcher_.SendRealeaseTexture(texture_id);
 }
@@ -511,12 +511,12 @@ void WebMediaPlayerGStreamer::OnSetCurrentFrame(
 
   gpu::Mailbox mailbox;
   mailbox.SetName(name);
-  GLuint sync_point = gl->InsertSyncPointCHROMIUM();
+  gpu::SyncToken texture_mailbox_sync_token(gl->InsertSyncPointCHROMIUM());
 
   // TODO: use ubercompositor to avoid inheriting from cc::VideoFrameProvider
   // and to avoid creating media::VideoFrame::WrapNativeTexture here.
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapNativeTexture(
-      media::PIXEL_FORMAT_ARGB, gpu::MailboxHolder(mailbox, target, sync_point),
+      media::PIXEL_FORMAT_ARGB, gpu::MailboxHolder(mailbox, texture_mailbox_sync_token, target),
       media::BindToCurrentLoop(base::Bind(
           &WebMediaPlayerGStreamer::OnReleaseTexture, AsWeakPtr(), texture_id)),
       gfx::Size(width, height), gfx::Rect(width, height),
