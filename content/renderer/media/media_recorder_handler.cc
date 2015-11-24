@@ -104,11 +104,7 @@ bool MediaRecorderHandler::start(int timeslice) {
   media_stream_.videoTracks(video_tracks);
   media_stream_.audioTracks(audio_tracks);
 
-#if defined(MEDIA_DISABLE_LIBWEBM)
-  LOG(WARNING) << "No muxer available";
-  return false;
-#endif
-
+#if !defined(MEDIA_DISABLE_LIBWEBM)
   DCHECK(!webm_muxer_);
 
   if (video_tracks.isEmpty() && audio_tracks.isEmpty()) {
@@ -121,6 +117,10 @@ bool MediaRecorderHandler::start(int timeslice) {
       video_tracks.size() > 0, audio_tracks.size() > 0,
       base::Bind(&MediaRecorderHandler::WriteData,
                  weak_factory_.GetWeakPtr())));
+#else
+  LOG(WARNING) << "No muxer available";
+  return false;
+#endif
 
   if (!video_tracks.isEmpty()) {
     // TODO(mcasas): The muxer API supports only one video track. Extend it to
@@ -209,8 +209,11 @@ void MediaRecorderHandler::OnEncodedAudio(const media::AudioParameters& params,
                                           scoped_ptr<std::string> encoded_data,
                                           base::TimeTicks timestamp) {
   DCHECK(main_render_thread_checker_.CalledOnValidThread());
+
+#if !defined(MEDIA_DISABLE_LIBWEBM)
   if (webm_muxer_)
     webm_muxer_->OnEncodedAudio(params, encoded_data.Pass(), timestamp);
+#endif
 }
 
 void MediaRecorderHandler::WriteData(base::StringPiece data) {
