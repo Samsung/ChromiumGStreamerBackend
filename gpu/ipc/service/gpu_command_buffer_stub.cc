@@ -1084,7 +1084,7 @@ void GpuCommandBufferStub::OnCreateEGLImage(
     return;
   }
 
-  scoped_refptr<gfx::GLImage> image =
+  scoped_refptr<gl::GLImage> image =
       channel()->CreateEGLImage(size, attributes, dmabuf_fds_);
   dmabuf_fds_[0] = dmabuf_fds_[1] = dmabuf_fds_[2] = 0;
   if (!image.get()) {
