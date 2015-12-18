@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/lazy_instance.h"
 #include "content/common/gpu/client/command_buffer_proxy_impl.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -17,23 +18,58 @@
 
 namespace content {
 
-EGLImageKHR CreateEGLImageKHR(EGLDisplay dpy,
-                              EGLContext ctx,
-                              EGLenum target,
-                              EGLClientBuffer buffer,
-                              const EGLint* attrib_list) {
+static base::LazyInstance<CommandBufferProxyImpl*>
+    g_thread_safe_cmd_impl = LAZY_INSTANCE_INITIALIZER;
+
+bool ClientEGL_SetupCommandBufferProxy()
+{
   gpu::gles2::GLES2Interface* gl_interface = ::gles2::GetGLContext();
 
   if (!gl_interface) {
-    NOTREACHED() << "eglCreateImageKHR, no gl interface";
-    return EGL_NO_IMAGE_KHR;
+    NOTREACHED() << "clientEglSetCommandBufferProxy, no gl interface";
+    return false;
   }
 
   gpu::gles2::GLES2Implementation* gl_impl =
       reinterpret_cast<gpu::gles2::GLES2Implementation*>(gl_interface);
 
   if (!gl_impl) {
-    NOTREACHED() << "eglCreateImageKHR, no gles impl";
+    NOTREACHED() << "clientEglSetCommandBufferProxy, no gles impl";
+    return false;
+  }
+
+  gpu::GpuControl* gpu_ctrl = gl_impl->gpu_control();
+
+  if (!gpu_ctrl) {
+    NOTREACHED() << "ClientEGL_SetupCommandBufferProxy, no gpu control";
+    return false;
+  }
+
+  if (gpu_ctrl->IsGpuChannelLost()) {
+    NOTREACHED() << "ClientEGL_SetupCommandBufferProxy, gpu channel is lost";
+    return false;
+  }
+
+  content::CommandBufferProxyImpl* cmd_impl =
+      static_cast<content::CommandBufferProxyImpl*>(gpu_ctrl);
+
+  if (!cmd_impl) {
+    NOTREACHED() << "ClientEGL_SetupCommandBufferProxy, no cmd buffer proxy";
+    return false;
+  }
+
+  g_thread_safe_cmd_impl.Get() = cmd_impl;
+
+  return true;
+}
+
+EGLImageKHR CreateEGLImageKHR(EGLDisplay dpy,
+                              EGLContext ctx,
+                              EGLenum target,
+                              EGLClientBuffer buffer,
+                              const EGLint* attrib_list) {
+  if (!g_thread_safe_cmd_impl.Get()) {
+    NOTREACHED() << "eglCreateImageKHR, no cmd buffer proxy";
     return EGL_NO_IMAGE_KHR;
   }
 
@@ -93,27 +129,7 @@ EGLImageKHR CreateEGLImageKHR(EGLDisplay dpy,
     return EGL_NO_IMAGE_KHR;
   }
 
-  gpu::GpuControl* gpu_ctrl = gl_impl->gpu_control();
-
-  if (!gpu_ctrl) {
-    NOTREACHED() << "eglCreateImageKHR, no gpu control";
-    return EGL_NO_IMAGE_KHR;
-  }
-
-  if (gpu_ctrl->IsGpuChannelLost()) {
-    NOTREACHED() << "eglCreateImageKHR, gpu channel is lost";
-    return EGL_NO_IMAGE_KHR;
-  }
-
-  content::CommandBufferProxyImpl* cmd_impl =
-      static_cast<content::CommandBufferProxyImpl*>(gpu_ctrl);
-
-  if (!cmd_impl) {
-    NOTREACHED() << "eglCreateImageKHR, no command buffer proxy";
-    return EGL_NO_IMAGE_KHR;
-  }
-
-  int32_t image_id = cmd_impl->CreateEGLImage(
+  int32_t image_id = g_thread_safe_cmd_impl.Get()->CreateEGLImage(
       width, height,
       std::vector<int32_t>(attrib_list, attrib_list + nb_attribs), dmabuf_fds);
 
