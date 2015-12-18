@@ -549,7 +549,7 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
 
   samples_[texture_id] = gst_sample_ref(sample);
 
-  target = ((GstGLMemory*)(gst_buffer_peek_memory(buf, 0)))->tex_target;
+  target = gst_gl_texture_target_to_gl(gst_gl_memory_get_texture_target(GST_GL_MEMORY_CAST(gst_buffer_peek_memory(buf, 0))));
 
   gpu::gles2::GLES2Interface* gl = ::gles2::GetGLContext();
 
