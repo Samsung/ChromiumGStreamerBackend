@@ -579,6 +579,8 @@ int32_t CommandBufferProxyImpl::CreateEGLImage(
       return -1;
   }
 
+  // GpuChannelHost has a thread safe sender sync_filter_ so it is fine to call
+  // it from any thread. It matchs usage of eglCreateImage with EGL_NO_CONTEXT.
   if (!Send(msg)) {
     return -1;
   }

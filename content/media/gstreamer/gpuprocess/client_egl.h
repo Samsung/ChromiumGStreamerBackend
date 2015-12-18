@@ -15,6 +15,8 @@ typedef void* EGLClientBuffer;
 typedef int EGLint;
 typedef void* EGLImageKHR;
 
+bool ClientEGL_SetupCommandBufferProxy();
+
 EGLImageKHR CreateEGLImageKHR(EGLDisplay dpy,
                               EGLContext ctx,
                               EGLenum target,
