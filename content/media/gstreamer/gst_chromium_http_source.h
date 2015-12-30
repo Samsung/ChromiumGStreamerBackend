@@ -64,23 +64,20 @@ private:
 
 class GStreamerBufferedDataSourceFactory {
 public:
-    GStreamerBufferedDataSourceFactory(
-        scoped_refptr<media::MediaLog> media_log,
-        content::ResourceDispatcher* resource_dispatcher,
-        scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner);
-
+    GStreamerBufferedDataSourceFactory();
     void create(gchar* uri, media::BufferedResourceLoader::CORSMode cors_mode, ChromiumHttpSrc* src);
     static GStreamerBufferedDataSourceFactory* Get();
     static void Init(scoped_refptr<media::MediaLog>, content::ResourceDispatcher*, scoped_refptr<base::SingleThreadTaskRunner>);
+    void Set(scoped_refptr<media::MediaLog>, content::ResourceDispatcher*, scoped_refptr<base::SingleThreadTaskRunner>);
     scoped_refptr<media::MediaLog> media_log() { return media_log_; }
     content::ResourceDispatcher* resource_dispatcher() { return resource_dispatcher_; }
     scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner() { return data_source_task_runner_; }
 
 private:
-    static scoped_ptr<GStreamerBufferedDataSourceFactory> data_source_factory_;
     scoped_refptr<media::MediaLog> media_log_;
     content::ResourceDispatcher* resource_dispatcher_;
     scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner_;
+    DISALLOW_COPY_AND_ASSIGN(GStreamerBufferedDataSourceFactory);
 };
 
 }
