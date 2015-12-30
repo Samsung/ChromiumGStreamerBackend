@@ -58,7 +58,15 @@ class MEDIA_BLINK_EXPORT MultibufferDataSource
   // Executes |init_cb| with the result of initialization when it has completed.
   //
   // Method called on the render thread.
+#if defined(USE_GSTREAMER)
+  void Initialize(const InitializeCB& init_cb,
+                  blink::WebURLLoader* url_loader = nullptr,
+                  const blink::WebString& referrer = blink::WebString(),
+                  blink::WebReferrerPolicy referrer_policy =
+                      blink::WebReferrerPolicyDefault) override;
+#else
   void Initialize(const InitializeCB& init_cb) override;
+#endif
 
   // Adjusts the buffering algorithm based on the given preload value.
   void SetPreload(Preload preload) override;
