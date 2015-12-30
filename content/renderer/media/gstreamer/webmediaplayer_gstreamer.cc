@@ -772,7 +772,7 @@ void WebMediaPlayerGStreamer::DoLoad(LoadType load_type,
 
   SetNetworkState(WebMediaPlayer::NetworkStateLoading);
   SetReadyState(WebMediaPlayer::ReadyStateHaveNothing);
-  media_log_->AddEvent(media_log_->CreateLoadEvent(url.spec()));
+  media_log_->AddEvent(media_log_->CreateLoadEvent(gurl.spec()));
 
   message_dispatcher_.SendLoad(gurl);
 }
@@ -1046,26 +1046,16 @@ unsigned WebMediaPlayerGStreamer::videoDecodedByteCount() const {
   return 0;
 }
 
-bool WebMediaPlayerGStreamer::copyVideoTextureToPlatformTexture(
-    blink::WebGraphicsContext3D* web_graphics_context,
-    unsigned int texture,
-    unsigned int level,
-    unsigned int internal_format,
-    unsigned int type,
-    bool premultiply_alpha,
-    bool flip_y) {
-  return copyVideoTextureToPlatformTexture(web_graphics_context, texture,
-                                           internal_format, type,
-                                           premultiply_alpha, flip_y);
+bool WebMediaPlayerGStreamer::copyVideoTextureToPlatformTexture(blink::WebGraphicsContext3D* web_graphics_context, unsigned target,
+    unsigned texture, unsigned internalFormat, unsigned type, int level,
+    bool premultiplyAlpha, bool flipY) {
+  NOTIMPLEMENTED();
+  return false;
 }
 
-bool WebMediaPlayerGStreamer::copyVideoTextureToPlatformTexture(
-    blink::WebGraphicsContext3D* web_graphics_context,
-    unsigned int texture,
-    unsigned int internal_format,
-    unsigned int type,
-    bool premultiply_alpha,
-    bool flip_y) {
+bool WebMediaPlayerGStreamer::copyVideoSubTextureToPlatformTexture(blink::WebGraphicsContext3D* web_graphics_context, unsigned target,
+    unsigned texture, int level, int xoffset, int yoffset, bool premultiplyAlpha,
+    bool flipY) {
   NOTIMPLEMENTED();
   return false;
 }
@@ -1145,8 +1135,9 @@ void WebMediaPlayerGStreamer::OnEncryptedMediaInitData(
   encrypted_media_support_.SetInitDataType(init_data_type);
 
   encrypted_client_->encrypted(
-      ConvertToWebInitDataType(init_data_type), vector_as_array(&init_data),
-      base::saturated_cast<unsigned int>(init_data.size()));
+      ConvertToWebInitDataType(init_data_type),
+      init_data.data(),
+      init_data.size());
 }
 
 void WebMediaPlayerGStreamer::OnWaitingForDecryptionKey() {
