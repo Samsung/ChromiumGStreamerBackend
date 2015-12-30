@@ -58,9 +58,10 @@ bool chromiumMediaSrcAppendData(ChromiumMediaSrc* src,
                                 const std::vector<base::TimeDelta>& times,
                                 base::TimeDelta& timestamp_offset);
 void chromiumMediaSrcAbort(ChromiumMediaSrc* src, const std::string& source_id);
-std::string chromiumMediaSrcIsMatchingSourceId(ChromiumMediaSrc* src,
-                                               const std::string& media_kind,
-                                               const std::string& codec);
+void chromiumMediaSrcIsMatchingSourceId(ChromiumMediaSrc* src,
+                                        const std::string& media_kind,
+                                        const std::string& codec,
+                                        std::string& source_id);
 
 // Unimplemented.
 void chromiumMediaSrcUnmarkEndOfStream(ChromiumMediaSrc* src);

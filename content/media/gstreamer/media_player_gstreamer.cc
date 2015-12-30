@@ -733,9 +733,10 @@ void MediaPlayerGStreamer::OnMediaInfoUpdated(GstPlayerMediaInfo* media_info) {
     GstPlayerStreamInfo* stream = (GstPlayerStreamInfo*)list->data;
     const gchar* codec = gst_player_stream_info_get_codec(stream);
     if (media_source_) {
-      std::string source_id = chromiumMediaSrcIsMatchingSourceId(
+      std::string source_id;
+      chromiumMediaSrcIsMatchingSourceId(
           CHROMIUM_MEDIA_SRC(media_source_),
-          gst_player_stream_info_get_stream_type(stream), codec);
+          gst_player_stream_info_get_stream_type(stream), codec, source_id);
       if (!source_id.empty())
         InitSegmentReceived(source_id);
     }
