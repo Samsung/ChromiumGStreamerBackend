@@ -76,7 +76,15 @@ class BufferedDataSourceInterface : public DataSource {
   //
   // Method called on the render thread.
   typedef base::Callback<void(bool)> InitializeCB;
+#if defined(USE_GSTREAMER)
+  virtual void Initialize(const InitializeCB& init_cb,
+                  blink::WebURLLoader* url_loader = nullptr,
+                  const blink::WebString& referrer = blink::WebString(),
+                  blink::WebReferrerPolicy referrer_policy =
+                      blink::WebReferrerPolicyDefault) = 0;
+#else
   virtual void Initialize(const InitializeCB& init_cb) = 0;
+#endif
 
   // Adjusts the buffering algorithm based on the given preload value.
   virtual void SetPreload(Preload preload) = 0;
@@ -156,7 +164,7 @@ class MEDIA_BLINK_EXPORT BufferedDataSource
                   blink::WebURLLoader* url_loader = nullptr,
                   const blink::WebString& referrer = blink::WebString(),
                   blink::WebReferrerPolicy referrer_policy =
-                      blink::WebReferrerPolicyDefault);
+                      blink::WebReferrerPolicyDefault) override;
 #else
   void Initialize(const InitializeCB& init_cb) override;
 #endif
