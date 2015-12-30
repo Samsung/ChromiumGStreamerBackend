@@ -163,7 +163,14 @@ void MultibufferDataSource::CreateResourceLoader(int64_t first_byte_position,
   UpdateBufferSizes();
 }
 
+#if defined(USE_GSTREAMER)
+void MultibufferDataSource::Initialize(const InitializeCB& init_cb,
+                                    blink::WebURLLoader* url_loader,
+                                    const blink::WebString& referrer,
+                                    blink::WebReferrerPolicy referrer_policy) {
+#else
 void MultibufferDataSource::Initialize(const InitializeCB& init_cb) {
+#endif
   DCHECK(render_task_runner_->BelongsToCurrentThread());
   DCHECK(!init_cb.is_null());
   DCHECK(!reader_.get());
