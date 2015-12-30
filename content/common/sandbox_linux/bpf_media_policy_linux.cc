@@ -421,22 +421,22 @@ void MediaProcessPolicy::InitMediaBrokerProcess(
   static const char kDevShmPath[] = "/dev/shm/";
   static const char kUsrLibPulseModulesPath[] = "/usr/lib/pulse-4.0/modules/";
   static const char kEtcPulsePath[] = "/etc/pulse/";
-  static const std::string kDevRunUserPulse =
+  const std::string kDevRunUserPulse =
       std::string(getenv("XDG_RUNTIME_DIR")) + "/pulse";
-  static const std::string kDevRunUserPulsePath =
+  const std::string kDevRunUserPulsePath =
       std::string(getenv("XDG_RUNTIME_DIR")) + "/pulse/";
-  static const std::string kHomePulsePath =
+  const std::string kHomePulsePath =
       std::string(getenv("HOME")) + "/.pulse/";
-  static const std::string kHomeConfigPulsePath =
+  const std::string kHomeConfigPulsePath =
       std::string(getenv("HOME")) + "/.config/pulse/";
-  static const std::string kHomeXauth =
+  const std::string kHomeXauth =
       std::string(getenv("HOME")) + "/.Xauthority";
 
   // GStreamer registry:
   // TODO: Implement more fine grained approach
-  static const std::string kHomeCacheGstreamerPath =
+  const std::string kHomeCacheGstreamerPath =
       std::string(getenv("HOME")) + "/.cache/gstreamer-1.0/";
-  static const std::string kHomeCacheGstreamerRegistry =
+  const std::string kHomeCacheGstreamerRegistry =
       std::string(getenv("HOME")) + "/.cache/gstreamer-1.0/registry.x86_64.bin";
 
   // Shared libraries.

@@ -881,28 +881,28 @@ GStreamerBufferedDataSource::GStreamerBufferedDataSource(GURL url, media::Buffer
     base::Bind(&onNotifyDownloading, GST_BASE_SRC(src)))) {
 }
 
-GStreamerBufferedDataSourceFactory::GStreamerBufferedDataSourceFactory(
-    scoped_refptr<media::MediaLog> media_log,
-    content::ResourceDispatcher* resource_dispatcher,
-    scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner)
-    : media_log_(media_log),
-      resource_dispatcher_(resource_dispatcher),
-      data_source_task_runner_(data_source_task_runner) {
+GStreamerBufferedDataSourceFactory::GStreamerBufferedDataSourceFactory() {
 }
+
+base::LazyInstance<GStreamerBufferedDataSourceFactory>::Leaky g_data_source_factory_ = LAZY_INSTANCE_INITIALIZER;
 
 void GStreamerBufferedDataSourceFactory::create(gchar* uri, media::BufferedResourceLoader::CORSMode cors_mode, ChromiumHttpSrc* src) {
   ChromiumHttpSrcPrivate* priv = src->priv;
   priv->gst_data_source_.reset(new GStreamerBufferedDataSource(GURL(uri), cors_mode, src));
 }
 
+void GStreamerBufferedDataSourceFactory::Set(scoped_refptr<media::MediaLog> media_log,  content::ResourceDispatcher* resource_dispatcher,  scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner) {
+  media_log_ = media_log;
+  resource_dispatcher_ = resource_dispatcher;
+  data_source_task_runner_ = data_source_task_runner;
+}
+
 void GStreamerBufferedDataSourceFactory::Init(scoped_refptr<media::MediaLog> media_log, content::ResourceDispatcher* resource_dispatcher, scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner) {
-  data_source_factory_.reset(new GStreamerBufferedDataSourceFactory(media_log, resource_dispatcher, data_source_task_runner));
+  g_data_source_factory_.Pointer()->Set(media_log, resource_dispatcher, data_source_task_runner);
 }
 
 GStreamerBufferedDataSourceFactory* GStreamerBufferedDataSourceFactory::Get() {
-  return data_source_factory_.get();
+  return g_data_source_factory_.Pointer();
 }
-
-scoped_ptr<GStreamerBufferedDataSourceFactory> GStreamerBufferedDataSourceFactory::data_source_factory_;
 
 }
