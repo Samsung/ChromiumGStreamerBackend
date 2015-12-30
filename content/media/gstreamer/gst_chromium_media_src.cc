@@ -566,9 +566,10 @@ static std::string gstCodecToMSECodec(const std::string& codec) {
   return "";
 }
 
-std::string chromiumMediaSrcIsMatchingSourceId(ChromiumMediaSrc* src,
-                                               const std::string& media_kind,
-                                               const std::string& gst_codec) {
+void chromiumMediaSrcIsMatchingSourceId(ChromiumMediaSrc* src,
+                                        const std::string& media_kind,
+                                        const std::string& gst_codec,
+                                        std::string& source_id) {
   GST_OBJECT_LOCK(src);
 
   ChromiumMediaSrcPrivate* priv = src->priv;
@@ -587,13 +588,14 @@ std::string chromiumMediaSrcIsMatchingSourceId(ChromiumMediaSrc* src,
          lower_gst_codec.find(source->codec) != std::string::npos)) {
       source->initialized = true;
       GST_OBJECT_UNLOCK(src);
-      return source->id;
+      source_id = source->id;
+      return;
     }
   }
 
   GST_OBJECT_UNLOCK(src);
 
-  return "";
+  source_id = "";
 }
 
 void chromiumMediaSrcUnmarkEndOfStream(ChromiumMediaSrc* src) {}
