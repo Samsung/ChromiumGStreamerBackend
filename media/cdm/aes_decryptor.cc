@@ -25,7 +25,7 @@
 #include "media/base/video_frame.h"
 #include "media/cdm/json_web_key.h"
 
-#if defined(USE_PROPRIETARY_CODECS)
+#if defined(USE_PROPRIETARY_CODECS) || defined(USE_GSTREAMER)
 #include "media/cdm/cenc_utils.h"
 #endif
 
