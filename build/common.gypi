@@ -134,8 +134,11 @@
             # Whether we're a traditional desktop unix.
             ['(OS=="linux" or OS=="freebsd" or OS=="openbsd" or OS=="solaris") and chromeos==0', {
               'desktop_linux%': 1,
+              'use_gstreamer%': 1,
+              'use_sysroot%': 0,
             }, {
               'desktop_linux%': 0,
+              'use_gstreamer%': 0,
             }],
 
             # Embedded implies ozone.
@@ -164,6 +167,7 @@
         'use_aura%': '<(use_aura)',
         'use_ash%': '<(use_ash)',
         'use_cras%': '<(use_cras)',
+        'use_gstreamer%': '<(use_gstreamer)',
         'use_ozone%': '<(use_ozone)',
         'embedded%': '<(embedded)',
         'use_libpci%': '<(use_libpci)',
@@ -349,6 +353,7 @@
       'use_aura%': '<(use_aura)',
       'use_ash%': '<(use_ash)',
       'use_cras%': '<(use_cras)',
+      'use_gstreamer%': '<(use_gstreamer)',
       'use_libpci%': '<(use_libpci)',
       'use_ozone%': '<(use_ozone)',
       'use_ozone_evdev%': '<(use_ozone_evdev)',
@@ -777,13 +782,6 @@
         }, {
           'use_pango%': 1,
           'use_cairo%': 1,
-        }],
-
-        # Flags to use gstreamer.
-        ['OS=="linux"', {
-          'use_gstreamer%': 1,
-        }, {
-          'use_gstreamer%': 0,
         }],
 
         # DBus usage.
