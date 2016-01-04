@@ -340,10 +340,8 @@ ResultExpr MediaProcessPolicy::EvaluateSyscall(int sysno) const {
         case __NR_connect:
           return Allow();
         case __NR_socket:
-          const Arg<int> domain(0);
-          const Arg<int> type(1);
-          return If(AllOf(domain == AF_UNIX, type == SOCK_STREAM), Allow())
-              .ElseIf(AnyOf(domain == AF_UNIX, type == SOCK_DGRAM), Allow())
+          const Arg<int> domain(0), type(1);
+          return If(AllOf(domain == AF_UNIX, type == (SOCK_STREAM | SOCK_CLOEXEC)), Allow())
               .Else(Error(EPERM));
       }
 #endif
