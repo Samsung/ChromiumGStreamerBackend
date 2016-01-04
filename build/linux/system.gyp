@@ -1271,7 +1271,7 @@
       'type': 'none',
       'toolsets': ['host', 'target'],
       'variables': {
-        'gstreamer_packages': 'gstreamer-1.0 gstreamer-base-1.0 gstreamer-audio-1.0 gstreamer-video-1.0 gstreamer-app-1.0 gstreamer-gl-1.0 gstreamer-player-0.0',
+        'gstreamer_packages': 'gstreamer-1.0 gstreamer-base-1.0 gstreamer-audio-1.0 gstreamer-video-1.0 gstreamer-app-1.0 gstreamer-gl-1.0 gstreamer-player-1.0',
       },
       'conditions': [
         ['_toolset=="target"', {
