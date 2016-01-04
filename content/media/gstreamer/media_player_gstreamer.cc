@@ -202,7 +202,7 @@ MediaPlayerGStreamer::MediaPlayerGStreamer(
       resource_dispatcher_(resource_dispatcher),
       main_task_runner_(main_task_runner),
       gl_task_runner_(gl_task_runner),
-      player_(gst_player_new()),  // It calls gst_init.
+      player_(gst_player_new(NULL, NULL)),  // It calls gst_init.
       media_source_(nullptr),
       gst_gl_display_(nullptr),
       gst_gl_context_(nullptr),
