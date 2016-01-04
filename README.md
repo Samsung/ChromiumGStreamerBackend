@@ -1,7 +1,7 @@
 Chromium GStreamer Backend
 ==========================
 
-[Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [MSE](#mse), [EME](#eme), [Zero-Copy](#zero-copy), [GstPlayer](https://github.com/sdroege/gst-player/commits/master), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Tips](#tips), [Maintenance](#maintenance), [UnitTests](#build-and-run-unit-tests), [Upstream](#contributing-to-upstream-chromium), [Issues](#issues-and-roadmap), [GstConf2015](#talk-at-gstreamer-conference-2015)
+[Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [MSE](#mse), [EME](#eme), [Zero-Copy](#zero-copy), [GstPlayer](#media-process-overview), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Tips](#tips), [Maintenance](#maintenance), [UnitTests](#build-and-run-unit-tests), [Upstream](#contributing-to-upstream-chromium), [Issues](#issues-and-roadmap), [GstConf2015](#talk-at-gstreamer-conference-2015)
 
 ### Current branching point from official chromium/src  ###
 ccdd6cc53cc09fcbe55c719508a49eaf6e9641ff (Sat Nov 21 2015)
@@ -10,7 +10,7 @@ ccdd6cc53cc09fcbe55c719508a49eaf6e9641ff (Sat Nov 21 2015)
 This is an experimental project that aims to have GStreamer as media player in Chromium browser.
 We introduced a dedicated [Media Process](#media-process-overview) that maintains GStreamer pipelines.
 The Media Process is [sandboxed](#media-process-sandbox) with same level as [GPU Process](https://code.google.com/p/chromium/wiki/LinuxSandboxing).
-[GstPlayer](http://gstreamer.freedesktop.org/projects/gstplayer.html) is used to construct and to maintain GStreamer pipelines. 
+[GstPlayer](http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-bad-libs/html/gst-plugins-bad-libs-gstplayer.html) is used to construct and to maintain GStreamer pipelines. 
 Each [HTML5 video tag](http://www.w3schools.com/html/html5_video.asp) is backed by a GStreamer pipeline that lives in the Media Process. 
 
 ### Licence ###
@@ -41,7 +41,7 @@ Then refer to this [section](#build-steps) to build the Chromium GStreamer Backe
 
 ### Media Process overview ###
 There is only one Media Process no matter the number of video tags in the same pages or the number of pages (~ tabulations).
-GStreamer is almost only used through the a high level API [GstPlayer](https://github.com/sdroege/gst-player/commits/master) (ex: gst_player_new. gst_player_play, gst_player_pause, gst_player_seek)
+GStreamer is almost only used through the a high level API [GstPlayer](http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-bad-libs/html/gst-plugins-bad-libs-gstplayer.html) (ex: gst_player_new. gst_player_play, gst_player_pause, gst_player_seek)
 It reduces GStreamer code lines a lot and it avoids doing mistakes when using more low level GStreamer API.
 Exception for the video rendering part because GstGL needs to be setup to use GPU Process. In short we pass an external get_process_addr to GstGL.
 Indeed the Media Process does not load OpenGL libraries; it uses chromium API to forward OpenGL calls to GPU Process which is the only sandboxed
@@ -183,8 +183,7 @@ http://www.w3schools.com/html/html5_video.asp
 ### Build steps ###
 ``` bash
 # GStreamer
-gstreamer >= 1.6 is required.
-GstPlayer: git clone https://github.com/sdroege/gst-player.git (should be merged in gstreamer 1.8)
+gstreamer >= 1.8 is required.
 
 # clone official chromium repositories
 git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git (then add it in front of your PATH)
