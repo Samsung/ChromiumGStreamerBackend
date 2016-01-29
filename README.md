@@ -369,12 +369,33 @@ ninja -C out/Release media_blink_unittests
 # run all tests in "gpu" unit tests group that contains "TexSubImage2DFloatDoesClearOnGLES3"
 ./out/Release/gpu_unittests --gtest_filter=*TexSubImage2DFloatDoesClearOnGLES3* --single-process-tests
 
-# list py tests
+# run all tests in "gpu" unit tests group that contains "GPUConfig"
+./out/Release/gpu_unittests --gtest_filter=*GPUConfig* --single-process-tests
+```
+
+### Build and run browser tests ###
+```bash
+# list
 ./content/test/gpu/run_gpu_test.py list
 
-# run py tests
+# run
 CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./content/test/gpu/run_unittests.py
 CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./content/test/gpu/run_gpu_test.py gpu_process
+
+# run browser tests with visible stdout
+CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox content/test/gpu/run_gpu_test.py --browser=release --show-stdout webgl_conformance
+```
+
+### Build and run layout tests ###
+```bash
+# build
+ninja -C out/Debug content_shell
+
+# run
+./out/Debug/chrome --run-layout-test --no-sandbox inspector/network/network-domain-filter.html
+
+# official steps
+https://www.chromium.org/developers/testing/webkit-layout-tests
 ```
 
 ### Contributing to upstream Chromium ###
