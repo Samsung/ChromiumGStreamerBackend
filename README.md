@@ -409,6 +409,7 @@ Before uploading the patch run "depot-tools-auth login https://codereview.chromi
 It should open a new tab in your browser starting by "localhost:8090" and after logged in it should be written: "The authentication flow has completed."
 Then you are ready to upload your patch by running "git cl upload".  
 To submit to a patch to an existing CL just type "git cl issue 1415793003" before uploading.  
+To make sure it creates a new CL just type "git cl issue 0".  
 
 
 ### Issues and roadmap ###
