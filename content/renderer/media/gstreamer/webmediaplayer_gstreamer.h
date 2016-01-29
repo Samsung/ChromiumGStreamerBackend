@@ -33,6 +33,7 @@
 #include "media/blink/buffered_data_source_host_impl.h"
 #include "media/blink/encrypted_media_player_support.h"
 #include "media/blink/encrypted_media_player_support.h"
+#include "media/blink/webmediaplayer_delegate.h"
 #include "media/blink/webmediaplayer_util.h"
 #include "third_party/WebKit/public/platform/WebContentDecryptionModuleResult.h"
 #include "third_party/WebKit/public/platform/WebMediaPlayer.h"
@@ -119,6 +120,7 @@ class WebMediaPlayerMessageDispatcher
 // Instead MediaPlayerGStreamer form Media Process will inherit this interface.
 class MEDIA_EXPORT WebMediaPlayerGStreamer
     : public NON_EXPORTED_BASE(blink::WebMediaPlayer),
+      public NON_EXPORTED_BASE(WebMediaPlayerDelegate::Observer),
       public cc::VideoFrameProvider,
       public base::SupportsWeakPtr<WebMediaPlayerGStreamer> {
  public:
@@ -142,90 +144,90 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
 
   virtual void load(LoadType load_type,
                     const blink::WebURL& url,
-                    CORSMode cors_mode);
+                    CORSMode cors_mode) override;
 
   // Playback controls.
-  virtual void play();
-  virtual void pause();
-  virtual bool supportsSave() const;
-  virtual void seek(double seconds);
-  virtual void setRate(double rate);
-  virtual void setVolume(double volume);
+  virtual void play() override;
+  virtual void pause() override;
+  virtual bool supportsSave() const override;
+  virtual void seek(double seconds) override;
+  virtual void setRate(double rate) override;
+  virtual void setVolume(double volume) override;
   virtual void setSinkId(const blink::WebString& sink_id,
                          const blink::WebSecurityOrigin& security_origin,
-                         blink::WebSetSinkIdCallbacks* web_callback);
-  virtual void setPreload(blink::WebMediaPlayer::Preload preload);
-  virtual blink::WebTimeRanges buffered() const;
-  virtual blink::WebTimeRanges seekable() const;
+                         blink::WebSetSinkIdCallbacks* web_callback) override;
+  virtual void setPreload(blink::WebMediaPlayer::Preload preload) override;
+  virtual blink::WebTimeRanges buffered() const override;
+  virtual blink::WebTimeRanges seekable() const override;
 
   // Methods for painting.
   virtual void paint(blink::WebCanvas* canvas,
                      const blink::WebRect& rect,
                      unsigned char alpha,
-                     SkXfermode::Mode mode);
+                     SkXfermode::Mode mode) override;
 
   // True if the loaded media has a playable video/audio track.
-  virtual bool hasVideo() const;
-  virtual bool hasAudio() const;
+  virtual bool hasVideo() const override;
+  virtual bool hasAudio() const override;
 
   // Dimensions of the video.
-  virtual blink::WebSize naturalSize() const;
+  virtual blink::WebSize naturalSize() const override;
 
   // Getters of playback state.
-  virtual bool paused() const;
-  virtual bool seeking() const;
-  virtual double duration() const;
+  virtual bool paused() const override;
+  virtual bool seeking() const override;
+  virtual double duration() const override;
   virtual double timelineOffset() const;
-  virtual double currentTime() const;
+  virtual double currentTime() const override;
 
   // Internal states of loading and network.
-  virtual blink::WebMediaPlayer::NetworkState networkState() const;
-  virtual blink::WebMediaPlayer::ReadyState readyState() const;
+  virtual blink::WebMediaPlayer::NetworkState networkState() const override;
+  virtual blink::WebMediaPlayer::ReadyState readyState() const override;
 
-  virtual bool didLoadingProgress();
+  virtual bool didLoadingProgress() override;
 
-  virtual bool hasSingleSecurityOrigin() const;
-  virtual bool didPassCORSAccessCheck() const;
+  virtual bool hasSingleSecurityOrigin() const override;
+  virtual bool didPassCORSAccessCheck() const override;
 
-  virtual double mediaTimeForTimeValue(double timeValue) const;
+  virtual double mediaTimeForTimeValue(double timeValue) const override;
 
-  virtual unsigned decodedFrameCount() const;
-  virtual unsigned droppedFrameCount() const;
-  virtual unsigned audioDecodedByteCount() const;
-  virtual unsigned videoDecodedByteCount() const;
+  virtual unsigned decodedFrameCount() const override;
+  virtual unsigned droppedFrameCount() const override;
+  virtual unsigned audioDecodedByteCount() const override;
+  virtual unsigned videoDecodedByteCount() const override;
 
   virtual bool copyVideoTextureToPlatformTexture(blink::WebGraphicsContext3D*, unsigned target,
       unsigned texture, unsigned internalFormat, unsigned type, int level,
-      bool premultiplyAlpha, bool flipY);
+      bool premultiplyAlpha, bool flipY) override;
 
   virtual bool copyVideoSubTextureToPlatformTexture(blink::WebGraphicsContext3D*, unsigned target,
       unsigned texture, int level, int xoffset, int yoffset, bool premultiplyAlpha,
-      bool flipY);
+      bool flipY) override;
 
   virtual MediaKeyException generateKeyRequest(
       const blink::WebString& key_system,
       const unsigned char* init_data,
-      unsigned init_data_length);
+      unsigned init_data_length) override;
 
   virtual MediaKeyException addKey(const blink::WebString& key_system,
                                    const unsigned char* key,
                                    unsigned key_length,
                                    const unsigned char* init_data,
                                    unsigned init_data_length,
-                                   const blink::WebString& session_id);
+                                   const blink::WebString& session_id) override;
 
   virtual MediaKeyException cancelKeyRequest(
       const blink::WebString& key_system,
-      const blink::WebString& session_id);
+      const blink::WebString& session_id) override;
 
   virtual void setContentDecryptionModule(
       blink::WebContentDecryptionModule* cdm,
-      blink::WebContentDecryptionModuleResult result);
+      blink::WebContentDecryptionModuleResult result) override;
 
   void OnAddTextTrack(const TextTrackConfig& config,
                       const AddTextTrackDoneCB& done_cb);
 
-  void OnReleaseTexture(uint32 texture_id, const gpu::SyncToken& sync_token);
+  void OnReleaseTexture(uint32_t texture_id, const gpu::SyncToken& sync_token);
 
   void OnSetCurrentFrame(int width,
                          int height,
@@ -254,7 +256,14 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   void OnTimestampOffsetUpdate(const std::string& id,
                                const base::TimeDelta& timestamp_offset);
   void OnNeedKey(const std::string& system_id,
-                 const std::vector<uint8>& init_data);
+                 const std::vector<uint8_t>& init_data);
+
+  // WebMediaPlayerDelegate::Observer implementation.
+  void OnHidden() override;
+  void OnShown() override;
+  void OnPlay() override;
+  void OnPause() override;
+  void OnVolumeMultiplierUpdate(double multiplier) override;
 
  private:
   void SetupGLContext();
@@ -368,6 +377,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   media::TimeDeltaInterpolator interpolator_;
 
   base::WeakPtr<WebMediaPlayerDelegate> delegate_;
+  int delegate_id_;
 
   WebMediaSourceGStreamer* media_source_;
 
