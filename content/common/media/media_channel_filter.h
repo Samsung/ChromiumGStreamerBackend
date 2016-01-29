@@ -58,9 +58,9 @@ class CONTENT_EXPORT MediaChannelFilter : public IPC::MessageFilter {
   bool Send(IPC::Message* msg);
 
   bool HandleMessagesScheduled();
-  uint64 MessagesProcessed();
+  uint64_t MessagesProcessed();
 
-  MediaChannel* LookupChannel(int32 client_id);
+  MediaChannel* LookupChannel(int32_t client_id);
   MediaPlayerGStreamerFactory* GetMediaPlayerFactory() {
     return media_player_factory_.get();
   }

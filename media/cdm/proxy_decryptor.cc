@@ -349,7 +349,7 @@ void ProxyDecryptor::OnSessionKeysChange(const std::string& session_id,
   // EME v0.1b doesn't support this event.
 #if defined(USE_GSTREAMER)
   cdm_context_keys_ready_cb_.Run(session_id, has_additional_usable_key,
-                                 keys_info.Pass());
+                                 std::move(keys_info));
 #endif
 }
 

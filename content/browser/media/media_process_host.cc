@@ -6,7 +6,6 @@
 
 #include "base/base64.h"
 #include "base/base_switches.h"
-#include "base/basictypes.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -81,7 +80,7 @@ class MediaSandboxedProcessLauncherDelegate
 
   ~MediaSandboxedProcessLauncherDelegate() override {}
 
-  base::ScopedFD TakeIpcFd() override { return ipc_fd_.Pass(); }
+  base::ScopedFD TakeIpcFd() override { return std::move(ipc_fd_); }
 
  private:
   base::ScopedFD ipc_fd_;
@@ -428,7 +427,7 @@ bool MediaProcessHost::OnMessageReceived(const IPC::Message& message) {
   return true;
 }
 
-void MediaProcessHost::OnChannelConnected(int32 peer_pid) {
+void MediaProcessHost::OnChannelConnected(int32_t peer_pid) {
   TRACE_EVENT0("media", "MediaProcessHost::OnChannelConnected");
 
   while (!queued_messages_.empty()) {

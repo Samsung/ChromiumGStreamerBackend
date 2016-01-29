@@ -8,7 +8,6 @@
 #include <queue>
 #include <string>
 
-#include "base/basictypes.h"
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_ptr.h"
@@ -82,9 +81,9 @@ class MediaChildThread : public ChildThreadImpl, public GpuChannelHostFactory {
   scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner() override;
   scoped_ptr<base::SharedMemory> AllocateSharedMemory(size_t size) override;
   CreateCommandBufferResult CreateViewCommandBuffer(
-      int32 surface_id,
+      int32_t surface_id,
       const GPUCreateCommandBufferConfig& init_params,
-      int32 route_id) override;
+      int32_t route_id) override;
 
   // Synchronously establish a channel to the GPU plugin if not previously
   // established or if it has been lost (for example if the GPU plugin crashed).

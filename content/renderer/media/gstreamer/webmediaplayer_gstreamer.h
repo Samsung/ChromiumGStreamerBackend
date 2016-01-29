@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/basictypes.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_ptr.h"
@@ -272,7 +271,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
 
   // Called when the demuxer encounters encrypted streams.
   void OnEncryptedMediaInitData(EmeInitDataType init_data_type,
-                                const std::vector<uint8>& init_data);
+                                const std::vector<uint8_t>& init_data);
 
   // Called when a decoder detects that the key needed to decrypt the stream
   // is not available.

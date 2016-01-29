@@ -329,14 +329,14 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
   GstMapInfo info;
   int ret = 0;
   guint8* data = 0;
-  int64 read_position = offset;
+  uint64_t read_position = offset;
 
   if (priv->aborted_->IsSignaled()) {
     GST_ELEMENT_ERROR(src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
     return GST_FLOW_ERROR;
   }
 
-  int64 file_size;
+  int64_t file_size;
   if (priv->gst_data_source_->data_source()->GetSize(&file_size) && read_position >= file_size) {
     GST_ELEMENT_ERROR(src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
     return GST_FLOW_ERROR;
@@ -420,7 +420,7 @@ static gboolean chromiumHttpSrcGetSize(GstBaseSrc* basesrc, guint64* size) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
 
-  int64 file_size;
+  int64_t file_size = 0;
   if (!priv->gst_data_source_->data_source()->GetSize(&file_size))
     return FALSE;
 
@@ -569,7 +569,7 @@ static void onResetDataSource(GstBaseSrc* basesrc) {
 
   content::WebURLLoaderImpl* url_loader = new content::WebURLLoaderImpl(
       content::GStreamerBufferedDataSourceFactory::Get()->resource_dispatcher(),
-      task_runner.Pass());
+      std::move(task_runner));
 
   // TODO: allow to set extra headers on WebURLLoaderImpl
 
