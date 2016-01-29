@@ -8,7 +8,6 @@
 #include <gst/gst.h>
 #include <gst/base/gstbasesrc.h>
 
-#include "base/basictypes.h"
 #include "content/renderer/media/render_media_log.h"
 #include "media/base/data_source.h"
 #include "media/blink/buffered_data_source.h"

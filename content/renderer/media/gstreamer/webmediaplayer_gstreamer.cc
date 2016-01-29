@@ -727,7 +727,7 @@ void WebMediaPlayerGStreamer::OnTimestampOffsetUpdate(
 }
 
 void WebMediaPlayerGStreamer::OnNeedKey(const std::string& system_id,
-                                        const std::vector<uint8>& init_data) {
+                                        const std::vector<uint8_t>& init_data) {
   DVLOG(1) << __FUNCTION__ << "(" << system_id << ")";
   EmeInitDataType type = EmeInitDataType::UNKNOWN;
 
@@ -1119,7 +1119,7 @@ void WebMediaPlayerGStreamer::setContentDecryptionModule(
 
 void WebMediaPlayerGStreamer::OnEncryptedMediaInitData(
     EmeInitDataType init_data_type,
-    const std::vector<uint8>& init_data) {
+    const std::vector<uint8_t>& init_data) {
   DCHECK(init_data_type != EmeInitDataType::UNKNOWN);
 
   // Do not fire "encrypted" event if encrypted media is not enabled.
@@ -1193,9 +1193,9 @@ void WebMediaPlayerGStreamer::OnAddTextTrack(
       new WebInbandTextTrackImpl(web_kind, web_label, web_language, web_id));
 
   scoped_ptr<TextTrack> text_track(new TextTrackImpl(
-      main_task_runner_, client_, web_inband_text_track.Pass()));
+      main_task_runner_, client_, std::move(web_inband_text_track)));
 
-  done_cb.Run(text_track.Pass());
+  done_cb.Run(std::move(text_track));
 }
 
 void WebMediaPlayerGStreamer::SetNetworkState(

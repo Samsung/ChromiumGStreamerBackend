@@ -110,7 +110,7 @@ class MediaProcessHost : public BrowserChildProcessHostDelegate,
 
   // BrowserChildProcessHostDelegate implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
-  void OnChannelConnected(int32 peer_pid) override;
+  void OnChannelConnected(int32_t peer_pid) override;
   void OnProcessLaunched() override;
   void OnProcessCrashed(int exit_code) override;
 
