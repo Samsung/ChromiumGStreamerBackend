@@ -55,6 +55,7 @@
 #include "media/blink/webmediasource_impl.h"
 #include "media/filters/chunk_demuxer.h"
 #include "media/filters/ffmpeg_demuxer.h"
+#include "third_party/WebKit/public/platform/URLConversion.h"
 #include "third_party/WebKit/public/platform/WebEncryptedMediaTypes.h"
 #include "third_party/WebKit/public/platform/WebMediaPlayerEncryptedMediaClient.h"
 #include "third_party/WebKit/public/platform/WebMediaSource.h"
@@ -382,6 +383,7 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
       encrypted_client_(encrypted_client),
       interpolator_(&default_tick_clock_),
       delegate_(delegate),
+      delegate_id_(0),
       media_source_(nullptr),
       supports_save_(true),
       message_dispatcher_(next_player_id_.GetNext(), AsWeakPtr()),
@@ -393,6 +395,9 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
                      AsWeakPtr(),
                      base::Bind(&IgnoreCdmAttached)),
           base::Bind(&WebMediaPlayerGStreamer::OnCdmKeysReady, AsWeakPtr())) {
+  if (delegate_)
+    delegate_id_ = delegate_->AddObserver(this);
+
   media_log_->AddEvent(
       media_log_->CreateEvent(MediaLogEvent::WEBMEDIAPLAYER_CREATED));
 
@@ -422,7 +427,7 @@ WebMediaPlayerGStreamer::~WebMediaPlayerGStreamer() {
       media_log_->CreateEvent(MediaLogEvent::WEBMEDIAPLAYER_DESTROYED));
 
   if (delegate_)
-    delegate_->PlayerGone(this);
+    delegate_->PlayerGone(delegate_id_);
 
   message_dispatcher_.SendRelease();
 }
@@ -478,7 +483,7 @@ scoped_refptr<media::VideoFrame> WebMediaPlayerGStreamer::GetCurrentFrame() {
 
 void WebMediaPlayerGStreamer::PutCurrentFrame() {}
 
-void WebMediaPlayerGStreamer::OnReleaseTexture(uint32 texture_id,
+void WebMediaPlayerGStreamer::OnReleaseTexture(uint32_t texture_id,
                                                const gpu::SyncToken& sync_token) {
   gpu::gles2::GLES2Interface* gl = ::gles2::GetGLContext();
 
@@ -511,12 +516,21 @@ void WebMediaPlayerGStreamer::OnSetCurrentFrame(
 
   gpu::Mailbox mailbox;
   mailbox.SetName(name);
-  gpu::SyncToken texture_mailbox_sync_token(gl->InsertSyncPointCHROMIUM());
+
+  gpu::SyncToken sync_token;
+  const GLuint64 fence_sync = gl->InsertFenceSyncCHROMIUM();
+  gl->ShallowFlushCHROMIUM();
+  gl->GenSyncTokenCHROMIUM(fence_sync, sync_token.GetData());
+
+  // Or:
+  // gl+>Flush()
+  // gl->GenUnverifiedSyncTokenCHROMIUM(fence_sync,
+  //                                    sync_token.GetData());
 
   // TODO: use ubercompositor to avoid inheriting from cc::VideoFrameProvider
   // and to avoid creating media::VideoFrame::WrapNativeTexture here.
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapNativeTexture(
-      media::PIXEL_FORMAT_ARGB, gpu::MailboxHolder(mailbox, texture_mailbox_sync_token, target),
+      media::PIXEL_FORMAT_ARGB, gpu::MailboxHolder(mailbox, sync_token, target),
       media::BindToCurrentLoop(base::Bind(
           &WebMediaPlayerGStreamer::OnReleaseTexture, AsWeakPtr(), texture_id)),
       gfx::Size(width, height), gfx::Rect(width, height),
@@ -753,7 +767,7 @@ void WebMediaPlayerGStreamer::DoLoad(LoadType load_type,
 
   GURL gurl(url);
   ReportMetrics(load_type, gurl,
-                GURL(frame_->document().securityOrigin().toString()));
+                blink::WebStringToGURL(frame_->document().securityOrigin().toString()));
 
   // Set subresource URL for crash reporting.
   base::debug::SetCrashKeyValue("subresource_url", gurl.spec());
@@ -834,9 +848,10 @@ void WebMediaPlayerGStreamer::setRate(double rate) {
     else if (rate > kMaxRate)
       rate = kMaxRate;
     if (playback_rate_ == 0 && !paused_ && delegate_)
-      delegate_->DidPlay(this);
+      delegate_->DidPlay(delegate_id_, hasVideo(), !hasVideo(), isRemote(),
+                         duration_);
   } else if (playback_rate_ != 0 && !paused_ && delegate_) {
-    delegate_->DidPause(this);
+    delegate_->DidPause(delegate_id_, ended_);
   }
 
   playback_rate_ = rate;
@@ -1231,10 +1246,29 @@ void WebMediaPlayerGStreamer::UpdatePlayingState(bool is_playing) {
 
   if (delegate_) {
     if (is_playing)
-      delegate_->DidPlay(this);
+      delegate_->DidPlay(delegate_id_, hasVideo(), !hasVideo(), isRemote(),
+                         duration_);
     else
-      delegate_->DidPause(this);
+      delegate_->DidPause(delegate_id_, ended_);
   }
 }
+
+void WebMediaPlayerGStreamer::OnHidden() {
+}
+
+void WebMediaPlayerGStreamer::OnShown() {
+}
+
+void WebMediaPlayerGStreamer::OnPlay() {
+  play();
+  client_->playbackStateChanged();
+}
+
+void WebMediaPlayerGStreamer::OnPause() {
+  pause();
+  client_->playbackStateChanged();
+}
+
+void WebMediaPlayerGStreamer::OnVolumeMultiplierUpdate(double multiplier) {}
 
 }  // namespace media
