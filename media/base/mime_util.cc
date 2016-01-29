@@ -276,7 +276,7 @@ static const MediaFormat kFormatCodecMappings[] = {
 #if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
     {"video/mp2t", PROPRIETARY, kMP4VideoCodecsExpression},
 #endif
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(USE_GSTREAMER)
     // HTTP Live Streaming (HLS)
     {"application/x-mpegurl", PROPRIETARY, kMP4VideoCodecsExpression},
     {"application/vnd.apple.mpegurl", PROPRIETARY, kMP4VideoCodecsExpression}
