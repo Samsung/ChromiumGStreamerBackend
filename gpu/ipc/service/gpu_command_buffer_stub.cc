@@ -1069,9 +1069,9 @@ void GpuCommandBufferStub::SendConsoleMessage(int32_t id,
 
 #if defined(USE_GSTREAMER)
 void GpuCommandBufferStub::OnCreateEGLImage(
-    int32 id,
+    int32_t id,
     gfx::Size size,
-    const std::vector<int32>& attributes) {
+    const std::vector<int32_t>& attributes) {
   TRACE_EVENT0("gpu", "GpuCommandBufferStub::OnCreateEGLImage");
 
   if (!decoder_)

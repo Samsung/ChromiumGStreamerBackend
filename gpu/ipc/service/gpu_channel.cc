@@ -1075,8 +1075,8 @@ scoped_refptr<gl::GLImage> GpuChannel::CreateImageForGpuMemoryBuffer(
 #if defined(USE_GSTREAMER)
 scoped_refptr<gl::GLImage> GpuChannel::CreateEGLImage(
     const gfx::Size& size,
-    const std::vector<int32>& attributes,
-    const std::vector<int32>& dmabuf_fds) {
+    const std::vector<int32_t>& attributes,
+    const std::vector<int32_t>& dmabuf_fds) {
   scoped_refptr<gl::GLImageEGL> image(new gl::GLImageEGL(size));
 
   EGLint* attrs = const_cast<EGLint*>(attributes.data());

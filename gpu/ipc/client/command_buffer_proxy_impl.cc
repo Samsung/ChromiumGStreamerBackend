@@ -567,7 +567,7 @@ int32_t CommandBufferProxyImpl::CreateEGLImage(
   if (!channel_ || channel_->IsLost())
     return -1;
 
-  int32 new_id = channel_->ReserveImageId();
+  int32_t new_id = channel_->ReserveImageId();
 
   IPC::Message* msg = new GpuCommandBufferMsg_CreateEGLImage(
       route_id_, new_id, gfx::Size(width, height), attributes);

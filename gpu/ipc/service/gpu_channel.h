@@ -176,8 +176,8 @@ class GPU_EXPORT GpuChannel
 #if defined(USE_GSTREAMER)
   scoped_refptr<gl::GLImage> CreateEGLImage(
       const gfx::Size& size,
-      const std::vector<int32>& attributes,
-      const std::vector<int32>& dmabuf_fds);
+      const std::vector<int32_t>& attributes,
+      const std::vector<int32_t>& dmabuf_fds);
 #endif
 
  protected:
