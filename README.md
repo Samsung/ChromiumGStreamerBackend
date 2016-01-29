@@ -243,6 +243,10 @@ ninja -C out/mybuild chrome chrome_sandbox -jN # if icecc -j60
 # Debug build
 If any linker error or crash then try to add linux_use_bundled_gold=0 or linux_use_gold_flags=0 to GYP_DEFINES
 
+# Using clang instead of gcc
+GYP_DEFINES="clang=1 clang_use_chrome_plugins=0 use_sysroot=0" # if icecc then add make_clang_dir=/opt/icecream/ linux_use_debug_fission=0 linux_use_bundled_binutils=0
+When lunching chrome you might need to adjust LD_LIBRARY_PATH.
+
 # Run without any sandbox
 ./out/Release/chrome --no-sandbox http://www.w3schools.com/html/mov_bbb.ogg
 
