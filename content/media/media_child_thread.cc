@@ -233,9 +233,9 @@ scoped_ptr<base::SharedMemory> MediaChildThread::AllocateSharedMemory(
 }
 
 CreateCommandBufferResult MediaChildThread::CreateViewCommandBuffer(
-    int32 surface_id,
+    int32_t surface_id,
     const GPUCreateCommandBufferConfig& init_params,
-    int32 route_id) {
+    int32_t route_id) {
   NOTREACHED();
   return CREATE_COMMAND_BUFFER_FAILED;
 }

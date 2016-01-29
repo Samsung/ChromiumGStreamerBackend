@@ -7,7 +7,7 @@
 #include "ppapi/features/features.h"
 
 #if defined(USE_GSTREAMER)
-#include "base/basictypes.h"
+#include "base/macros.h"
 #endif
 
 namespace switches {
