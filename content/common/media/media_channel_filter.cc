@@ -39,7 +39,7 @@ void MediaChannelFilter::RemoveChannel(int client_id) {
   media_channels_.erase(client_id);
 }
 
-MediaChannel* MediaChannelFilter::LookupChannel(int32 client_id) {
+MediaChannel* MediaChannelFilter::LookupChannel(int32_t client_id) {
   MediaChannelMap::const_iterator iter = media_channels_.find(client_id);
   if (iter == media_channels_.end())
     return NULL;
@@ -75,10 +75,10 @@ void MediaChannelFilter::OnEstablishChannel(int client_id) {
   // that it gets closed after it has been sent.
   base::ScopedFD renderer_fd = channel->TakeRendererFileDescriptor();
   DCHECK(renderer_fd.is_valid());
-  channel_handle.socket = base::FileDescriptor(renderer_fd.Pass());
+  channel_handle.socket = base::FileDescriptor(std::move(renderer_fd));
 #endif
 
-  media_channels_.set(client_id, channel.Pass());
+  media_channels_.set(client_id, std::move(channel));
 
   Send(new MediaHostMsg_ChannelEstablished(channel_handle));
 }

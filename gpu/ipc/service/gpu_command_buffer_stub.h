@@ -191,9 +191,9 @@ class GPU_EXPORT GpuCommandBufferStub
                              bool* succeeded);
 
 #if defined(USE_GSTREAMER)
-  void OnCreateEGLImage(int32 id,
+  void OnCreateEGLImage(int32_t id,
                         gfx::Size size,
-                        const std::vector<int32>& attributes);
+                        const std::vector<int32_t>& attributes);
 #endif
 
   void OnCommandProcessed();
@@ -253,7 +253,7 @@ class GPU_EXPORT GpuCommandBufferStub
   LatencyInfoCallback latency_info_callback_;
 
 #if defined(USE_GSTREAMER)
-  std::vector<int32> dmabuf_fds_;
+  std::vector<int32_t> dmabuf_fds_;
 #endif
 
   GURL active_url_;
