@@ -427,7 +427,7 @@ void MimeUtil::AddSupportedMediaFormats() {
   DCHECK(!mp4_video_codecs.empty());
   AddContainerWithCodecs("video/mp2t", mp4_codecs, true);
 #endif  // BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(USE_GSTREAMER)
   // HTTP Live Streaming (HLS).
   // TODO(ddorwin): Is any MP3 codec string variant included in real queries?
   CodecSet hls_codecs(avc_and_aac);
