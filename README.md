@@ -218,7 +218,7 @@ cd src
 GYP (old but stable so we recommend it for now) and GN (new from a few months)
 
 # Using GYP to generate ninja build files
-GYP_DEFINES="proprietary_codecs=1" build/gyp_chromium -D component=shared_library # if icecc then add linux_use_debug_fission=0 linux_use_bundled_binutils=0 clang=0
+GYP_DEFINES="use_sysroot=0 proprietary_codecs=1 ffmpeg_branding=Chrome" build/gyp_chromium -D component=shared_library # if icecc then add linux_use_debug_fission=0 linux_use_bundled_binutils=0 clang=0
 ninja -C out/Release chrome chrome_sandbox -jN # if icecc -j60
 
 # Using GN to generate ninja build files
@@ -230,7 +230,9 @@ It should open a file then put the following flags inside:
   use_debug_fission = false
   linux_use_bundled_binutils = false
   is_clang = false
+  use_sysroot = false
   proprietary_codecs = true
+  ffmpeg_branding = Chrome
   is_component_build = true
   enable_nacl = false
   media_use_ffmpeg = false
