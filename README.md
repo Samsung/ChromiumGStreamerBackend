@@ -238,6 +238,9 @@ It should open a file then put the following flags inside:
   media_use_libwebm = false
 ninja -C out/mybuild chrome chrome_sandbox -jN # if icecc -j60
 
+# Debug build
+If any linker error or crash then try to add linux_use_bundled_gold=0 or linux_use_gold_flags=0 to GYP_DEFINES
+
 # Run without any sandbox
 ./out/Release/chrome --no-sandbox http://www.w3schools.com/html/mov_bbb.ogg
 
