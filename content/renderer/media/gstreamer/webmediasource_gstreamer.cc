@@ -51,7 +51,8 @@ WebMediaSource::AddStatus WebMediaSourceGStreamer::addSourceBuffer(
   std::vector<std::string> parsed_codec_ids;
   media::ParseCodecString(codecs.utf8().data(), &parsed_codec_ids, false);
 
-  if (!message_dispatcher_->SendAddSourceId(id, type.utf8().data(), parsed_codec_ids))
+  if (!message_dispatcher_->SendAddSourceId(id, type.utf8().data(),
+                                            parsed_codec_ids))
     return WebMediaSource::AddStatusNotSupported;
 
   WebSourceBufferGStreamer* source_buffer_gstreamer =

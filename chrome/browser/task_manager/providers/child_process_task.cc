@@ -73,7 +73,8 @@ base::string16 GetLocalizedTitle(const base::string16& title,
 #if defined(USE_GSTREAMER)
     // TODO: add localized resource
     case content::PROCESS_TYPE_MEDIA:
-      return base::string16(reinterpret_cast<const base::char16*>(u"Media Process"));
+      return base::string16(
+          reinterpret_cast<const base::char16*>(u"Media Process"));
 #endif
     case content::PROCESS_TYPE_PPAPI_PLUGIN:
       return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PLUGIN_PREFIX,

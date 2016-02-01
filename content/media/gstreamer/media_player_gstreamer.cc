@@ -296,21 +296,22 @@ MediaPlayerGStreamer::~MediaPlayerGStreamer() {
     gl_thread_condition_.wait(gl_thread_lock);
   }
 
-  // 2. Destroy the pipeline. Note that some cleanup callbacks will be called later in this task runner.
+  // 2. Destroy the pipeline. Note that some cleanup callbacks will be called
+  // later in this task runner.
   gst_object_unref(player_);
   player_ = nullptr;
 
   if (media_source_) {
-      gst_object_unref(media_source_);
-      media_source_ = nullptr;
+    gst_object_unref(media_source_);
+    media_source_ = nullptr;
   }
 
   // 3. Clean up the context finally.
   {
     std::unique_lock<std::mutex> gl_thread_lock(gl_thread_mutex_);
-    gl_task_runner_->PostTask(FROM_HERE,
-                              base::Bind(&MediaPlayerGStreamer::CleanupGLContext,
-                                         weak_factory_.GetWeakPtr()));
+    gl_task_runner_->PostTask(
+        FROM_HERE, base::Bind(&MediaPlayerGStreamer::CleanupGLContext,
+                              weak_factory_.GetWeakPtr()));
     gl_thread_condition_.wait(gl_thread_lock);
   }
 
@@ -529,7 +530,7 @@ GstGLContext* MediaPlayerGStreamer::GstgldisplayCreateContextCallback(
 
   gl_thread_condition_.wait(lock);
 
-  return GST_GL_CONTEXT (gst_object_ref (gst_gl_context_));
+  return GST_GL_CONTEXT(gst_object_ref(gst_gl_context_));
 }
 
 bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
@@ -574,7 +575,8 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
 
   samples_[texture_id] = gst_sample_ref(sample);
 
-  target = gst_gl_texture_target_to_gl(gst_gl_memory_get_texture_target(GST_GL_MEMORY_CAST(gst_buffer_peek_memory(buf, 0))));
+  target = gst_gl_texture_target_to_gl(gst_gl_memory_get_texture_target(
+      GST_GL_MEMORY_CAST(gst_buffer_peek_memory(buf, 0))));
 
   gpu::gles2::GLES2Interface* gl = ::gles2::GetGLContext();
 
@@ -599,7 +601,8 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
   return true;
 }
 
-void MediaPlayerGStreamer::Load(GURL url, unsigned position_update_interval_ms) {
+void MediaPlayerGStreamer::Load(GURL url,
+                                unsigned position_update_interval_ms) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   if (!gst_gl_context_)
@@ -610,7 +613,7 @@ void MediaPlayerGStreamer::Load(GURL url, unsigned position_update_interval_ms) 
 
   url_ = url;
   gst_player_set_uri(player_, url_.spec().c_str());
-  gst_player_set_position_update_interval (player_, position_update_interval_ms);
+  gst_player_set_position_update_interval(player_, position_update_interval_ms);
   gst_player_pause(player_);
 }
 

@@ -56,7 +56,8 @@ class MEDIA_EXPORT ProxyDecryptor {
 #if defined(USE_GSTREAMER)
   typedef base::Callback<void(const std::string& session_id,
                               bool has_additional_usable_key,
-                              CdmKeysInfo keys_info)> CdmContextKeysReadyCB;
+                              CdmKeysInfo keys_info)>
+      CdmContextKeysReadyCB;
 #endif
 
   // These are similar to the callbacks in media_keys.h, but pass back the

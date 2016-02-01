@@ -18,11 +18,10 @@
 
 namespace content {
 
-static base::LazyInstance<CommandBufferProxyImpl*>
-    g_thread_safe_cmd_impl = LAZY_INSTANCE_INITIALIZER;
+static base::LazyInstance<CommandBufferProxyImpl*> g_thread_safe_cmd_impl =
+    LAZY_INSTANCE_INITIALIZER;
 
-bool ClientEGL_SetupCommandBufferProxy()
-{
+bool ClientEGL_SetupCommandBufferProxy() {
   gpu::gles2::GLES2Interface* gl_interface = ::gles2::GetGLContext();
 
   if (!gl_interface) {

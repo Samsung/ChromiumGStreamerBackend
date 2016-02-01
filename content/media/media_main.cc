@@ -69,7 +69,6 @@ bool MediaProcessLogMessageHandler(int severity,
 
 // Main function for starting the media process.
 int MediaMain(const MainFunctionParams& parameters) {
-
 #if !defined(OFFICIAL_BUILD)
   base::debug::EnableInProcessStackDumping();
 #endif
