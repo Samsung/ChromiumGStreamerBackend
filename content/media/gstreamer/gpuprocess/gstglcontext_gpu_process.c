@@ -94,7 +94,6 @@ gst_gl_context_gpu_process_new (GstGLDisplay * display,
   GstGLContextGPUProcess *gpu_context = NULL;
   GstGLContextClass *context_class = NULL;
   GstGLWindow *window = NULL;
-  GError *error = NULL;
   g_return_val_if_fail ((gst_gl_display_get_gl_api (display) & gl_api) !=
       GST_GL_API_NONE, NULL);
 
@@ -106,32 +105,11 @@ gst_gl_context_gpu_process_new (GstGLDisplay * display,
   context = GST_GL_CONTEXT (gpu_context);
 
   context->display = display;
-  gst_gl_display_add_context (display, context);
 
   context_class = GST_GL_CONTEXT_GET_CLASS (context);
 
   context_class->get_current_context = NULL;
   context_class->get_proc_address = GST_DEBUG_FUNCPTR (proc_addr);
-
-  gst_gl_context_activate (context, TRUE);
-  gst_gl_context_fill_info (context, &error);
-
-  if (error) {
-    GST_ERROR_OBJECT (context, "Failed to create gpu process context: %s",
-        error->message);
-    g_error_free (error);
-    gst_object_unref (context);
-    return NULL;
-  }
-
-  context->gl_vtable->EGLImageTargetTexture2D =
-      gst_gl_context_get_proc_address (context, "glEGLImageTargetTexture2D");
-
-  if (!context->gl_vtable->EGLImageTargetTexture2D) {
-    GST_ERROR_OBJECT (context, "Cannot find glEGLImageTargetTexture2D");
-    gst_object_unref (context);
-    return NULL;
-  }
 
   egl_context->eglCreateImage = gst_gl_context_get_proc_address (context,
     "eglCreateImage");
@@ -145,3 +123,32 @@ gst_gl_context_gpu_process_new (GstGLDisplay * display,
 
   return context;
 }
+
+gboolean
+gst_gl_context_gpu_process_create(GstGLContext* context)
+{;
+  GError *error = NULL;
+
+  gst_gl_context_activate (context, TRUE);
+  gst_gl_context_fill_info (context, &error);
+
+  if (error) {
+    GST_ERROR_OBJECT (context, "Failed to create gpu process context: %s",
+        error->message);
+    g_error_free (error);
+    gst_object_unref (context);
+    return FALSE;
+  }
+
+  context->gl_vtable->EGLImageTargetTexture2D =
+      gst_gl_context_get_proc_address (context, "glEGLImageTargetTexture2D");
+
+  if (!context->gl_vtable->EGLImageTargetTexture2D) {
+    GST_ERROR_OBJECT (context, "Cannot find glEGLImageTargetTexture2D");
+    gst_object_unref (context);
+    return FALSE;
+  }
+
+  return TRUE;
+}
+

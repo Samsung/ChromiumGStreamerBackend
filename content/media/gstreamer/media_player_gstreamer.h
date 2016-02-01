@@ -132,6 +132,7 @@ class MediaPlayerGStreamer {
 
   GstGLContext* GstgldisplayCreateContextCallback(GstGLDisplay* display,
                                                   GstGLContext* other_context);
+  void ActivateGLContext();
   bool GlimagesinkDrawCallback(GstElement* sink,
                                GstGLContext* context,
                                GstSample* sample);
