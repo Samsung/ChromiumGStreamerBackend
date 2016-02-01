@@ -69,6 +69,8 @@ GstGLContext* gst_gl_context_gpu_process_new(GstGLDisplay* display,
                                              GstGLAPI gl_api,
                                              GstGLProcAddrFunc proc_addr);
 
+gboolean gst_gl_context_gpu_process_create(GstGLContext* context);
+
 G_END_DECLS
 
 #endif /* __GST_GL_CONTEXT_GPU_PROCESS_H__ */
