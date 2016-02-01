@@ -962,7 +962,7 @@ void RenderThreadImpl::Shutdown() {
   if (media_channel_.get())
     media_channel_->DestroyChannel();
 #endif
-  // TODO(port)
+// TODO(port)
 #if defined(OS_WIN)
   // Clean up plugin channels before this thread goes away.
   NPChannelBase::CleanupChannels();

@@ -216,7 +216,8 @@ base::string16 ChildProcessResource::GetLocalizedTitle() const {
 #if defined(USE_GSTREAMER)
     // TODO: add localized resource
     case content::PROCESS_TYPE_MEDIA:
-      return base::string16(reinterpret_cast<const base::char16*>(u"Media Process"));
+      return base::string16(
+          reinterpret_cast<const base::char16*>(u"Media Process"));
 #endif
     case content::PROCESS_TYPE_PLUGIN:
     case content::PROCESS_TYPE_PPAPI_PLUGIN:

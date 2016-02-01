@@ -124,14 +124,15 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
       public cc::VideoFrameProvider,
       public base::SupportsWeakPtr<WebMediaPlayerGStreamer> {
  public:
-  WebMediaPlayerGStreamer(blink::WebLocalFrame* frame,
-                          blink::WebMediaPlayerClient* client,
-                          blink::WebMediaPlayerEncryptedMediaClient* encrypted_client,
-                          base::WeakPtr<WebMediaPlayerDelegate> delegate,
-                          CdmFactory* cdm_factory,
-                          media::MediaPermission* media_permission,
-                          blink::WebContentDecryptionModule* initial_cdm,
-                          MediaLog* media_log);
+  WebMediaPlayerGStreamer(
+      blink::WebLocalFrame* frame,
+      blink::WebMediaPlayerClient* client,
+      blink::WebMediaPlayerEncryptedMediaClient* encrypted_client,
+      base::WeakPtr<WebMediaPlayerDelegate> delegate,
+      CdmFactory* cdm_factory,
+      media::MediaPermission* media_permission,
+      blink::WebContentDecryptionModule* initial_cdm,
+      MediaLog* media_log);
   virtual ~WebMediaPlayerGStreamer();
 
   void SetVideoFrameProviderClient(
@@ -196,12 +197,23 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   virtual unsigned audioDecodedByteCount() const override;
   virtual unsigned videoDecodedByteCount() const override;
 
-  virtual bool copyVideoTextureToPlatformTexture(blink::WebGraphicsContext3D*, unsigned target,
-      unsigned texture, unsigned internalFormat, unsigned type, int level,
-      bool premultiplyAlpha, bool flipY) override;
+  virtual bool copyVideoTextureToPlatformTexture(blink::WebGraphicsContext3D*,
+                                                 unsigned target,
+                                                 unsigned texture,
+                                                 unsigned internalFormat,
+                                                 unsigned type,
+                                                 int level,
+                                                 bool premultiplyAlpha,
+                                                 bool flipY) override;
 
-  virtual bool copyVideoSubTextureToPlatformTexture(blink::WebGraphicsContext3D*, unsigned target,
-      unsigned texture, int level, int xoffset, int yoffset, bool premultiplyAlpha,
+  virtual bool copyVideoSubTextureToPlatformTexture(
+      blink::WebGraphicsContext3D*,
+      unsigned target,
+      unsigned texture,
+      int level,
+      int xoffset,
+      int yoffset,
+      bool premultiplyAlpha,
       bool flipY) override;
 
   virtual MediaKeyException generateKeyRequest(

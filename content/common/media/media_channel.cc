@@ -117,7 +117,9 @@ void MediaChannel::OnMediaPlayerCreate(int player_id) {
   }
 }
 
-void MediaChannel::OnMediaPlayerLoad(int player_id, GURL url, unsigned position_update_interval_ms) {
+void MediaChannel::OnMediaPlayerLoad(int player_id,
+                                     GURL url,
+                                     unsigned position_update_interval_ms) {
   MediaPlayerGStreamer* player = GetMediaPlayer(player_id);
   if (player) {
     player->Load(url, position_update_interval_ms);

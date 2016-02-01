@@ -35,7 +35,7 @@ using GUniquePtr = std::unique_ptr<T, GPtrDeleter<T>>;
 #define WTF_DEFINE_GPTR_DELETER(typeName, deleterFunc) \
   template <>                                          \
   struct GPtrDeleter<typeName> {                       \
-    void operator()(typeName * ptr) const {            \
+    void operator()(typeName* ptr) const {             \
       if (ptr)                                         \
         deleterFunc(ptr);                              \
     }                                                  \
@@ -64,7 +64,7 @@ struct _ChromiumHttpSrcPrivate {
 
   std::mutex mutex_data_source_;
   std::condition_variable condition_data_source_;
-  scoped_ptr<content::GStreamerBufferedDataSource> gst_data_source_ ;
+  scoped_ptr<content::GStreamerBufferedDataSource> gst_data_source_;
 };
 
 enum {
@@ -209,7 +209,7 @@ static void chromium_http_src_init(ChromiumHttpSrc* src) {
   ChromiumHttpSrcPrivate* priv = CHROMIUM_HTTP_SRC_GET_PRIVATE(src);
   src->priv = priv;
 
-  priv->gst_data_source_  = nullptr;
+  priv->gst_data_source_ = nullptr;
   priv->data_source_initialized_ = false;
 
   priv->aborted_ = new base::WaitableEvent{true, false};
@@ -218,7 +218,8 @@ static void chromium_http_src_init(ChromiumHttpSrc* src) {
   gst_base_src_set_blocksize(GST_BASE_SRC(src), DEFAULT_BLOCKSIZE);
 }
 
-static void onDeleteDataSource(content::GStreamerBufferedDataSource* gst_data_source) {
+static void onDeleteDataSource(
+    content::GStreamerBufferedDataSource* gst_data_source) {
   delete gst_data_source;
 }
 
@@ -232,8 +233,10 @@ static void chromiumHttpSrcFinalize(GObject* object) {
   delete priv->aborted_;
 
   if (priv->gst_data_source_) {
-    content::GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner()->PostTask(FROM_HERE,
-        base::Bind(&onDeleteDataSource, priv->gst_data_source_.release()));
+    content::GStreamerBufferedDataSourceFactory::Get()
+        ->data_source_task_runner()
+        ->PostTask(FROM_HERE, base::Bind(&onDeleteDataSource,
+                                         priv->gst_data_source_.release()));
 
     priv->gst_data_source_ = nullptr;
   }
@@ -337,7 +340,8 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
   }
 
   int64_t file_size;
-  if (priv->gst_data_source_->data_source()->GetSize(&file_size) && read_position >= file_size) {
+  if (priv->gst_data_source_->data_source()->GetSize(&file_size) &&
+      read_position >= file_size) {
     GST_ELEMENT_ERROR(src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
     return GST_FLOW_ERROR;
   }
@@ -356,7 +360,8 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
     //   2) |aborted_| is signalled
     priv->last_read_bytes_ = 0;
 
-    priv->gst_data_source_->data_source()->Read(read_position, to_read, data,
+    priv->gst_data_source_->data_source()->Read(
+        read_position, to_read, data,
         base::Bind(&SignalReadCompleted, basesrc));
 
     base::WaitableEvent* events[] = {priv->aborted_, priv->read_complete_};
@@ -456,7 +461,7 @@ static gboolean chromiumHttpSrcStop(GstBaseSrc* basesrc) {
   return TRUE;
 }
 
-static gboolean chromiumHttpSrcUnlock (GstBaseSrc * basesrc) {
+static gboolean chromiumHttpSrcUnlock(GstBaseSrc* basesrc) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
   GST_OBJECT_LOCK(src);
@@ -472,7 +477,7 @@ static gboolean chromiumHttpSrcUnlock (GstBaseSrc * basesrc) {
   return TRUE;
 }
 
-static gboolean chromiumHttpSrcUnlockStop (GstBaseSrc * basesrc) {
+static gboolean chromiumHttpSrcUnlockStop(GstBaseSrc* basesrc) {
   return TRUE;
 }
 
@@ -550,9 +555,11 @@ static void onSourceInitialized(GstBaseSrc* basesrc, bool success) {
 }
 
 static void onNotifyDownloading(GstBaseSrc* basesrc, bool is_downloading) {
-  content::GStreamerBufferedDataSourceFactory::Get()->media_log()->AddEvent(content::GStreamerBufferedDataSourceFactory::Get()->media_log()->CreateBooleanEvent(
-      media::MediaLogEvent::NETWORK_ACTIVITY_SET, "is_downloading_data",
-      is_downloading));
+  content::GStreamerBufferedDataSourceFactory::Get()->media_log()->AddEvent(
+      content::GStreamerBufferedDataSourceFactory::Get()
+          ->media_log()
+          ->CreateBooleanEvent(media::MediaLogEvent::NETWORK_ACTIVITY_SET,
+                               "is_downloading_data", is_downloading));
 
   GST_DEBUG("Data source downloading: %d", is_downloading);
 }
@@ -565,7 +572,8 @@ static void onResetDataSource(GstBaseSrc* basesrc) {
 
   scoped_ptr<scheduler::WebTaskRunnerImpl> task_runner(
       new scheduler::WebTaskRunnerImpl(
-        content::GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner()));
+          content::GStreamerBufferedDataSourceFactory::Get()
+              ->data_source_task_runner()));
 
   content::WebURLLoaderImpl* url_loader = new content::WebURLLoaderImpl(
       content::GStreamerBufferedDataSourceFactory::Get()->resource_dispatcher(),
@@ -623,10 +631,13 @@ static void onResetDataSource(GstBaseSrc* basesrc) {
 
   GST_DEBUG("Create data source for uri: %s", priv->uri_);
 
-  content::GStreamerBufferedDataSourceFactory::Get()->create(priv->uri_, media::BufferedResourceLoader::CORSMode::kUnspecified, src);
-  priv->gst_data_source_->data_source()->SetPreload(media::BufferedDataSource::AUTO);
-  priv->gst_data_source_->data_source()->Initialize(base::Bind(&onSourceInitialized, basesrc),
-      url_loader, "", blink::WebReferrerPolicyDefault);
+  content::GStreamerBufferedDataSourceFactory::Get()->create(
+      priv->uri_, media::BufferedResourceLoader::CORSMode::kUnspecified, src);
+  priv->gst_data_source_->data_source()->SetPreload(
+      media::BufferedDataSource::AUTO);
+  priv->gst_data_source_->data_source()->Initialize(
+      base::Bind(&onSourceInitialized, basesrc), url_loader, "",
+      blink::WebReferrerPolicyDefault);
 
   priv->gst_data_source_->data_source()->MediaIsPlaying();
 }
@@ -870,39 +881,51 @@ G_TYPE_INT, (gint) icyMetaInt, NULL));
 
 namespace content {
 
-GStreamerBufferedDataSource::GStreamerBufferedDataSource(GURL url, media::BufferedResourceLoader::CORSMode cors_mode, ChromiumHttpSrc* src)
-  : data_source_(new media::BufferedDataSource(
-    url,
-    cors_mode,
-    GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner(),
-    nullptr,
-    GStreamerBufferedDataSourceFactory::Get()->media_log().get(),
-    &buffered_data_source_host_,
-    base::Bind(&onNotifyDownloading, GST_BASE_SRC(src)))) {
-}
+GStreamerBufferedDataSource::GStreamerBufferedDataSource(
+    GURL url,
+    media::BufferedResourceLoader::CORSMode cors_mode,
+    ChromiumHttpSrc* src)
+    : data_source_(new media::BufferedDataSource(
+          url,
+          cors_mode,
+          GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner(),
+          nullptr,
+          GStreamerBufferedDataSourceFactory::Get()->media_log().get(),
+          &buffered_data_source_host_,
+          base::Bind(&onNotifyDownloading, GST_BASE_SRC(src)))) {}
 
-GStreamerBufferedDataSourceFactory::GStreamerBufferedDataSourceFactory() {
-}
+GStreamerBufferedDataSourceFactory::GStreamerBufferedDataSourceFactory() {}
 
-base::LazyInstance<GStreamerBufferedDataSourceFactory>::Leaky g_data_source_factory_ = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<GStreamerBufferedDataSourceFactory>::Leaky
+    g_data_source_factory_ = LAZY_INSTANCE_INITIALIZER;
 
-void GStreamerBufferedDataSourceFactory::create(gchar* uri, media::BufferedResourceLoader::CORSMode cors_mode, ChromiumHttpSrc* src) {
+void GStreamerBufferedDataSourceFactory::create(
+    gchar* uri,
+    media::BufferedResourceLoader::CORSMode cors_mode,
+    ChromiumHttpSrc* src) {
   ChromiumHttpSrcPrivate* priv = src->priv;
-  priv->gst_data_source_.reset(new GStreamerBufferedDataSource(GURL(uri), cors_mode, src));
+  priv->gst_data_source_.reset(
+      new GStreamerBufferedDataSource(GURL(uri), cors_mode, src));
 }
 
-void GStreamerBufferedDataSourceFactory::Set(scoped_refptr<media::MediaLog> media_log,  content::ResourceDispatcher* resource_dispatcher,  scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner) {
+void GStreamerBufferedDataSourceFactory::Set(
+    scoped_refptr<media::MediaLog> media_log,
+    content::ResourceDispatcher* resource_dispatcher,
+    scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner) {
   media_log_ = media_log;
   resource_dispatcher_ = resource_dispatcher;
   data_source_task_runner_ = data_source_task_runner;
 }
 
-void GStreamerBufferedDataSourceFactory::Init(scoped_refptr<media::MediaLog> media_log, content::ResourceDispatcher* resource_dispatcher, scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner) {
-  g_data_source_factory_.Pointer()->Set(media_log, resource_dispatcher, data_source_task_runner);
+void GStreamerBufferedDataSourceFactory::Init(
+    scoped_refptr<media::MediaLog> media_log,
+    content::ResourceDispatcher* resource_dispatcher,
+    scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner) {
+  g_data_source_factory_.Pointer()->Set(media_log, resource_dispatcher,
+                                        data_source_task_runner);
 }
 
 GStreamerBufferedDataSourceFactory* GStreamerBufferedDataSourceFactory::Get() {
   return g_data_source_factory_.Pointer();
 }
-
 }

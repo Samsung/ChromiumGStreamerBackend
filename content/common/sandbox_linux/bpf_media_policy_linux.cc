@@ -341,7 +341,9 @@ ResultExpr MediaProcessPolicy::EvaluateSyscall(int sysno) const {
           return Allow();
         case __NR_socket:
           const Arg<int> domain(0), type(1);
-          return If(AllOf(domain == AF_UNIX, type == (SOCK_STREAM | SOCK_CLOEXEC)), Allow())
+          return If(AllOf(domain == AF_UNIX,
+                          type == (SOCK_STREAM | SOCK_CLOEXEC)),
+                    Allow())
               .Else(Error(EPERM));
       }
 #endif
@@ -376,22 +378,20 @@ bool MediaProcessPolicy::PreSandboxHook() {
   return true;
 }
 
-static void splitAndAddReadOnlyPermission(const char* path,
+static void splitAndAddReadOnlyPermission(
+    const char* path,
     const std::string& delimiter,
-    std::vector<BrokerFilePermission>& permissions)
-{
+    std::vector<BrokerFilePermission>& permissions) {
   if (path) {
     std::vector<std::string> results;
     base::SplitStringUsingSubstr(path, delimiter, &results);
     for (auto it = results.begin(); it != results.end(); ++it) {
       if (!it->empty()) {
         if (*(it->rbegin()) != '/') {
-          permissions.push_back(
-              BrokerFilePermission::ReadOnly(*it));
+          permissions.push_back(BrokerFilePermission::ReadOnly(*it));
           it->append("/");
         }
-        permissions.push_back(
-            BrokerFilePermission::ReadOnlyRecursive(*it));
+        permissions.push_back(BrokerFilePermission::ReadOnlyRecursive(*it));
       }
     }
   }
@@ -424,12 +424,10 @@ void MediaProcessPolicy::InitMediaBrokerProcess(
       std::string(getenv("XDG_RUNTIME_DIR")) + "/pulse";
   const std::string kDevRunUserPulsePath =
       std::string(getenv("XDG_RUNTIME_DIR")) + "/pulse/";
-  const std::string kHomePulsePath =
-      std::string(getenv("HOME")) + "/.pulse/";
+  const std::string kHomePulsePath = std::string(getenv("HOME")) + "/.pulse/";
   const std::string kHomeConfigPulsePath =
       std::string(getenv("HOME")) + "/.config/pulse/";
-  const std::string kHomeXauth =
-      std::string(getenv("HOME")) + "/.Xauthority";
+  const std::string kHomeXauth = std::string(getenv("HOME")) + "/.Xauthority";
 
   // GStreamer registry:
   // TODO: Implement more fine grained approach
@@ -465,8 +463,7 @@ void MediaProcessPolicy::InitMediaBrokerProcess(
 
 #if !defined(OFFICIAL_BUILD)
   if (kGstRegistry)
-    permissions.push_back(
-        BrokerFilePermission::ReadOnly(kGstRegistry));
+    permissions.push_back(BrokerFilePermission::ReadOnly(kGstRegistry));
 
   splitAndAddReadOnlyPermission(kGstPluginPath, ":", permissions);
   splitAndAddReadOnlyPermission(kLdLibraryPath, ":", permissions);
