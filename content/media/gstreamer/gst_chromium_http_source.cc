@@ -51,10 +51,11 @@ struct _ChromiumHttpSrcPrivate {
 
   bool data_source_initialized_;
   gint last_read_bytes_;
-  base::Closure error_cb_;
 
   base::WaitableEvent* aborted_;
   base::WaitableEvent* read_complete_;
+
+  gboolean flushing;
 
   // icecast stuff
   gchar* iradioName;
@@ -209,6 +210,8 @@ static void chromium_http_src_init(ChromiumHttpSrc* src) {
   ChromiumHttpSrcPrivate* priv = CHROMIUM_HTTP_SRC_GET_PRIVATE(src);
   src->priv = priv;
 
+  priv->flushing = FALSE;
+
   priv->gst_data_source_ = nullptr;
   priv->data_source_initialized_ = false;
 
@@ -317,8 +320,12 @@ static void SignalReadCompleted(GstBaseSrc* basesrc, int size) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
 
+  GST_OBJECT_LOCK(src);
+
   priv->last_read_bytes_ = size;
   priv->read_complete_->Signal();
+
+  GST_OBJECT_UNLOCK(src);
 }
 
 static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
@@ -332,10 +339,13 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
   GstMapInfo info;
   int ret = 0;
   guint8* data = 0;
-  uint64_t read_position = offset;
+  int64_t read_position = offset;
+
+  GST_OBJECT_LOCK(src);
 
   if (priv->aborted_->IsSignaled()) {
     GST_ELEMENT_ERROR(src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
+    GST_OBJECT_UNLOCK(src);
     return GST_FLOW_ERROR;
   }
 
@@ -343,6 +353,7 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
   if (priv->gst_data_source_->data_source()->GetSize(&file_size) &&
       read_position >= file_size) {
     GST_ELEMENT_ERROR(src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
+    GST_OBJECT_UNLOCK(src);
     return GST_FLOW_ERROR;
   }
 
@@ -365,7 +376,14 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
         base::Bind(&SignalReadCompleted, basesrc));
 
     base::WaitableEvent* events[] = {priv->aborted_, priv->read_complete_};
+
+    GST_OBJECT_UNLOCK(src);
     size_t index = base::WaitableEvent::WaitMany(events, arraysize(events));
+
+    GST_OBJECT_LOCK(src);
+
+    if (priv->flushing)
+      goto flushing;
 
     if (events[index] == priv->aborted_) {
       GST_ELEMENT_ERROR(src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
@@ -375,7 +393,6 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
     }
     if (priv->last_read_bytes_ == media::DataSource::kReadError) {
       priv->aborted_->Signal();
-      priv->error_cb_.Run();
       gst_buffer_unmap(buf, &info);
       gst_buffer_resize(buf, 0, 0);
       GST_ELEMENT_ERROR(src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
@@ -405,12 +422,21 @@ static GstFlowReturn chromiumHttpSrcFill(GstBaseSrc* basesrc,
   GST_BUFFER_OFFSET(buf) = offset;
   GST_BUFFER_OFFSET_END(buf) = offset + bytes_read;
 
+  GST_OBJECT_UNLOCK(src);
+
   return GST_FLOW_OK;
+
+flushing : {
+  GST_DEBUG("we are flushing");
+  GST_OBJECT_UNLOCK(src);
+  return GST_FLOW_FLUSHING;
+}
 
 eos : {
   GST_DEBUG("EOS");
   gst_buffer_unmap(buf, &info);
   gst_buffer_resize(buf, 0, 0);
+  GST_OBJECT_UNLOCK(src);
   return GST_FLOW_EOS;
 }
 }
@@ -439,6 +465,9 @@ static gboolean chromiumHttpSrcStop(GstBaseSrc* basesrc) {
   ChromiumHttpSrcPrivate* priv = src->priv;
 
   GST_OBJECT_LOCK(src);
+
+  priv->flushing = FALSE;
+
   if (priv->gst_data_source_) {
     // Can be called in any thread.
     priv->gst_data_source_->data_source()->Stop();
@@ -464,20 +493,38 @@ static gboolean chromiumHttpSrcStop(GstBaseSrc* basesrc) {
 static gboolean chromiumHttpSrcUnlock(GstBaseSrc* basesrc) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
+
   GST_OBJECT_LOCK(src);
 
   if (priv->gst_data_source_ && !priv->read_complete_->IsSignaled()) {
     GST_DEBUG("Data source is unlocking.");
 
+    priv->flushing = TRUE;
     priv->last_read_bytes_ = 0;
     priv->read_complete_->Signal();
   }
 
   GST_OBJECT_UNLOCK(src);
+
   return TRUE;
 }
 
 static gboolean chromiumHttpSrcUnlockStop(GstBaseSrc* basesrc) {
+  ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
+  ChromiumHttpSrcPrivate* priv = src->priv;
+
+  GST_OBJECT_LOCK(src);
+
+  if (priv->gst_data_source_ && !priv->read_complete_->IsSignaled()) {
+    GST_DEBUG("Data source is unlocking stop.");
+
+    priv->flushing = TRUE;
+    priv->last_read_bytes_ = 0;
+    priv->read_complete_->Signal();
+  }
+
+  GST_OBJECT_UNLOCK(src);
+
   return TRUE;
 }
 
@@ -649,6 +696,8 @@ static gboolean chromiumHttpSrcStart(GstBaseSrc* basesrc) {
 
   GST_OBJECT_LOCK(src);
 
+  priv->flushing = FALSE;
+
   if (!priv->uri_) {
     GST_ERROR_OBJECT(src, "No URI provided");
     GST_OBJECT_UNLOCK(src);
@@ -683,13 +732,14 @@ static gboolean chromiumHttpSrcStart(GstBaseSrc* basesrc) {
 
     is_seekable = chromiumHttpSrcIsSeekable(basesrc);
 
-    // priv->data_source_->MediaIsPlaying();
+    // priv->gst_data_source_->data_source()->MediaIsPlaying();
 
     // TODO call data_source_->MediaIsPaused(); when paused
   }
 
   GST_OBJECT_LOCK(src);
   gst_base_src_set_dynamic_size(basesrc, is_seekable);
+  ;
   GST_OBJECT_UNLOCK(src);
 
   return true;
