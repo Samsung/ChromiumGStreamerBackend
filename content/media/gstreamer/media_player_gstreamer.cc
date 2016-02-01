@@ -543,13 +543,14 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
 
   DVLOG(1) << __FUNCTION__ << "(Using texture id: " << texture_id << ")";
 
-  if (was_preroll_ && samples_[texture_id]) {
+  GstSampleMap::const_iterator iter = samples_.find(texture_id);
+  if (was_preroll_ && iter != samples_.end() && iter->second) {
     was_preroll_ = false;
     gst_video_frame_unmap(&v_frame);
     return true;
   }
 
-  DCHECK(samples_[texture_id] == 0);
+  DCHECK(iter == samples_.end() || !iter->second);
 
   samples_[texture_id] = gst_sample_ref(sample);
 
