@@ -506,10 +506,30 @@ void MediaPlayerGStreamer::DoReleaseTexture(unsigned texture_id) {
   }
 }
 
+void MediaPlayerGStreamer::ActivateGLContext() {
+  {
+    std::lock_guard<std::mutex> lock(gl_thread_mutex_);
+    gst_gl_context_gpu_process_create(gst_gl_context_);
+  }
+
+  gl_thread_condition_.notify_one();
+}
+
 GstGLContext* MediaPlayerGStreamer::GstgldisplayCreateContextCallback(
     GstGLDisplay* display,
     GstGLContext* other_context) {
-  return gst_gl_context_;
+  DCHECK(display);
+  DCHECK(!other_context);
+
+  std::unique_lock<std::mutex> lock(gl_thread_mutex_);
+
+  gl_task_runner_->PostTask(FROM_HERE,
+                            base::Bind(&MediaPlayerGStreamer::ActivateGLContext,
+                                       weak_factory_.GetWeakPtr()));
+
+  gl_thread_condition_.wait(lock);
+
+  return GST_GL_CONTEXT (gst_object_ref (gst_gl_context_));
 }
 
 bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
