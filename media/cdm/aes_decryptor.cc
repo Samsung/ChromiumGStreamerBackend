@@ -401,7 +401,6 @@ void AesDecryptor::UpdateSession(const std::string& session_id,
             &key_info->key);
 #endif
         keys_info.push_back(key_info.release());
-
       }
     }
   }

@@ -87,9 +87,8 @@ MediaChildThread::MediaChildThread(bool dead_on_arrival,
 }
 
 MediaChildThread::MediaChildThread(const InProcessChildThreadParams& params)
-    : ChildThreadImpl(ChildThreadImpl::Options::Builder()
-                          .InBrowserProcess(params)
-                          .Build()),
+    : ChildThreadImpl(
+          ChildThreadImpl::Options::Builder().InBrowserProcess(params).Build()),
       dead_on_arrival_(false),
       in_browser_process_(true),
       blink_platform_(nullptr) {
@@ -100,10 +99,9 @@ MediaChildThread::MediaChildThread(const InProcessChildThreadParams& params)
   g_thread_safe_sender.Get() = thread_safe_sender();
 }
 
-MediaChildThread::~MediaChildThread()
-{
+MediaChildThread::~MediaChildThread() {
   if (blink_platform_)
-      blink::shutdownWithoutV8();
+    blink::shutdownWithoutV8();
 }
 
 void MediaChildThread::Shutdown() {
@@ -289,8 +287,9 @@ void MediaChildThread::OnInitialize() {
   scoped_refptr<media::MediaLog> media_log(
       new media::MediaLog());  // TODO: new RenderMediaLog
 
-  GStreamerBufferedDataSourceFactory::Init(media_log.get(), resource_dispatcher(),
-      base::ThreadTaskRunnerHandle::Get());
+  GStreamerBufferedDataSourceFactory::Init(media_log.get(),
+                                           resource_dispatcher(),
+                                           base::ThreadTaskRunnerHandle::Get());
 
   media_channel_filter_ = new MediaChannelFilter(
       GetRouter(), ChildProcess::current()->io_task_runner(),

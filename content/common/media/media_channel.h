@@ -61,7 +61,9 @@ class MediaChannel : public IPC::Listener, public IPC::Sender {
   void OnChannelError() override;
 
   void OnMediaPlayerCreate(int player_id);
-  void OnMediaPlayerLoad(int player_id, GURL url, unsigned position_update_interval_ms);
+  void OnMediaPlayerLoad(int player_id,
+                         GURL url,
+                         unsigned position_update_interval_ms);
   void OnMediaPlayerStart(int player_id);
   void OnMediaPlayerPause(int player_id);
   void OnMediaPlayerSeek(int player_id, base::TimeDelta delta);

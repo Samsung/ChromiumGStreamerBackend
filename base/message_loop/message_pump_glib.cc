@@ -144,7 +144,7 @@ void CheckThread(MessagePumpGlib* pump) {
   AutoLock auto_lock(thread_info_lock.Get());
 #if defined(USE_GSTREAMER)
   if (thread_info && thread_info->pump != pump) {
-     return;
+    return;
   }
 #endif
   if (!thread_info) {
