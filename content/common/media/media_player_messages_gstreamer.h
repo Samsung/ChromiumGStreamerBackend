@@ -19,7 +19,9 @@
 IPC_SYNC_MESSAGE_CONTROL1_0(MediaPlayerMsg_Create, int /* player_id */)
 
 // Start the player for playback.
-IPC_MESSAGE_CONTROL3(MediaPlayerMsg_Load, int /* player_id */, GURL /* url */,
+IPC_MESSAGE_CONTROL3(MediaPlayerMsg_Load,
+                     int /* player_id */,
+                     GURL /* url */,
                      unsigned /* position_update_interval */)
 
 IPC_MESSAGE_CONTROL1(MediaPlayerMsg_Start, int /* player_id */)

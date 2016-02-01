@@ -104,7 +104,8 @@ bool SyncMessageFilter::Send(Message* message) {
         return true;
       } else if (!io_task_runner_.get()) {
 #if defined(USE_GSTREAMER)
-        VLOG(1) << "SyncMessageFilter::Send: the filter is not added yet, push the message in pending messages.";
+        VLOG(1) << "SyncMessageFilter::Send: the filter is not added yet, push "
+                   "the message in pending messages.";
 #endif
         pending_messages_.emplace_back(base::WrapUnique(message));
         return true;

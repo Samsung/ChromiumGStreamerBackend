@@ -78,10 +78,10 @@ class BufferedDataSourceInterface : public DataSource {
   typedef base::Callback<void(bool)> InitializeCB;
 #if defined(USE_GSTREAMER)
   virtual void Initialize(const InitializeCB& init_cb,
-                  blink::WebURLLoader* url_loader = nullptr,
-                  const blink::WebString& referrer = blink::WebString(),
-                  blink::WebReferrerPolicy referrer_policy =
-                      blink::WebReferrerPolicyDefault) = 0;
+                          blink::WebURLLoader* url_loader = nullptr,
+                          const blink::WebString& referrer = blink::WebString(),
+                          blink::WebReferrerPolicy referrer_policy =
+                              blink::WebReferrerPolicyDefault) = 0;
 #else
   virtual void Initialize(const InitializeCB& init_cb) = 0;
 #endif

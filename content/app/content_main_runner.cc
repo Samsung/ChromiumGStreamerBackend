@@ -377,8 +377,7 @@ static void RegisterMainThreadFactories() {
   GpuProcessHost::RegisterGpuMainThreadFactory(
       CreateInProcessGpuThread);
 #if defined(USE_GSTREAMER)
-  MediaProcessHost::RegisterMediaMainThreadFactory(
-      CreateInProcessMediaThread);
+  MediaProcessHost::RegisterMediaMainThreadFactory(CreateInProcessMediaThread);
 #endif
 #else
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
@@ -392,8 +391,8 @@ static void RegisterMainThreadFactories() {
   }
 #if defined(USE_GSTREAMER)
   if (command_line.HasSwitch(switches::kInProcessMedia)) {
-      LOG(FATAL) <<
-          "--in-process-media is not supported in chrome multiple dll browser.";
+    LOG(FATAL) << "--in-process-media is not supported in chrome multiple dll "
+               << "browser.";
   }
 #endif
 #endif  // !CHROME_MULTIPLE_DLL_BROWSER && !CHROME_MULTIPLE_DLL_CHILD
