@@ -151,7 +151,8 @@ void WebMediaPlayerMessageDispatcher::SendLoad(GURL url) {
   content::MediaChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
-    channel->Send(new MediaPlayerMsg_Load(player_id_, url, media::kTimeUpdateInterval));
+    channel->Send(
+        new MediaPlayerMsg_Load(player_id_, url, media::kTimeUpdateInterval));
 }
 
 void WebMediaPlayerMessageDispatcher::SendStart() {
@@ -483,8 +484,9 @@ scoped_refptr<media::VideoFrame> WebMediaPlayerGStreamer::GetCurrentFrame() {
 
 void WebMediaPlayerGStreamer::PutCurrentFrame() {}
 
-void WebMediaPlayerGStreamer::OnReleaseTexture(uint32_t texture_id,
-                                               const gpu::SyncToken& sync_token) {
+void WebMediaPlayerGStreamer::OnReleaseTexture(
+    uint32_t texture_id,
+    const gpu::SyncToken& sync_token) {
   gpu::gles2::GLES2Interface* gl = ::gles2::GetGLContext();
 
   if (!gl) {
@@ -691,7 +693,8 @@ void WebMediaPlayerGStreamer::OnSourceSelected() {
   client_->mediaSourceOpened(media_source_);
 }
 
-void WebMediaPlayerGStreamer::OnSourceDeleted(WebMediaSourceGStreamer* media_source) {
+void WebMediaPlayerGStreamer::OnSourceDeleted(
+    WebMediaSourceGStreamer* media_source) {
   if (media_source_ == media_source)
     media_source_ = nullptr;
 }
@@ -766,8 +769,9 @@ void WebMediaPlayerGStreamer::DoLoad(LoadType load_type,
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   GURL gurl(url);
-  ReportMetrics(load_type, gurl,
-                blink::WebStringToGURL(frame_->document().securityOrigin().toString()));
+  ReportMetrics(
+      load_type, gurl,
+      blink::WebStringToGURL(frame_->document().securityOrigin().toString()));
 
   // Set subresource URL for crash reporting.
   base::debug::SetCrashKeyValue("subresource_url", gurl.spec());
@@ -959,8 +963,8 @@ double WebMediaPlayerGStreamer::currentTime() const {
   // Blink may still query us if updatePlaybackState() occurs while seeking.
 
   if (seeking()) {
-    return pending_seek_ ?
-        pending_seek_time_.InSecondsF() : seek_time_.InSecondsF();
+    return pending_seek_ ? pending_seek_time_.InSecondsF()
+                         : seek_time_.InSecondsF();
   }
 
   return std::min((const_cast<media::TimeDeltaInterpolator*>(&interpolator_))
@@ -1061,15 +1065,27 @@ unsigned WebMediaPlayerGStreamer::videoDecodedByteCount() const {
   return 0;
 }
 
-bool WebMediaPlayerGStreamer::copyVideoTextureToPlatformTexture(blink::WebGraphicsContext3D* web_graphics_context, unsigned target,
-    unsigned texture, unsigned internalFormat, unsigned type, int level,
-    bool premultiplyAlpha, bool flipY) {
+bool WebMediaPlayerGStreamer::copyVideoTextureToPlatformTexture(
+    blink::WebGraphicsContext3D* web_graphics_context,
+    unsigned target,
+    unsigned texture,
+    unsigned internalFormat,
+    unsigned type,
+    int level,
+    bool premultiplyAlpha,
+    bool flipY) {
   NOTIMPLEMENTED();
   return false;
 }
 
-bool WebMediaPlayerGStreamer::copyVideoSubTextureToPlatformTexture(blink::WebGraphicsContext3D* web_graphics_context, unsigned target,
-    unsigned texture, int level, int xoffset, int yoffset, bool premultiplyAlpha,
+bool WebMediaPlayerGStreamer::copyVideoSubTextureToPlatformTexture(
+    blink::WebGraphicsContext3D* web_graphics_context,
+    unsigned target,
+    unsigned texture,
+    int level,
+    int xoffset,
+    int yoffset,
+    bool premultiplyAlpha,
     bool flipY) {
   NOTIMPLEMENTED();
   return false;
@@ -1149,10 +1165,8 @@ void WebMediaPlayerGStreamer::OnEncryptedMediaInitData(
 
   encrypted_media_support_.SetInitDataType(init_data_type);
 
-  encrypted_client_->encrypted(
-      ConvertToWebInitDataType(init_data_type),
-      init_data.data(),
-      init_data.size());
+  encrypted_client_->encrypted(ConvertToWebInitDataType(init_data_type),
+                               init_data.data(), init_data.size());
 }
 
 void WebMediaPlayerGStreamer::OnWaitingForDecryptionKey() {
@@ -1253,11 +1267,9 @@ void WebMediaPlayerGStreamer::UpdatePlayingState(bool is_playing) {
   }
 }
 
-void WebMediaPlayerGStreamer::OnHidden() {
-}
+void WebMediaPlayerGStreamer::OnHidden() {}
 
-void WebMediaPlayerGStreamer::OnShown() {
-}
+void WebMediaPlayerGStreamer::OnShown() {}
 
 void WebMediaPlayerGStreamer::OnPlay() {
   play();

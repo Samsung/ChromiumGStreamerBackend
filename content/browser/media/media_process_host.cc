@@ -296,16 +296,15 @@ void GetContexts(
     ResourceContext** resource_context_out,
     net::URLRequestContext** request_context_out) {
   *resource_context_out = resource_context;
-  *request_context_out = GetRequestContext(
-      request_context, media_request_context, resource_type);
+  *request_context_out =
+      GetRequestContext(request_context, media_request_context, resource_type);
 }
 
 void MediaProcessHost::CreateGpuMessageFilter() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!gpu_message_filter_) {
-    gpu_message_filter_ =
-        new GpuMessageFilter(gpu_client_id_);
+    gpu_message_filter_ = new GpuMessageFilter(gpu_client_id_);
     process_->AddFilter(gpu_message_filter_);
   }
 }
@@ -373,8 +372,8 @@ bool MediaProcessHost::Init() {
     DCHECK(media_data_manager);
     media_data_manager->AppendMediaCommandLine(command_line);
     in_process_media_thread_.reset(
-            g_media_main_thread_factory(InProcessChildThreadParams(
-                channel_id, base::MessageLoop::current()->task_runner())));
+        g_media_main_thread_factory(InProcessChildThreadParams(
+            channel_id, base::MessageLoop::current()->task_runner())));
     in_process_media_thread_->Start();
 
     OnProcessLaunched();  // Fake a callback that the process is ready.

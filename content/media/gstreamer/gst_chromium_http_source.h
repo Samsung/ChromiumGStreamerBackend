@@ -51,34 +51,47 @@ G_END_DECLS
 namespace content {
 
 class GStreamerBufferedDataSource {
-public:
-    GStreamerBufferedDataSource(GURL url, media::BufferedResourceLoader::CORSMode cors_mode, ChromiumHttpSrc* src);
-    media::BufferedDataSourceHostImpl* buffered_data_source_host() { return &buffered_data_source_host_; }
-    media::BufferedDataSource* data_source() { return data_source_.get(); }
+ public:
+  GStreamerBufferedDataSource(GURL url,
+                              media::BufferedResourceLoader::CORSMode cors_mode,
+                              ChromiumHttpSrc* src);
+  media::BufferedDataSourceHostImpl* buffered_data_source_host() {
+    return &buffered_data_source_host_;
+  }
+  media::BufferedDataSource* data_source() { return data_source_.get(); }
 
-private:
-    media::BufferedDataSourceHostImpl buffered_data_source_host_;
-    scoped_ptr<media::BufferedDataSource> data_source_;
+ private:
+  media::BufferedDataSourceHostImpl buffered_data_source_host_;
+  scoped_ptr<media::BufferedDataSource> data_source_;
 };
 
 class GStreamerBufferedDataSourceFactory {
-public:
-    GStreamerBufferedDataSourceFactory();
-    void create(gchar* uri, media::BufferedResourceLoader::CORSMode cors_mode, ChromiumHttpSrc* src);
-    static GStreamerBufferedDataSourceFactory* Get();
-    static void Init(scoped_refptr<media::MediaLog>, content::ResourceDispatcher*, scoped_refptr<base::SingleThreadTaskRunner>);
-    void Set(scoped_refptr<media::MediaLog>, content::ResourceDispatcher*, scoped_refptr<base::SingleThreadTaskRunner>);
-    scoped_refptr<media::MediaLog> media_log() { return media_log_; }
-    content::ResourceDispatcher* resource_dispatcher() { return resource_dispatcher_; }
-    scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner() { return data_source_task_runner_; }
+ public:
+  GStreamerBufferedDataSourceFactory();
+  void create(gchar* uri,
+              media::BufferedResourceLoader::CORSMode cors_mode,
+              ChromiumHttpSrc* src);
+  static GStreamerBufferedDataSourceFactory* Get();
+  static void Init(scoped_refptr<media::MediaLog>,
+                   content::ResourceDispatcher*,
+                   scoped_refptr<base::SingleThreadTaskRunner>);
+  void Set(scoped_refptr<media::MediaLog>,
+           content::ResourceDispatcher*,
+           scoped_refptr<base::SingleThreadTaskRunner>);
+  scoped_refptr<media::MediaLog> media_log() { return media_log_; }
+  content::ResourceDispatcher* resource_dispatcher() {
+    return resource_dispatcher_;
+  }
+  scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner() {
+    return data_source_task_runner_;
+  }
 
-private:
-    scoped_refptr<media::MediaLog> media_log_;
-    content::ResourceDispatcher* resource_dispatcher_;
-    scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner_;
-    DISALLOW_COPY_AND_ASSIGN(GStreamerBufferedDataSourceFactory);
+ private:
+  scoped_refptr<media::MediaLog> media_log_;
+  content::ResourceDispatcher* resource_dispatcher_;
+  scoped_refptr<base::SingleThreadTaskRunner> data_source_task_runner_;
+  DISALLOW_COPY_AND_ASSIGN(GStreamerBufferedDataSourceFactory);
 };
-
 }
 
 #endif  // CONTENT_MEDIA_GSTREAMER_HTTP_SOURCE_H_
