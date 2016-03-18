@@ -232,12 +232,12 @@ bool GpuCommandBufferStub::OnMessageReceived(const IPC::Message& message) {
 
 #if defined(USE_GSTREAMER)
   if (message.type() == GpuCommandBufferMsg_CreateEGLImage::ID) {
-    scoped_refptr<IPC::MessageAttachment> attachment;
+    scoped_refptr<base::Pickle::Attachment> attachment;
     base::PickleIterator iter(message);
     if (iter.SkipBytes(68)) {
       for (int i = 0; i < 3; ++i) {
         if (message.ReadAttachment(&iter, &attachment))
-          dmabuf_fds_[i] = attachment->TakePlatformFile();
+          dmabuf_fds_[i] = static_cast<IPC::MessageAttachment*>(attachment.get())->TakePlatformFile();
         else
           break;
       }
