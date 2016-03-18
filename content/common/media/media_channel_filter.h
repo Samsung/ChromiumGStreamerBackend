@@ -27,21 +27,20 @@ class WaitableEvent;
 
 namespace IPC {
 struct ChannelHandle;
+class MessageRouter;
 class SyncChannel;
-// class MessageFilter;
 }
 
 namespace content {
 class MediaChannel;
 class MediaPlayerGStreamerFactory;
-class MessageRouter;
 
 // A MediaChannelManager is responsible for managing the lifetimes of media
 // channels and forwarding IPC requests from the
 // browser process to them based on the corresponding renderer ID.
 class CONTENT_EXPORT MediaChannelFilter : public IPC::MessageFilter {
  public:
-  MediaChannelFilter(MessageRouter* router,
+  MediaChannelFilter(IPC::MessageRouter* router,
                      base::SingleThreadTaskRunner* io_task_runner,
                      base::WaitableEvent* shutdown_event,
                      IPC::SyncChannel* channel,
@@ -76,7 +75,7 @@ class CONTENT_EXPORT MediaChannelFilter : public IPC::MessageFilter {
   base::WaitableEvent* shutdown_event_;
 
   // Used to send and receive IPC messages from the browser process.
-  MessageRouter* const router_;
+  IPC::MessageRouter* const router_;
 
   // These objects manage channels to individual renderer processes there is
   // one channel for each renderer process that has connected to this media

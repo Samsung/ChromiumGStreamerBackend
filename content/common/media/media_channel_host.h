@@ -16,7 +16,6 @@
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
 #include "content/common/content_export.h"
-#include "content/common/message_router.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/message_filter.h"
