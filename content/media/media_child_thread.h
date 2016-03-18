@@ -16,7 +16,6 @@
 #include "content/child/blink_platform_impl.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/gpu/client/gpu_channel_host.h"
-#include "content/common/gpu/gpu_result_codes.h"
 #include "content/common/media/media_channel.h"
 #include "content/common/media/media_channel_filter.h"
 #include "content/common/media/media_config.h"
@@ -80,10 +79,7 @@ class MediaChildThread : public ChildThreadImpl, public GpuChannelHostFactory {
   bool IsMainThread() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner() override;
   scoped_ptr<base::SharedMemory> AllocateSharedMemory(size_t size) override;
-  CreateCommandBufferResult CreateViewCommandBuffer(
-      int32_t surface_id,
-      const GPUCreateCommandBufferConfig& init_params,
-      int32_t route_id) override;
+  gfx::GLSurfaceHandle GetSurfaceHandle(int32_t surface_id) override;
 
   // Synchronously establish a channel to the GPU plugin if not previously
   // established or if it has been lost (for example if the GPU plugin crashed).
