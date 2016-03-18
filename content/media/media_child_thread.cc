@@ -15,14 +15,17 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/worker_pool.h"
 #include "build/build_config.h"
+#include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/child/child_gpu_memory_buffer_manager.h"
 #include "content/child/child_process.h"
 #include "content/child/thread_safe_sender.h"
 #include "content/common/gpu/client/context_provider_command_buffer.h"
 #include "content/common/gpu/client/gpu_channel_host.h"
+#include "content/common/gpu/gpu_host_messages.h"
 #include "content/common/gpu/gpu_messages.h"
 #include "content/common/gpu/gpu_process_launch_causes.h"
 #include "content/common/media/media_messages.h"
+#include "content/browser/gpu/gpu_surface_tracker.h"
 #include "content/media/gstreamer/media_player_gstreamer.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -230,12 +233,9 @@ scoped_ptr<base::SharedMemory> MediaChildThread::AllocateSharedMemory(
       ChildThreadImpl::AllocateSharedMemory(size, thread_safe_sender()));
 }
 
-CreateCommandBufferResult MediaChildThread::CreateViewCommandBuffer(
-    int32_t surface_id,
-    const GPUCreateCommandBufferConfig& init_params,
-    int32_t route_id) {
-  NOTREACHED();
-  return CREATE_COMMAND_BUFFER_FAILED;
+gfx::GLSurfaceHandle MediaChildThread::GetSurfaceHandle(
+    int32_t surface_id) {
+  return GpuSurfaceTracker::Get()->GetSurfaceHandle(surface_id);
 }
 
 class MessagePumpGlibLocal : public base::MessagePumpGlib {
