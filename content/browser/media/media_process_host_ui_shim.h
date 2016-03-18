@@ -18,9 +18,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/non_thread_safe.h"
 #include "content/common/content_export.h"
-#include "content/common/message_router.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
+#include "ipc/message_router.h"
 
 namespace IPC {
 class Message;

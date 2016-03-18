@@ -9,13 +9,13 @@
 #include "content/child/child_thread_impl.h"
 #include "content/common/media/media_channel.h"
 #include "content/common/media/media_messages.h"
-#include "content/common/message_router.h"
 #include "ipc/message_filter.h"
+#include "ipc/message_router.h"
 
 namespace content {
 
 MediaChannelFilter::MediaChannelFilter(
-    MessageRouter* router,
+    IPC::MessageRouter* router,
     base::SingleThreadTaskRunner* io_task_runner,
     base::WaitableEvent* shutdown_event,
     IPC::SyncChannel* channel,

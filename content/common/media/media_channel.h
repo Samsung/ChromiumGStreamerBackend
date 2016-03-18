@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
-#include "content/common/message_router.h"
+#include "ipc/message_router.h"
 #include "ipc/ipc_sync_channel.h"
 #include "url/gurl.h"
 
