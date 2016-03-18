@@ -271,7 +271,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
                  const std::vector<uint8_t>& init_data);
 
   // WebMediaPlayerDelegate::Observer implementation.
-  void OnHidden() override;
+  void OnHidden(bool) override;
   void OnShown() override;
   void OnPlay() override;
   void OnPause() override;
