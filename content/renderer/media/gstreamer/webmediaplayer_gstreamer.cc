@@ -1267,7 +1267,7 @@ void WebMediaPlayerGStreamer::UpdatePlayingState(bool is_playing) {
   }
 }
 
-void WebMediaPlayerGStreamer::OnHidden() {}
+void WebMediaPlayerGStreamer::OnHidden(bool) {}
 
 void WebMediaPlayerGStreamer::OnShown() {}
 
