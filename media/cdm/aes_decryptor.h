@@ -81,6 +81,10 @@ class MEDIA_EXPORT AesDecryptor : public MediaKeys,
                              const VideoDecodeCB& video_decode_cb) override;
   void ResetDecoder(StreamType stream_type) override;
   void DeinitializeDecoder(StreamType stream_type) override;
+#if defined(USE_GSTREAMER)
+  virtual void EnableDecryptionProxy(const KeysChangeCB& keys_change_cb) override;
+  virtual bool IsDecryptorProxy() override;
+#endif
 
  private:
   // TODO(fgalligan): Remove this and change KeyMap to use crypto::SymmetricKey
@@ -139,6 +143,9 @@ class MEDIA_EXPORT AesDecryptor : public MediaKeys,
   SessionMessageCB session_message_cb_;
   SessionClosedCB session_closed_cb_;
   SessionKeysChangeCB session_keys_change_cb_;
+#if defined(USE_GSTREAMER)
+  KeysChangeCB keys_change_cb_;
+#endif
 
   // Since only Decrypt() is called off the renderer thread, we only need to
   // protect |key_map_|, the only member variable that is shared between

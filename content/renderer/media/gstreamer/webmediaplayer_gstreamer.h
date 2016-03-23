@@ -374,6 +374,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   WebMediaSourceGStreamer* media_source_;
 
   bool supports_save_;
+  media::CdmContext* cdm_context_;
 
   static base::AtomicSequenceNumber next_player_id_;
   WebMediaPlayerMessageDispatcher message_dispatcher_;

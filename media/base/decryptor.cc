@@ -10,4 +10,9 @@ Decryptor::Decryptor() {}
 
 Decryptor::~Decryptor() {}
 
+#if defined(USE_GSTREAMER)
+void Decryptor::EnableDecryptionProxy(const KeysChangeCB&) {}
+bool Decryptor::IsDecryptorProxy() { return false; }
+#endif
+
 }  // namespace media
