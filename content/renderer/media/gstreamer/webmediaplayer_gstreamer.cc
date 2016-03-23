@@ -45,7 +45,6 @@
 #include "media/base/text_renderer.h"
 #include "media/base/video_frame.h"
 #include "media/blink/buffered_data_source.h"
-#include "media/blink/encrypted_media_player_support.h"
 #include "media/blink/texttrack_impl.h"
 #include "media/blink/webaudiosourceprovider_impl.h"
 #include "media/blink/webcontentdecryptionmodule_impl.h"
@@ -66,7 +65,6 @@
 #include "third_party/WebKit/public/web/WebDocument.h"
 #include "third_party/WebKit/public/web/WebLocalFrame.h"
 #include "third_party/WebKit/public/web/WebRuntimeFeatures.h"
-#include "third_party/WebKit/public/web/WebSecurityOrigin.h"
 #include "third_party/WebKit/public/web/WebView.h"
 
 using blink::WebCanvas;
@@ -113,14 +111,6 @@ STATIC_ASSERT_MATCHING_ENUM(Unspecified);
 STATIC_ASSERT_MATCHING_ENUM(Anonymous);
 STATIC_ASSERT_MATCHING_ENUM(UseCredentials);
 #undef STATIC_ASSERT_MATCHING_ENUM
-
-// Convert a WebString to ASCII, falling back on an empty string in the case
-// of a non-ASCII string.
-static std::string ToASCIIOrEmpty(const WebString& string) {
-  return base::IsStringASCII(string)
-             ? base::UTF16ToASCII(base::StringPiece16(string))
-             : std::string();
-}
 
 WebMediaPlayerMessageDispatcher::WebMediaPlayerMessageDispatcher(
     int player_id,
@@ -354,8 +344,6 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
     blink::WebMediaPlayerClient* client,
     blink::WebMediaPlayerEncryptedMediaClient* encrypted_client,
     base::WeakPtr<WebMediaPlayerDelegate> delegate,
-    CdmFactory* cdm_factory,
-    media::MediaPermission* media_permission,
     blink::WebContentDecryptionModule* initial_cdm,
     MediaLog* media_log)
     : video_frame_provider_client_(nullptr),
@@ -387,15 +375,7 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
       delegate_id_(0),
       media_source_(nullptr),
       supports_save_(true),
-      message_dispatcher_(next_player_id_.GetNext(), AsWeakPtr()),
-      encrypted_media_support_(
-          cdm_factory,
-          encrypted_client,
-          media_permission,
-          base::Bind(&WebMediaPlayerGStreamer::SetCdm,
-                     AsWeakPtr(),
-                     base::Bind(&IgnoreCdmAttached)),
-          base::Bind(&WebMediaPlayerGStreamer::OnCdmKeysReady, AsWeakPtr())) {
+      message_dispatcher_(next_player_id_.GetNext(), AsWeakPtr()) {
   if (delegate_)
     delegate_id_ = delegate_->AddObserver(this);
 
@@ -1091,45 +1071,6 @@ bool WebMediaPlayerGStreamer::copyVideoSubTextureToPlatformTexture(
   return false;
 }
 
-WebMediaPlayer::MediaKeyException WebMediaPlayerGStreamer::generateKeyRequest(
-    const WebString& key_system,
-    const unsigned char* init_data,
-    unsigned init_data_length) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  std::string ascii_key_system =
-      media::GetUnprefixedKeySystemName(media::ToASCIIOrEmpty(key_system));
-
-  // Support common decryption only for now
-  if (!CanUseAesDecryptor(ascii_key_system)) {
-    return MediaKeyExceptionKeySystemNotSupported;
-  }
-
-  return encrypted_media_support_.GenerateKeyRequest(
-      frame_, key_system, init_data, init_data_length);
-}
-
-WebMediaPlayer::MediaKeyException WebMediaPlayerGStreamer::addKey(
-    const WebString& key_system,
-    const unsigned char* key,
-    unsigned key_length,
-    const unsigned char* init_data,
-    unsigned init_data_length,
-    const WebString& session_id) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  return encrypted_media_support_.AddKey(key_system, key, key_length, init_data,
-                                         init_data_length, session_id);
-}
-
-WebMediaPlayer::MediaKeyException WebMediaPlayerGStreamer::cancelKeyRequest(
-    const WebString& key_system,
-    const WebString& session_id) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-
-  return encrypted_media_support_.CancelKeyRequest(key_system, session_id);
-}
-
 void WebMediaPlayerGStreamer::setContentDecryptionModule(
     blink::WebContentDecryptionModule* cdm,
     blink::WebContentDecryptionModuleResult result) {
@@ -1151,19 +1092,15 @@ void WebMediaPlayerGStreamer::setContentDecryptionModule(
 void WebMediaPlayerGStreamer::OnEncryptedMediaInitData(
     EmeInitDataType init_data_type,
     const std::vector<uint8_t>& init_data) {
-  DCHECK(init_data_type != EmeInitDataType::UNKNOWN);
-
   // Do not fire "encrypted" event if encrypted media is not enabled.
-  // TODO(xhwang): Handle this in |client_|.
-  if (!blink::WebRuntimeFeatures::isPrefixedEncryptedMediaEnabled() &&
-      !blink::WebRuntimeFeatures::isEncryptedMediaEnabled()) {
+  if (!blink::WebRuntimeFeatures::isEncryptedMediaEnabled()) {
     return;
   }
 
   // TODO(xhwang): Update this UMA name.
   UMA_HISTOGRAM_COUNTS("Media.EME.NeedKey", 1);
 
-  encrypted_media_support_.SetInitDataType(init_data_type);
+  DCHECK(init_data_type != media::EmeInitDataType::UNKNOWN);
 
   encrypted_client_->encrypted(ConvertToWebInitDataType(init_data_type),
                                init_data.data(), init_data.size());

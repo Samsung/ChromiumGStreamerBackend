@@ -31,8 +31,6 @@
 #include "media/base/time_delta_interpolator.h"
 #include "media/blink/buffered_data_source.h"
 #include "media/blink/buffered_data_source_host_impl.h"
-#include "media/blink/encrypted_media_player_support.h"
-#include "media/blink/encrypted_media_player_support.h"
 #include "media/blink/webmediaplayer_delegate.h"
 #include "media/blink/webmediaplayer_util.h"
 #include "third_party/WebKit/public/platform/WebContentDecryptionModuleResult.h"
@@ -48,11 +46,11 @@ class SingleThreadTaskRunner;
 namespace blink {
 class WebGraphicsContext3D;
 class WebLocalFrame;
+class WebMediaPlayerEncryptedMediaClient;
 }
 
 namespace cc_blink {
 class WebLayerImpl;
-class WebMediaPlayerEncryptedMediaClient;
 }
 
 namespace media {
@@ -129,8 +127,6 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
       blink::WebMediaPlayerClient* client,
       blink::WebMediaPlayerEncryptedMediaClient* encrypted_client,
       base::WeakPtr<WebMediaPlayerDelegate> delegate,
-      CdmFactory* cdm_factory,
-      media::MediaPermission* media_permission,
       blink::WebContentDecryptionModule* initial_cdm,
       MediaLog* media_log);
   virtual ~WebMediaPlayerGStreamer();
@@ -215,22 +211,6 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
       int yoffset,
       bool premultiplyAlpha,
       bool flipY) override;
-
-  virtual MediaKeyException generateKeyRequest(
-      const blink::WebString& key_system,
-      const unsigned char* init_data,
-      unsigned init_data_length) override;
-
-  virtual MediaKeyException addKey(const blink::WebString& key_system,
-                                   const unsigned char* key,
-                                   unsigned key_length,
-                                   const unsigned char* init_data,
-                                   unsigned init_data_length,
-                                   const blink::WebString& session_id) override;
-
-  virtual MediaKeyException cancelKeyRequest(
-      const blink::WebString& key_system,
-      const blink::WebString& session_id) override;
 
   virtual void setContentDecryptionModule(
       blink::WebContentDecryptionModule* cdm,
@@ -397,8 +377,6 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
 
   static base::AtomicSequenceNumber next_player_id_;
   WebMediaPlayerMessageDispatcher message_dispatcher_;
-
-  EncryptedMediaPlayerSupport encrypted_media_support_;
 
   DISALLOW_COPY_AND_ASSIGN(WebMediaPlayerGStreamer);
 };
