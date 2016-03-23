@@ -821,8 +821,6 @@
           '../media/blink/webcontentdecryptionmodulesession_impl.h',
           '../media/blink/webencryptedmediaclient_impl.cc',
           '../media/blink/webencryptedmediaclient_impl.h',
-          '../media/blink/encrypted_media_player_support.cc',
-          '../media/blink/encrypted_media_player_support.h',
           '../media/blink/new_session_cdm_result_promise.cc',
           '../media/blink/new_session_cdm_result_promise.h',
           '../media/blink/texttrack_impl.cc',
