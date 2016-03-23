@@ -34,7 +34,9 @@ static gboolean chromiumCommonEncryptionDecryptSinkEventHandler(
 GST_DEBUG_CATEGORY_STATIC(chromium_common_encryption_decrypt_debug_category);
 #define GST_CAT_DEFAULT chromium_common_encryption_decrypt_debug_category
 
-#define CLEAR_KEY_PROTECTION_SYSTEM_ID "58147ec8-0423-4659-92e6-f52c5ce8c3cc"
+//  Old clearkey system id. Just keep it here for now in case some legacy support
+//  #define CLEAR_KEY_PROTECTION_SYSTEM_ID "58147ec8-0423-4659-92e6-f52c5ce8c3cc"
+#define CLEAR_KEY_PROTECTION_SYSTEM_ID "1077efec-c0b2-4d02-ace3-3c1e52e2fb4b"
 
 static GstStaticPadTemplate sinkTemplate = GST_STATIC_PAD_TEMPLATE(
     "sink",
@@ -210,6 +212,7 @@ static GstCaps* chromiumCommonEncryptionDecryptTransformCaps(
   return transformedCaps;
 }
 
+// Implement decryption using crypto::Encryptor, should improve performance.
 static GstFlowReturn chromiumCommonEncryptionDecryptTransformInPlace(
     GstBaseTransform* base,
     GstBuffer* buffer) {
