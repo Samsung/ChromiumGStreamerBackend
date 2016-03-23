@@ -38,6 +38,8 @@
 #include "media/audio/null_audio_sink.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
+#include "media/base/cdm_key_information.h"
+#include "media/base/decryptor.h"
 #include "media/base/limits.h"
 #include "media/base/key_systems.h"
 #include "media/base/media_log.h"
@@ -1117,7 +1119,11 @@ void WebMediaPlayerGStreamer::OnWaitingForDecryptionKey() {
 
 void WebMediaPlayerGStreamer::SetCdm(const CdmAttachedCB& cdm_attached_cb,
                                      CdmContext* cdm_context) {
-  NOTIMPLEMENTED();
+  cdm_context_ = cdm_context;
+  cdm_context_->GetDecryptor()->EnableDecryptionProxy(
+      base::Bind(&WebMediaPlayerGStreamer::OnCdmKeysReady, AsWeakPtr()));
+
+  cdm_attached_cb.Run(true);
 }
 
 void WebMediaPlayerGStreamer::OnCdmAttached(

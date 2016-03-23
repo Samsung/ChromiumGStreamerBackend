@@ -401,6 +401,12 @@ void AesDecryptor::UpdateSession(const std::string& session_id,
     }
   }
 
+#if defined(USE_GSTREAMER)
+  if (IsDecryptorProxy() && !keys_change_cb_.is_null()) {
+    keys_change_cb_.Run(session_id, key_added, std::move(keys_info));
+  }
+#endif
+
   session_keys_change_cb_.Run(session_id, key_added, std::move(keys_info));
 }
 
@@ -462,6 +468,13 @@ void AesDecryptor::RegisterNewKeyCB(StreamType stream_type,
 void AesDecryptor::Decrypt(StreamType stream_type,
                            const scoped_refptr<DecoderBuffer>& encrypted,
                            const DecryptCB& decrypt_cb) {
+#if defined(USE_GSTREAMER)
+  if (IsDecryptorProxy()) {
+    NOTREACHED() << "Proxy decrypting does not support direct decrypting";
+    return;
+  }
+#endif
+
   CHECK(encrypted->decrypt_config());
 
   scoped_refptr<DecoderBuffer> decrypted;
@@ -529,6 +542,16 @@ void AesDecryptor::DeinitializeDecoder(StreamType stream_type) {
   // called any time after InitializeAudioDecoder/InitializeVideoDecoder,
   // nothing to be done here.
 }
+
+#if defined(USE_GSTREAMER)
+void AesDecryptor::EnableDecryptionProxy(const KeysChangeCB& keys_change_cb) {
+  keys_change_cb_ = keys_change_cb;
+}
+
+bool AesDecryptor::IsDecryptorProxy() {
+  return !keys_change_cb_.is_null();
+}
+#endif
 
 bool AesDecryptor::AddDecryptionKey(const std::string& session_id,
                                     const std::string& key_id,
