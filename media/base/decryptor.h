@@ -12,6 +12,9 @@
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/media_export.h"
+#if defined(USE_GSTREAMER)
+#include "media/base/media_keys.h"
+#endif
 
 namespace media {
 
@@ -158,6 +161,14 @@ class MEDIA_EXPORT Decryptor {
   // After this operation, the decoder is set to an uninitialized state.
   // The decoder can be reinitialized after it is uninitialized.
   virtual void DeinitializeDecoder(StreamType stream_type) = 0;
+
+#if defined(USE_GSTREAMER)
+  typedef base::Callback<void(const std::string&, bool, CdmKeysInfo)>
+      KeysChangeCB;
+
+  virtual void EnableDecryptionProxy(const KeysChangeCB&);
+  virtual bool IsDecryptorProxy();
+#endif
 
  private:
   DISALLOW_COPY_AND_ASSIGN(Decryptor);
