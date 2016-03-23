@@ -580,6 +580,11 @@ bool MediaPlayerGStreamer::GlimagesinkDrawCallback(GstElement* sink,
 
   gpu::gles2::GLES2Interface* gl = ::gles2::GetGLContext();
 
+  if (!gl) {
+    gst_video_frame_unmap(&v_frame);
+    return true;
+  }
+
   gpu::Mailbox mailbox;
   gl->GenMailboxCHROMIUM(mailbox.name);
   gl->ProduceTextureDirectCHROMIUM(texture_id, target, mailbox.name);
