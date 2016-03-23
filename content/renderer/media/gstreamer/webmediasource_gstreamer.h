@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/hash_tables.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/base/ranges.h"
