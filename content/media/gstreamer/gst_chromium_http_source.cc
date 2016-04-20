@@ -690,6 +690,11 @@ class DataSourceTaskRunnerWrapper : public scheduler::TaskQueue {
     NOTREACHED();
   }
 
+  void SetBlameContext(
+      base::trace_event::BlameContext* blame_context) override {
+    NOTREACHED();
+  }
+
   void SetTimeDomain(scheduler::TimeDomain* domain) override { NOTREACHED(); }
 
   scheduler::TimeDomain* GetTimeDomain() const override {
