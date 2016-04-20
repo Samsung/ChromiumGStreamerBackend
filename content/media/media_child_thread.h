@@ -15,10 +15,11 @@
 #include "build/build_config.h"
 #include "content/child/blink_platform_impl.h"
 #include "content/child/child_thread_impl.h"
-#include "content/common/gpu/client/gpu_channel_host.h"
+#include "content/common/gpu_process_launch_causes.h"
 #include "content/common/media/media_config.h"
 #include "content/common/media/media_player_channel.h"
 #include "content/common/media/media_player_channel_filter.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 
 namespace blink {
 class WebGraphicsContext3D;
@@ -52,7 +53,7 @@ class WebGraphicsContext3DCommandBufferImpl;
 // The main thread of the media process. There will only ever be one of
 // these per process. It does process initialization and shutdown,
 // sends commands to the media.
-class MediaChildThread : public ChildThreadImpl, public GpuChannelHostFactory {
+class MediaChildThread : public ChildThreadImpl, public gpu::GpuChannelHostFactory {
  public:
   typedef std::queue<IPC::Message*> DeferredMessages;
 
@@ -79,13 +80,12 @@ class MediaChildThread : public ChildThreadImpl, public GpuChannelHostFactory {
   bool IsMainThread() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner() override;
   scoped_ptr<base::SharedMemory> AllocateSharedMemory(size_t size) override;
-  gfx::GLSurfaceHandle GetSurfaceHandle(int32_t surface_id) override;
 
   // Synchronously establish a channel to the GPU plugin if not previously
   // established or if it has been lost (for example if the GPU plugin crashed).
   // If there is a pending asynchronous request, it will be completed by the
   // time this routine returns.
-  GpuChannelHost* EstablishGpuChannelSync(CauseForGpuLaunch);
+  gpu::GpuChannelHost* EstablishGpuChannelSync(CauseForGpuLaunch);
 
   scoped_ptr<WebGraphicsContext3DCommandBufferImpl> CreateOffscreenContext3d();
 
@@ -111,7 +111,7 @@ class MediaChildThread : public ChildThreadImpl, public GpuChannelHostFactory {
   scoped_refptr<MediaPlayerChannelFilter> media_channel_filter_;
 
   // The channel from the media process to the GPU process.
-  scoped_refptr<GpuChannelHost> gpu_channel_;
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
 
   // Cache of variables that are needed on the compositor thread by
   // GpuChannelHostFactory methods.

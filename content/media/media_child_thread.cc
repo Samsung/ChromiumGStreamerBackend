@@ -19,11 +19,11 @@
 #include "content/child/child_gpu_memory_buffer_manager.h"
 #include "content/child/child_process.h"
 #include "content/child/thread_safe_sender.h"
+#include "content/common/child_process_messages.h"
 #include "content/common/gpu/client/context_provider_command_buffer.h"
-#include "content/common/gpu/client/gpu_channel_host.h"
-#include "content/common/gpu/gpu_host_messages.h"
-#include "content/common/gpu/gpu_messages.h"
-#include "content/common/gpu/gpu_process_launch_causes.h"
+#include "content/common/gpu_host_messages.h"
+#include "content/common/gpu_process_launch_causes.h"
+#include "gpu/ipc/common/gpu_messages.h"
 #include "content/common/media/media_messages.h"
 #include "content/browser/gpu/gpu_surface_tracker.h"
 #include "content/media/gstreamer/media_player_gstreamer.h"
@@ -32,6 +32,7 @@
 #include "gin/public/debug.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_sync_message_filter.h"
 #include "media/base/audio_hardware_config.h"
@@ -42,16 +43,6 @@ using base::ThreadRestrictions;
 
 namespace content {
 namespace {
-
-blink::WebGraphicsContext3D::Attributes GetOffscreenAttribs() {
-  blink::WebGraphicsContext3D::Attributes attributes;
-  attributes.shareResources = true;
-  attributes.depth = false;
-  attributes.stencil = false;
-  attributes.antialias = false;
-  attributes.noAutomaticFlushes = true;
-  return attributes;
-}
 
 static base::LazyInstance<scoped_refptr<ThreadSafeSender>>
     g_thread_safe_sender = LAZY_INSTANCE_INITIALIZER;
@@ -124,7 +115,7 @@ void MediaChildThread::Init(const base::Time& process_start_time) {
 bool MediaChildThread::Send(IPC::Message* msg) {
   // The media process must never send a synchronous IPC message to the browser
   // process. This could result in deadlock.
-  DCHECK(!msg->is_sync() || msg->type() == GpuHostMsg_EstablishGpuChannel::ID);
+  DCHECK(!msg->is_sync() || msg->type() == ChildProcessHostMsg_EstablishGpuChannel::ID);
   return ChildThreadImpl::Send(msg);
 }
 
@@ -168,7 +159,7 @@ MediaChildThread::CreateSharedContextProvider() {
   return provider_;
 }
 
-GpuChannelHost* MediaChildThread::EstablishGpuChannelSync(
+gpu::GpuChannelHost* MediaChildThread::EstablishGpuChannelSync(
     CauseForGpuLaunch cause_for_gpu_launch) {
   TRACE_EVENT0("media", "MediaChildThread::EstablishGpuChannelSync");
 
@@ -187,8 +178,9 @@ GpuChannelHost* MediaChildThread::EstablishGpuChannelSync(
   int client_id = 0;
   IPC::ChannelHandle channel_handle;
   gpu::GPUInfo gpu_info;
-  if (!Send(new GpuHostMsg_EstablishGpuChannel(cause_for_gpu_launch, &client_id,
-                                               &channel_handle, &gpu_info)) ||
+  if (!Send(new ChildProcessHostMsg_EstablishGpuChannel(
+      cause_for_gpu_launch, &client_id,
+      &channel_handle, &gpu_info)) ||
 #if defined(OS_POSIX)
       channel_handle.socket.fd == -1 ||
 #endif
@@ -201,7 +193,7 @@ GpuChannelHost* MediaChildThread::EstablishGpuChannelSync(
 
   io_thread_task_runner_ = ChildProcess::current()->io_task_runner();
 
-  gpu_channel_ = GpuChannelHost::Create(
+  gpu_channel_ = gpu::GpuChannelHost::Create(
       this, client_id, gpu_info, channel_handle,
       ChildProcess::current()->GetShutDownEvent(), gpu_memory_buffer_manager());
   return gpu_channel_.get();
@@ -209,11 +201,22 @@ GpuChannelHost* MediaChildThread::EstablishGpuChannelSync(
 
 scoped_ptr<WebGraphicsContext3DCommandBufferImpl>
 MediaChildThread::CreateOffscreenContext3d() {
-  blink::WebGraphicsContext3D::Attributes attributes(GetOffscreenAttribs());
-  bool lose_context_when_out_of_memory = true;
+  gpu::gles2::ContextCreationAttribHelper attributes;
+  attributes.alpha_size = -1;
+  attributes.depth_size = 0;
+  attributes.stencil_size = 0;
+  attributes.samples = 0;
+  attributes.sample_buffers = 0;
+  attributes.bind_generates_resource = false;
+  attributes.lose_context_when_out_of_memory = true;
+  bool share_resources = true;
+  bool automatic_flushes = false;
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(EstablishGpuChannelSync(
+      CAUSE_FOR_GPU_LAUNCH_WEBGRAPHICSCONTEXT3DCOMMANDBUFFERIMPL_INITIALIZE));
   return make_scoped_ptr(
       WebGraphicsContext3DCommandBufferImpl::CreateOffscreenContext(
-          gpu_channel_.get(), attributes, lose_context_when_out_of_memory,
+          gpu_channel_host.get(), attributes, gfx::PreferIntegratedGpu,
+          share_resources, automatic_flushes,
           GURL("chrome://gpu/MediaChildThread::CreateOffscreenContext3d"),
           WebGraphicsContext3DCommandBufferImpl::SharedMemoryLimits(), NULL));
 }
@@ -231,11 +234,6 @@ scoped_ptr<base::SharedMemory> MediaChildThread::AllocateSharedMemory(
     size_t size) {
   return scoped_ptr<base::SharedMemory>(
       ChildThreadImpl::AllocateSharedMemory(size, thread_safe_sender()));
-}
-
-gfx::GLSurfaceHandle MediaChildThread::GetSurfaceHandle(
-    int32_t surface_id) {
-  return GpuSurfaceTracker::Get()->GetSurfaceHandle(surface_id);
 }
 
 class MessagePumpGlibLocal : public base::MessagePumpGlib {
