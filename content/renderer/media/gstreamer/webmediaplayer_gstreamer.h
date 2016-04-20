@@ -178,8 +178,8 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   virtual double currentTime() const override;
 
   // Internal states of loading and network.
-  virtual blink::WebMediaPlayer::NetworkState networkState() const override;
-  virtual blink::WebMediaPlayer::ReadyState readyState() const override;
+  virtual blink::WebMediaPlayer::NetworkState getNetworkState() const override;
+  virtual blink::WebMediaPlayer::ReadyState getReadyState() const override;
 
   virtual bool didLoadingProgress() override;
 
@@ -190,27 +190,8 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
 
   virtual unsigned decodedFrameCount() const override;
   virtual unsigned droppedFrameCount() const override;
-  virtual unsigned audioDecodedByteCount() const override;
-  virtual unsigned videoDecodedByteCount() const override;
-
-  virtual bool copyVideoTextureToPlatformTexture(blink::WebGraphicsContext3D*,
-                                                 unsigned target,
-                                                 unsigned texture,
-                                                 unsigned internalFormat,
-                                                 unsigned type,
-                                                 int level,
-                                                 bool premultiplyAlpha,
-                                                 bool flipY) override;
-
-  virtual bool copyVideoSubTextureToPlatformTexture(
-      blink::WebGraphicsContext3D*,
-      unsigned target,
-      unsigned texture,
-      int level,
-      int xoffset,
-      int yoffset,
-      bool premultiplyAlpha,
-      bool flipY) override;
+  virtual size_t audioDecodedByteCount() const override;
+  virtual size_t videoDecodedByteCount() const override;
 
   virtual void setContentDecryptionModule(
       blink::WebContentDecryptionModule* cdm,
@@ -251,8 +232,9 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
                  const std::vector<uint8_t>& init_data);
 
   // WebMediaPlayerDelegate::Observer implementation.
-  void OnHidden(bool) override;
+  void OnHidden() override;
   void OnShown() override;
+  void OnSuspendRequested(bool must_suspend) override;
   void OnPlay() override;
   void OnPause() override;
   void OnVolumeMultiplierUpdate(double multiplier) override;
