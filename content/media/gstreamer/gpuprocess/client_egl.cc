@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "content/common/gpu/client/command_buffer_proxy_impl.h"
+#include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -18,7 +18,7 @@
 
 namespace content {
 
-static base::LazyInstance<CommandBufferProxyImpl*> g_thread_safe_cmd_impl =
+static base::LazyInstance<gpu::CommandBufferProxyImpl*> g_thread_safe_cmd_impl =
     LAZY_INSTANCE_INITIALIZER;
 
 bool ClientEGL_SetupCommandBufferProxy() {
@@ -49,8 +49,8 @@ bool ClientEGL_SetupCommandBufferProxy() {
     return false;
   }
 
-  content::CommandBufferProxyImpl* cmd_impl =
-      static_cast<content::CommandBufferProxyImpl*>(gpu_ctrl);
+  gpu::CommandBufferProxyImpl* cmd_impl =
+      static_cast<gpu::CommandBufferProxyImpl*>(gpu_ctrl);
 
   if (!cmd_impl) {
     NOTREACHED() << "ClientEGL_SetupCommandBufferProxy, no cmd buffer proxy";
