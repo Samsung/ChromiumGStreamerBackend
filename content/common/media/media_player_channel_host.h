@@ -46,11 +46,11 @@ namespace content {
 // On the media process side there's a corresponding channel.
 // Every method can be called on any thread with a message loop, except for the
 // IO thread.
-class MediaChannelHost : public IPC::Sender,
-                         public base::RefCountedThreadSafe<MediaChannelHost> {
+class MediaPlayerChannelHost : public IPC::Sender,
+                               public base::RefCountedThreadSafe<MediaPlayerChannelHost> {
  public:
   // Must be called on the main thread
-  static scoped_refptr<MediaChannelHost> Create(
+  static scoped_refptr<MediaPlayerChannelHost> Create(
       const IPC::ChannelHandle& channel_handle,
       base::WaitableEvent* shutdown_event);
 
@@ -69,9 +69,9 @@ class MediaChannelHost : public IPC::Sender,
   void DestroyChannel();
 
  private:
-  friend class base::RefCountedThreadSafe<MediaChannelHost>;
-  MediaChannelHost();
-  ~MediaChannelHost() override;
+  friend class base::RefCountedThreadSafe<MediaPlayerChannelHost>;
+  MediaPlayerChannelHost();
+  ~MediaPlayerChannelHost() override;
   void Connect(const IPC::ChannelHandle& channel_handle,
                base::WaitableEvent* shutdown_event);
   bool InternalSend(IPC::Message* msg);
@@ -120,7 +120,7 @@ class MediaChannelHost : public IPC::Sender,
   // A filter for sending messages from thread other than the main thread.
   scoped_refptr<IPC::SyncMessageFilter> sync_filter_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaChannelHost);
+  DISALLOW_COPY_AND_ASSIGN(MediaPlayerChannelHost);
 };
 
 }  // namespace content

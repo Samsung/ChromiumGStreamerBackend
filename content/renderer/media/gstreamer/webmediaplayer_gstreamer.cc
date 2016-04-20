@@ -119,28 +119,28 @@ WebMediaPlayerMessageDispatcher::WebMediaPlayerMessageDispatcher(
     base::WeakPtr<WebMediaPlayerGStreamer> player)
     : player_id_(player_id), player_(player) {
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->RegisterDispatcher(player_id_, this);
 }
 
 WebMediaPlayerMessageDispatcher::~WebMediaPlayerMessageDispatcher() {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->RemoveDispatcher(player_id_);
 }
 
 void WebMediaPlayerMessageDispatcher::SendCreate() {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_Create(player_id_));
 }
 
 void WebMediaPlayerMessageDispatcher::SendLoad(GURL url) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(
@@ -148,35 +148,35 @@ void WebMediaPlayerMessageDispatcher::SendLoad(GURL url) {
 }
 
 void WebMediaPlayerMessageDispatcher::SendStart() {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_Start(player_id_));
 }
 
 void WebMediaPlayerMessageDispatcher::SendPause() {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_Pause(player_id_));
 }
 
 void WebMediaPlayerMessageDispatcher::SendSeek(base::TimeDelta delta) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_Seek(player_id_, delta));
 }
 
 void WebMediaPlayerMessageDispatcher::SendRelease() {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_Release(player_id_));
 }
 
 void WebMediaPlayerMessageDispatcher::SendRealeaseTexture(unsigned texture_id) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_ReleaseTexture(player_id_, texture_id));
@@ -187,7 +187,7 @@ bool WebMediaPlayerMessageDispatcher::SendAddSourceId(
     const std::string& type,
     const std::vector<std::string>& codecs) {
   bool ret = false;
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
 
   if (channel)
@@ -199,7 +199,7 @@ bool WebMediaPlayerMessageDispatcher::SendAddSourceId(
 
 void WebMediaPlayerMessageDispatcher::SendRemoveSourceId(
     const std::string& id) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_RemoveSourceId(player_id_, id));
@@ -207,21 +207,21 @@ void WebMediaPlayerMessageDispatcher::SendRemoveSourceId(
 
 void WebMediaPlayerMessageDispatcher::SendSetDuration(
     const base::TimeDelta& duration) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_SetDuration(player_id_, duration));
 }
 
 void WebMediaPlayerMessageDispatcher::SendMarkEndOfStream() {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_MarkEndOfStream(player_id_));
 }
 
 void WebMediaPlayerMessageDispatcher::SendUnmarkEndOfStream() {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_UnmarkEndOfStream(player_id_));
@@ -229,7 +229,7 @@ void WebMediaPlayerMessageDispatcher::SendUnmarkEndOfStream() {
 
 void WebMediaPlayerMessageDispatcher::SendSetSequenceMode(const std::string& id,
                                                           bool sequence_mode) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(
@@ -243,7 +243,7 @@ void WebMediaPlayerMessageDispatcher::SendAppendData(
     const base::TimeDelta& append_window_start,
     const base::TimeDelta& append_window_end,
     const base::TimeDelta& timestamp_offset) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_AppendData(
@@ -253,7 +253,7 @@ void WebMediaPlayerMessageDispatcher::SendAppendData(
 }
 
 void WebMediaPlayerMessageDispatcher::SendAbort(const std::string& id) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_Abort(player_id_, id));
@@ -263,7 +263,7 @@ void WebMediaPlayerMessageDispatcher::
     SendSetGroupStartTimestampIfInSequenceMode(
         const std::string& id,
         const base::TimeDelta& timestamp_offset) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_SetGroupStartTimestampIfInSequenceMode(
@@ -274,7 +274,7 @@ void WebMediaPlayerMessageDispatcher::SendRemoveSegment(
     const std::string& id,
     const base::TimeDelta& start,
     const base::TimeDelta& end) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(new MediaPlayerMsg_RemoveSegment(player_id_, id, start, end));
@@ -283,7 +283,7 @@ void WebMediaPlayerMessageDispatcher::SendRemoveSegment(
 void WebMediaPlayerMessageDispatcher::SendAddKey(const std::string& session_id,
                                                  const std::string& key_id,
                                                  const std::string& key) {
-  content::MediaChannelHost* channel =
+  content::MediaPlayerChannelHost* channel =
       content::RenderThreadImpl::current()->GetMediaChannel();
   if (channel)
     channel->Send(

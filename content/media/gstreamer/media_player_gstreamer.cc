@@ -21,8 +21,7 @@
 #include "content/child/child_thread_impl.h"
 #include "content/child/resource_dispatcher.h"
 #include "content/common/gpu/client/context_provider_command_buffer.h"
-#include "content/common/gpu/client/gl_helper.h"
-#include "content/common/media/media_channel.h"
+#include "content/common/media/media_player_channel.h"
 #include "content/media/gstreamer/gst_chromium_http_source.h"
 #include "content/media/gstreamer/gst_chromium_media_src.h"
 #include "content/media/gstreamer/gst_chromium_common_encryption_decryptor.h"
@@ -180,7 +179,7 @@ MediaPlayerGStreamerFactory::~MediaPlayerGStreamerFactory() {}
 
 MediaPlayerGStreamer* MediaPlayerGStreamerFactory::create(
     int player_id,
-    content::MediaChannel* media_channel) {
+    content::MediaPlayerChannel* media_channel) {
   return new MediaPlayerGStreamer(player_id, GURL(), media_channel,
                                   media_log_.get(), resource_dispatcher_,
                                   main_task_runner_, gl_task_runner_);
@@ -189,7 +188,7 @@ MediaPlayerGStreamer* MediaPlayerGStreamerFactory::create(
 MediaPlayerGStreamer::MediaPlayerGStreamer(
     int player_id,
     const GURL& url,
-    content::MediaChannel* media_channel,
+    content::MediaPlayerChannel* media_channel,
     media::MediaLog* media_log,
     content::ResourceDispatcher* resource_dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
