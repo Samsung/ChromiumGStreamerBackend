@@ -17,7 +17,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "content/common/media/media_channel_filter.h"
+#include "content/common/media/media_player_channel_filter.h"
 #include "content/media/gstreamer/gst_chromium_http_source.h"
 #include "content/renderer/media/render_media_log.h"
 #include "media/base/time_delta_interpolator.h"
@@ -46,7 +46,7 @@ namespace content {
 
 struct RunHolder;
 class MediaPlayerGStreamer;
-class MediaChannel;
+class MediaPlayerChannel;
 class ResourceDispatcher;
 class GStreamerBufferedDataSourceFactory;
 
@@ -61,7 +61,7 @@ class MediaPlayerGStreamerFactory {
   ~MediaPlayerGStreamerFactory();
 
   MediaPlayerGStreamer* create(int player_id,
-                               content::MediaChannel* media_channel);
+                               content::MediaPlayerChannel* media_channel);
 
  private:
   scoped_refptr<media::MediaLog> media_log_;
@@ -76,7 +76,7 @@ class MediaPlayerGStreamer {
   MediaPlayerGStreamer(
       int player_id,
       const GURL& url,
-      content::MediaChannel* media_channel,
+      content::MediaPlayerChannel* media_channel,
       media::MediaLog* media_log,
       content::ResourceDispatcher* resource_dispatcher,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
@@ -156,7 +156,7 @@ class MediaPlayerGStreamer {
 
   scoped_refptr<cc::ContextProvider> provider_;
 
-  content::MediaChannel* media_channel_;
+  content::MediaPlayerChannel* media_channel_;
 
   scoped_refptr<media::MediaLog> media_log_;
   media::BufferedDataSourceHostImpl buffered_data_source_host_;

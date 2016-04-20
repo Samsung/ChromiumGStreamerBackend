@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media_channel_host.h"
+#include "media_player_channel_host.h"
 
 #include <algorithm>
 
@@ -23,21 +23,21 @@ using base::AutoLock;
 namespace content {
 
 // static
-scoped_refptr<MediaChannelHost> MediaChannelHost::Create(
+scoped_refptr<MediaPlayerChannelHost> MediaPlayerChannelHost::Create(
     const IPC::ChannelHandle& channel_handle,
     base::WaitableEvent* shutdown_event) {
-  scoped_refptr<MediaChannelHost> dispatcher = new MediaChannelHost;
+  scoped_refptr<MediaPlayerChannelHost> dispatcher = new MediaPlayerChannelHost;
   dispatcher->Connect(channel_handle, shutdown_event);
   return dispatcher;
 }
 
-MediaChannelHost::MediaChannelHost() {}
+MediaPlayerChannelHost::MediaPlayerChannelHost() {}
 
 static bool IsMainThread() {
   return !!ChildThread::Get();
 }
 
-void MediaChannelHost::Connect(const IPC::ChannelHandle& channel_handle,
+void MediaPlayerChannelHost::Connect(const IPC::ChannelHandle& channel_handle,
                                base::WaitableEvent* shutdown_event) {
   // Open a channel to the media process. We pass NULL as the main listener here
   // since we need to filter everything to route it to the right thread.
@@ -56,7 +56,7 @@ void MediaChannelHost::Connect(const IPC::ChannelHandle& channel_handle,
   channel_->AddFilter(channel_filter_.get());
 }
 
-bool MediaChannelHost::Send(IPC::Message* msg) {
+bool MediaPlayerChannelHost::Send(IPC::Message* msg) {
   scoped_ptr<IPC::Message> message(msg);
   // The media process never sends synchronous IPCs so clear the unblock flag to
   // preserve order.
@@ -66,7 +66,7 @@ bool MediaChannelHost::Send(IPC::Message* msg) {
     base::ThreadRestrictions::ScopedAllowWait allow_wait;
     bool result = channel_->Send(message.release());
     if (!result)
-      DVLOG(1) << "MediaChannelHost::Send failed: Channel::Send failed";
+      DVLOG(1) << "MediaPlayerChannelHost::Send failed: Channel::Send failed";
     return result;
   }
 
@@ -74,40 +74,40 @@ bool MediaChannelHost::Send(IPC::Message* msg) {
   return result;
 }
 
-void MediaChannelHost::DestroyChannel() {
+void MediaPlayerChannelHost::DestroyChannel() {
   DCHECK(IsMainThread());
   channel_.reset();
 }
 
-void MediaChannelHost::RegisterDispatcher(
+void MediaPlayerChannelHost::RegisterDispatcher(
     int player_id,
     media::WebMediaPlayerMessageDispatcher* dispatcher) {
   channel_filter_->RegisterDispatcher(player_id, dispatcher);
 }
 
-void MediaChannelHost::RemoveDispatcher(int player_id) {
+void MediaPlayerChannelHost::RemoveDispatcher(int player_id) {
   channel_filter_->RemoveDispatcher(player_id);
 }
 
-MediaChannelHost::~MediaChannelHost() {
+MediaPlayerChannelHost::~MediaPlayerChannelHost() {
   DestroyChannel();
 }
 
-MediaChannelHost::MessageFilter::MessageFilter() : lost_(false) {}
+MediaPlayerChannelHost::MessageFilter::MessageFilter() : lost_(false) {}
 
-MediaChannelHost::MessageFilter::~MessageFilter() {}
+MediaPlayerChannelHost::MessageFilter::~MessageFilter() {}
 
-void MediaChannelHost::MessageFilter::RegisterDispatcher(
+void MediaPlayerChannelHost::MessageFilter::RegisterDispatcher(
     int player_id,
     media::WebMediaPlayerMessageDispatcher* dispatcher) {
   dispatchers_[player_id] = dispatcher;
 }
 
-void MediaChannelHost::MessageFilter::RemoveDispatcher(int player_id) {
+void MediaPlayerChannelHost::MessageFilter::RemoveDispatcher(int player_id) {
   dispatchers_.erase(player_id);
 }
 
-bool MediaChannelHost::MessageFilter::OnMessageReceived(
+bool MediaPlayerChannelHost::MessageFilter::OnMessageReceived(
     const IPC::Message& message) {
   // Never handle sync message replies or we will deadlock here.
   if (message.is_reply())
@@ -131,7 +131,7 @@ bool MediaChannelHost::MessageFilter::OnMessageReceived(
   return true;
 }
 
-void MediaChannelHost::MessageFilter::OnChannelError() {
+void MediaPlayerChannelHost::MessageFilter::OnChannelError() {
   // Set the lost state before signalling the proxies. That way, if they
   // themselves post a task to recreate the context, they will not try to re-use
   // this channel host.
@@ -143,7 +143,7 @@ void MediaChannelHost::MessageFilter::OnChannelError() {
   dispatchers_.clear();
 }
 
-bool MediaChannelHost::MessageFilter::IsLost() const {
+bool MediaPlayerChannelHost::MessageFilter::IsLost() const {
   AutoLock lock(lock_);
   return lost_;
 }

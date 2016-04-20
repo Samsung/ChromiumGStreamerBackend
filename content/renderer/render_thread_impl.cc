@@ -205,7 +205,7 @@
 #endif
 
 #if defined(USE_GSTREAMER)
-#include "content/common/media/media_channel_host.h"
+#include "content/common/media/media_player_channel_host.h"
 #include "content/common/media/media_messages.h"
 #endif
 
@@ -1810,7 +1810,7 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync(
   return gpu_channel_;
 }
 #if defined(USE_GSTREAMER)
-MediaChannelHost* RenderThreadImpl::EstablishMediaChannelSync(
+MediaPlayerChannelHost* RenderThreadImpl::EstablishMediaChannelSync(
     CauseForMediaLaunch cause_for_media_launch) {
   if (media_channel_.get()) {
     // Do nothing if we already have a Media channel or are already
@@ -1958,13 +1958,13 @@ RenderThreadImpl::CreateCompositorOutputSurface(
     return NULL;
   }
 
-  media_channel_ = content::MediaChannelHost::Create(
+  media_channel_ = content::MediaPlayerChannelHost::Create(
       channel_handle, content::ChildProcess::current()->GetShutDownEvent());
 
   return media_channel_.get();
 }
 
-MediaChannelHost* RenderThreadImpl::GetMediaChannel() {
+MediaPlayerChannelHost* RenderThreadImpl::GetMediaChannel() {
   if (!media_channel_.get())
     return NULL;
 
