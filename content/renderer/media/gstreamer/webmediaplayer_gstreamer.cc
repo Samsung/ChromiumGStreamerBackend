@@ -24,7 +24,6 @@
 #include "cc/layers/video_layer.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/common/gpu/client/context_provider_command_buffer.h"
-#include "content/common/gpu/client/gl_helper.h"
 #include "content/common/media/media_messages.h"
 #include "content/child/child_process.h"
 #include "content/renderer/media/gstreamer/webmediasource_gstreamer.h"
@@ -611,10 +610,10 @@ void WebMediaPlayerGStreamer::OnVideoSizeChanged(int width, int height) {
   natural_size_.width = width;
   natural_size_.height = height;
 
+  // Lazily allocate compositing layer.
   if (!video_weblayer_) {
     video_weblayer_.reset(new cc_blink::WebLayerImpl(
-        cc::VideoLayer::Create(cc_blink::WebLayerImpl::LayerSettings(), this,
-                               media::VIDEO_ROTATION_0)));
+        cc::VideoLayer::Create(this, media::VIDEO_ROTATION_0)));
     client_->setWebLayer(video_weblayer_.get());
   }
 
@@ -751,9 +750,7 @@ void WebMediaPlayerGStreamer::DoLoad(LoadType load_type,
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   GURL gurl(url);
-  ReportMetrics(
-      load_type, gurl,
-      blink::WebStringToGURL(frame_->document().securityOrigin().toString()));
+  ReportMetrics(load_type, gurl, frame_->getSecurityOrigin());
 
   // Set subresource URL for crash reporting.
   base::debug::SetCrashKeyValue("subresource_url", gurl.spec());
@@ -955,12 +952,12 @@ double WebMediaPlayerGStreamer::currentTime() const {
       .InSecondsF();
 }
 
-WebMediaPlayer::NetworkState WebMediaPlayerGStreamer::networkState() const {
+WebMediaPlayer::NetworkState WebMediaPlayerGStreamer::getNetworkState() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return network_state_;
 }
 
-WebMediaPlayer::ReadyState WebMediaPlayerGStreamer::readyState() const {
+WebMediaPlayer::ReadyState WebMediaPlayerGStreamer::getReadyState() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return ready_state_;
 }
@@ -1037,40 +1034,14 @@ unsigned WebMediaPlayerGStreamer::droppedFrameCount() const {
   return 0;
 }
 
-unsigned WebMediaPlayerGStreamer::audioDecodedByteCount() const {
+size_t WebMediaPlayerGStreamer::audioDecodedByteCount() const {
   NOTIMPLEMENTED();
   return 0;
 }
 
-unsigned WebMediaPlayerGStreamer::videoDecodedByteCount() const {
+size_t WebMediaPlayerGStreamer::videoDecodedByteCount() const {
   NOTIMPLEMENTED();
   return 0;
-}
-
-bool WebMediaPlayerGStreamer::copyVideoTextureToPlatformTexture(
-    blink::WebGraphicsContext3D* web_graphics_context,
-    unsigned target,
-    unsigned texture,
-    unsigned internalFormat,
-    unsigned type,
-    int level,
-    bool premultiplyAlpha,
-    bool flipY) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool WebMediaPlayerGStreamer::copyVideoSubTextureToPlatformTexture(
-    blink::WebGraphicsContext3D* web_graphics_context,
-    unsigned target,
-    unsigned texture,
-    int level,
-    int xoffset,
-    int yoffset,
-    bool premultiplyAlpha,
-    bool flipY) {
-  NOTIMPLEMENTED();
-  return false;
 }
 
 void WebMediaPlayerGStreamer::setContentDecryptionModule(
@@ -1094,15 +1065,10 @@ void WebMediaPlayerGStreamer::setContentDecryptionModule(
 void WebMediaPlayerGStreamer::OnEncryptedMediaInitData(
     EmeInitDataType init_data_type,
     const std::vector<uint8_t>& init_data) {
-  // Do not fire "encrypted" event if encrypted media is not enabled.
-  if (!blink::WebRuntimeFeatures::isEncryptedMediaEnabled()) {
-    return;
-  }
-
-  // TODO(xhwang): Update this UMA name.
-  UMA_HISTOGRAM_COUNTS("Media.EME.NeedKey", 1);
-
   DCHECK(init_data_type != media::EmeInitDataType::UNKNOWN);
+
+  // TODO(xhwang): Update this UMA name. https://crbug.com/589251
+  UMA_HISTOGRAM_COUNTS("Media.EME.NeedKey", 1);
 
   encrypted_client_->encrypted(ConvertToWebInitDataType(init_data_type),
                                init_data.data(), init_data.size());
@@ -1156,15 +1122,17 @@ void WebMediaPlayerGStreamer::OnAddTextTrack(
 
   const WebInbandTextTrackImpl::Kind web_kind =
       static_cast<WebInbandTextTrackImpl::Kind>(config.kind());
-  const blink::WebString web_label = blink::WebString::fromUTF8(config.label());
+  const blink::WebString web_label =
+      blink::WebString::fromUTF8(config.label());
   const blink::WebString web_language =
       blink::WebString::fromUTF8(config.language());
-  const blink::WebString web_id = blink::WebString::fromUTF8(config.id());
+  const blink::WebString web_id =
+      blink::WebString::fromUTF8(config.id());
 
   scoped_ptr<WebInbandTextTrackImpl> web_inband_text_track(
       new WebInbandTextTrackImpl(web_kind, web_label, web_language, web_id));
 
-  scoped_ptr<TextTrack> text_track(new TextTrackImpl(
+  scoped_ptr<media::TextTrack> text_track(new TextTrackImpl(
       main_task_runner_, client_, std::move(web_inband_text_track)));
 
   done_cb.Run(std::move(text_track));
@@ -1210,9 +1178,26 @@ void WebMediaPlayerGStreamer::UpdatePlayingState(bool is_playing) {
   }
 }
 
-void WebMediaPlayerGStreamer::OnHidden(bool) {}
+void WebMediaPlayerGStreamer::OnShown() {
+  if (ready_state_ < WebMediaPlayer::ReadyStateHaveMetadata ||
+      (!ended_ && !paused_)) {
+    play();
+  }
+}
 
-void WebMediaPlayerGStreamer::OnShown() {}
+void WebMediaPlayerGStreamer::OnHidden() {
+  pause();
+}
+
+void WebMediaPlayerGStreamer::OnSuspendRequested(bool must_suspend) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  // Suspend should never be requested unless required or we're already in an
+  // idle state (paused or ended).
+  DCHECK(must_suspend || paused_ || ended_);
+  // TODO: we need to add new suspend API
+  if (must_suspend)
+    pause();
+}
 
 void WebMediaPlayerGStreamer::OnPlay() {
   play();
