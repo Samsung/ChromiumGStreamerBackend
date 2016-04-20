@@ -29,16 +29,16 @@ class MessageFilter;
 }
 
 namespace content {
-class MediaChannelFilter;
+class MediaPlayerChannelFilter;
 class MediaPlayerGStreamer;
 
 // Encapsulates an IPC channel between the media process and one renderer
 // process. On the renderer side there's a corresponding web media player.
-class MediaChannel : public IPC::Listener, public IPC::Sender {
+class MediaPlayerChannel : public IPC::Listener, public IPC::Sender {
  public:
   // Takes ownership of the renderer process handle.
-  MediaChannel(int, MediaChannelFilter*);
-  ~MediaChannel() override;
+  MediaPlayerChannel(int, MediaPlayerChannelFilter*);
+  ~MediaPlayerChannel() override;
 
   void Init(base::SingleThreadTaskRunner* io_task_runner,
             base::WaitableEvent* shutdown_event);
@@ -142,13 +142,13 @@ class MediaChannel : public IPC::Listener, public IPC::Sender {
   // Uniquely identifies the channel within this GPU process.
   std::string channel_id_;
 
-  scoped_refptr<MediaChannelFilter> channel_filter_;
+  scoped_refptr<MediaPlayerChannelFilter> channel_filter_;
 
   typedef base::ScopedPtrHashMap<int, scoped_ptr<MediaPlayerGStreamer>>
       MediaPlayerMap;
   MediaPlayerMap media_players_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaChannel);
+  DISALLOW_COPY_AND_ASSIGN(MediaPlayerChannel);
 };
 
 }  // namespace content

@@ -32,20 +32,20 @@ class SyncChannel;
 }
 
 namespace content {
-class MediaChannel;
+class MediaPlayerChannel;
 class MediaPlayerGStreamerFactory;
 
 // A MediaChannelManager is responsible for managing the lifetimes of media
 // channels and forwarding IPC requests from the
 // browser process to them based on the corresponding renderer ID.
-class CONTENT_EXPORT MediaChannelFilter : public IPC::MessageFilter {
+class CONTENT_EXPORT MediaPlayerChannelFilter : public IPC::MessageFilter {
  public:
-  MediaChannelFilter(IPC::MessageRouter* router,
+  MediaPlayerChannelFilter(IPC::MessageRouter* router,
                      base::SingleThreadTaskRunner* io_task_runner,
                      base::WaitableEvent* shutdown_event,
                      IPC::SyncChannel* channel,
                      MediaPlayerGStreamerFactory* media_player_factory);
-  ~MediaChannelFilter() override;
+  ~MediaPlayerChannelFilter() override;
 
   // Remove the channel for a particular renderer.
   void RemoveChannel(int client_id);
@@ -59,13 +59,13 @@ class CONTENT_EXPORT MediaChannelFilter : public IPC::MessageFilter {
   bool HandleMessagesScheduled();
   uint64_t MessagesProcessed();
 
-  MediaChannel* LookupChannel(int32_t client_id);
+  MediaPlayerChannel* LookupChannel(int32_t client_id);
   MediaPlayerGStreamerFactory* GetMediaPlayerFactory() {
     return media_player_factory_.get();
   }
 
  private:
-  typedef base::ScopedPtrHashMap<int, scoped_ptr<MediaChannel>> MediaChannelMap;
+  typedef base::ScopedPtrHashMap<int, scoped_ptr<MediaPlayerChannel>> MediaChannelMap;
 
   // Message handlers.
   void OnEstablishChannel(int client_id);
@@ -88,9 +88,9 @@ class CONTENT_EXPORT MediaChannelFilter : public IPC::MessageFilter {
   // Member variables should appear before the WeakPtrFactory, to ensure
   // that any WeakPtrs to Controller are invalidated before its members
   // variable's destructors are executed, rendering them invalid.
-  base::WeakPtrFactory<MediaChannelFilter> weak_factory_;
+  base::WeakPtrFactory<MediaPlayerChannelFilter> weak_factory_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaChannelFilter);
+  DISALLOW_COPY_AND_ASSIGN(MediaPlayerChannelFilter);
 };
 
 }  // namespace content
