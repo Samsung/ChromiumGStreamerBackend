@@ -79,7 +79,6 @@
 
 #if defined(USE_GSTREAMER)
 #include "content/browser/media/media_process_host.h"
-#endif
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/utility_process_host_impl.h"
 #include "content/public/gpu/content_gpu_client.h"

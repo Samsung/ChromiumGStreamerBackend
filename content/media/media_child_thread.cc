@@ -86,7 +86,7 @@ MediaChildThread::MediaChildThread(bool dead_on_arrival,
       in_browser_process_(false),
       blink_platform_(new content::BlinkPlatformImpl) {
   g_thread_safe_sender.Get() = thread_safe_sender();
-  blink::initializeWithoutV8(blink_platform_.get());
+  blink::initialize(blink_platform_.get());
 }
 
 MediaChildThread::MediaChildThread(const InProcessChildThreadParams& params)
@@ -104,7 +104,7 @@ MediaChildThread::MediaChildThread(const InProcessChildThreadParams& params)
 
 MediaChildThread::~MediaChildThread() {
   if (blink_platform_)
-    blink::shutdownWithoutV8();
+    blink::shutdown();
 }
 
 void MediaChildThread::Shutdown() {
