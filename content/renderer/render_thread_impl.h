@@ -30,7 +30,7 @@
 #include "content/common/render_frame_message_filter.mojom.h"
 #include "content/common/storage_partition_service.mojom.h"
 #if defined(USE_GSTREAMER)
-#include "content/common/media/media_channel_host.h"
+#include "content/common/media/media_player_channel_host.h"
 #include "content/common/media/media_process_launch_causes.h"
 #endif
 #include "content/public/renderer/render_thread.h"
@@ -246,11 +246,11 @@ class CONTENT_EXPORT RenderThreadImpl
 #if defined(USE_GSTREAMER)
   // Synchronously establish a channel to the media process if not previously
   // established or if it has been lost or get the current channel.
-  MediaChannelHost* EstablishMediaChannelSync(
+  MediaPlayerChannelHost* EstablishMediaChannelSync(
       CauseForMediaLaunch = CAUSE_FOR_MEDIA_LAUNCH_RENDERER);
 
   // Get media channel if it is created and not lost.
-  MediaChannelHost* GetMediaChannel();
+  MediaPlayerChannelHost* GetMediaChannel();
 #endif
 
   std::unique_ptr<cc::SwapPromise> RequestCopyOfOutputForLayoutTest(
@@ -613,7 +613,7 @@ class CONTENT_EXPORT RenderThreadImpl
 
 #if defined(USE_GSTREAMER)
   // The channel from the renderer process to the media process.
-  scoped_refptr<content::MediaChannelHost> media_channel_;
+  scoped_refptr<content::MediaPlayerChannelHost> media_channel_;
 #endif
 
   // Cache of variables that are needed on the compositor thread by

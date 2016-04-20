@@ -291,7 +291,7 @@ void MediaChildThread::OnInitialize() {
                                            resource_dispatcher(),
                                            base::ThreadTaskRunnerHandle::Get());
 
-  media_channel_filter_ = new MediaChannelFilter(
+  media_channel_filter_ = new MediaPlayerChannelFilter(
       GetRouter(), ChildProcess::current()->io_task_runner(),
       ChildProcess::current()->GetShutDownEvent(), channel(),
       new MediaPlayerGStreamerFactory(media_log.get(), resource_dispatcher(),

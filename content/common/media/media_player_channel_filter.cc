@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media_channel_filter.h"
+#include "media_player_channel_filter.h"
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "content/child/child_thread_impl.h"
-#include "content/common/media/media_channel.h"
 #include "content/common/media/media_messages.h"
+#include "content/common/media/media_player_channel.h"
 #include "ipc/message_filter.h"
 #include "ipc/message_router.h"
 
 namespace content {
 
-MediaChannelFilter::MediaChannelFilter(
+MediaPlayerChannelFilter::MediaPlayerChannelFilter(
     IPC::MessageRouter* router,
     base::SingleThreadTaskRunner* io_task_runner,
     base::WaitableEvent* shutdown_event,
@@ -31,15 +31,15 @@ MediaChannelFilter::MediaChannelFilter(
   DCHECK(shutdown_event);
 }
 
-MediaChannelFilter::~MediaChannelFilter() {
+MediaPlayerChannelFilter::~MediaPlayerChannelFilter() {
   media_channels_.clear();
 }
 
-void MediaChannelFilter::RemoveChannel(int client_id) {
+void MediaPlayerChannelFilter::RemoveChannel(int client_id) {
   media_channels_.erase(client_id);
 }
 
-MediaChannel* MediaChannelFilter::LookupChannel(int32_t client_id) {
+MediaPlayerChannel* MediaPlayerChannelFilter::LookupChannel(int32_t client_id) {
   MediaChannelMap::const_iterator iter = media_channels_.find(client_id);
   if (iter == media_channels_.end())
     return NULL;
@@ -47,9 +47,9 @@ MediaChannel* MediaChannelFilter::LookupChannel(int32_t client_id) {
     return iter->second;
 }
 
-bool MediaChannelFilter::OnMessageReceived(const IPC::Message& msg) {
+bool MediaPlayerChannelFilter::OnMessageReceived(const IPC::Message& msg) {
   bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(MediaChannelFilter, msg)
+  IPC_BEGIN_MESSAGE_MAP(MediaPlayerChannelFilter, msg)
     IPC_MESSAGE_HANDLER(MediaMsg_EstablishChannel, OnEstablishChannel)
     IPC_MESSAGE_HANDLER(MediaMsg_CloseChannel, OnCloseChannel)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -57,16 +57,16 @@ bool MediaChannelFilter::OnMessageReceived(const IPC::Message& msg) {
   return handled;
 }
 
-bool MediaChannelFilter::Send(IPC::Message* msg) {
+bool MediaPlayerChannelFilter::Send(IPC::Message* msg) {
   return router_->Send(msg);
 }
 
-void MediaChannelFilter::OnEstablishChannel(int client_id) {
+void MediaPlayerChannelFilter::OnEstablishChannel(int client_id) {
   DCHECK_NE(io_task_runner_.get(), base::ThreadTaskRunnerHandle::Get().get());
 
   IPC::ChannelHandle channel_handle;
 
-  scoped_ptr<MediaChannel> channel(new MediaChannel(client_id, this));
+  scoped_ptr<MediaPlayerChannel> channel(new MediaPlayerChannel(client_id, this));
   channel->Init(io_task_runner_.get(), shutdown_event_);
   channel_handle.name = channel->GetChannelName();
 
@@ -83,7 +83,7 @@ void MediaChannelFilter::OnEstablishChannel(int client_id) {
   Send(new MediaHostMsg_ChannelEstablished(channel_handle));
 }
 
-void MediaChannelFilter::OnCloseChannel(
+void MediaPlayerChannelFilter::OnCloseChannel(
     const IPC::ChannelHandle& channel_handle) {
   for (MediaChannelMap::iterator iter = media_channels_.begin();
        iter != media_channels_.end(); ++iter) {

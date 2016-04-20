@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "base/threading/thread.h"
 #include "cc/layers/video_frame_provider.h"
-#include "content/common/media/media_channel_host.h"
+#include "content/common/media/media_player_channel_host.h"
 #include "content/common/media/media_player_messages_gstreamer.h"
 #include "content/common/media/media_process_launch_causes.h"
 #include "gpu/command_buffer/common/sync_token.h"

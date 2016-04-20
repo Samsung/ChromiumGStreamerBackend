@@ -16,9 +16,9 @@
 #include "content/child/blink_platform_impl.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/gpu/client/gpu_channel_host.h"
-#include "content/common/media/media_channel.h"
-#include "content/common/media/media_channel_filter.h"
 #include "content/common/media/media_config.h"
+#include "content/common/media/media_player_channel.h"
+#include "content/common/media/media_player_channel_filter.h"
 
 namespace blink {
 class WebGraphicsContext3D;
@@ -108,7 +108,7 @@ class MediaChildThread : public ChildThreadImpl, public GpuChannelHostFactory {
 
   base::Time process_start_time_;
 
-  scoped_refptr<MediaChannelFilter> media_channel_filter_;
+  scoped_refptr<MediaPlayerChannelFilter> media_channel_filter_;
 
   // The channel from the media process to the GPU process.
   scoped_refptr<GpuChannelHost> gpu_channel_;
