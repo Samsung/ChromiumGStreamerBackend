@@ -18,8 +18,12 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
+#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/media_data_manager.h"
+#include "content/common/gpu_process_launch_causes.h"
 #include "content/common/media/media_process_launch_causes.h"
+#include "gpu/config/gpu_info.h"
+
 #include "ipc/ipc_sender.h"
 #include "ipc/message_filter.h"
 
@@ -29,13 +33,40 @@ struct ChannelHandle;
 
 namespace content {
 class BrowserChildProcessHostImpl;
-class GpuMessageFilter;
 class MediaMainThread;
 class RenderWidgetHelper;
 class InProcessChildThreadParams;
 
 typedef base::Thread* (*MediaMainThreadFactoryFunction)(
     const InProcessChildThreadParams&);
+
+// A message filter for messages from the media process to the GpuProcessHost
+// in the browser. Such messages are typically destined for the GPU process,
+// but need to be mediated by the browser.
+class GpuMessageFilter : public BrowserMessageFilter {
+ public:
+  GpuMessageFilter(int render_process_id);
+
+  // BrowserMessageFilter methods:
+  bool OnMessageReceived(const IPC::Message& message) override;
+
+ private:
+  ~GpuMessageFilter() override;
+
+  // Message handlers called on the browser IO thread:
+  void OnEstablishGpuChannel(CauseForGpuLaunch,
+                             IPC::Message* reply);
+  void EstablishGpuChannelCallback(scoped_ptr<IPC::Message> reply,
+                                const IPC::ChannelHandle& channel,
+                                const gpu::GPUInfo& gpu_info);
+
+  int gpu_process_id_;
+  int render_process_id_;
+
+  base::WeakPtrFactory<GpuMessageFilter> weak_ptr_factory_;
+
+  DISALLOW_COPY_AND_ASSIGN(GpuMessageFilter);
+};
 
 class MediaProcessHost : public BrowserChildProcessHostDelegate,
                          public IPC::Sender,
