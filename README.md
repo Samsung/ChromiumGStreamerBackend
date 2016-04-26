@@ -4,7 +4,7 @@ Chromium GStreamer Backend
 [Chromium](https://www.chromium.org/Home), [GStreamer](http://gstreamer.freedesktop.org/features/), [MediaProcess](#media-process-overview), [Sandbox](#media-process-sandbox), [MSE](#mse), [EME](#eme), [Zero-Copy](#zero-copy), [GstPlayer](#media-process-overview), [GstGL](#media-process-stack), [GstChromiumHttpSrc](#media-process-stack), [Build](#build), [Tips](#tips), [Maintenance](#maintenance), [UnitTests](#build-and-run-unit-tests), [Upstream](#contributing-to-upstream-chromium), [Issues](#issues-and-roadmap), [GstConf2015](#talk-at-gstreamer-conference-2015)
 
 ### Current branching point from official chromium/src  ###
-52f1532c2d22862396fdc3f90f71f7345482d29d (Wed Feb 24 2016) - tag 50.0.2660.0
+1553708cc722dcc8ae421838d8232d3a0e10faff (Mon Apr 4 2016) - tag 51.0.2700.0
 
 ### Project description ###
 This is an experimental project that aims to have GStreamer as media player in Chromium browser.
@@ -205,7 +205,7 @@ ninja -C out/Release chrome
 git remote add github_gstbackend https://github.com/Samsung/ChromiumGStreamerBackend
 git fetch github_gstbackend
 git checkout -b gstbackend --track github_gstbackend/master
-git replace 2a3df5cb2cd5f0ca72b2cb0a3989843d8318e6bb 52f1532c2d22862396fdc3f90f71f7345482d29d
+git replace 94383df24b3f7dad19633061d583d92a2e7f7a11 1553708cc722dcc8ae421838d8232d3a0e10faff
 
 # build Chromium GStreamer Backend
 cd .. # to go to root chromium directory
@@ -292,12 +292,12 @@ NO_AUTH_BOTO_CONFIG=~/.boto gclient runhooks
 # We use "git replace" to allow rebasing between our truncated branch and original branch.
 
 # fake our branch point because we truncated the history
-git replace 2a3df5cb2cd5f0ca72b2cb0a3989843d8318e6bb 52f1532c2d22862396fdc3f90f71f7345482d29d
+git replace 94383df24b3f7dad19633061d583d92a2e7f7a11 1553708cc722dcc8ae421838d8232d3a0e10faff
 
 # replay chromium original upstream commits on top of our branch with truncated history
 git checkout NEW_ORIGIN_SHA
 git checkout -b master_new
-git rebase 2a3df5cb2cd5f0ca72b2cb0a3989843d8318e6bb
+git rebase 94383df24b3f7dad19633061d583d92a2e7f7a11
 git replace $(git rev-parse HEAD) NEW_ORIGIN_SHA
 
 # replay gst backend
