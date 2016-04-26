@@ -19,7 +19,7 @@
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
 
-#define IPC_MESSAGE_START MediaMsgStart
+#define IPC_MESSAGE_START MediaPlayerChannelMsgStart
 
 IPC_ENUM_TRAITS_MAX_VALUE(content::CauseForMediaLaunch,
                           content::CAUSE_FOR_MEDIA_LAUNCH_MAX_ENUM - 1)
