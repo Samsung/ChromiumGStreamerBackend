@@ -32,7 +32,7 @@ MediaChannel::MediaChannel(int client_id, MediaChannelFilter* channel_filter)
     : client_id_(client_id), channel_filter_(channel_filter) {
   DCHECK(client_id);
 
-  channel_id_ = IPC::Channel::GenerateVerifiedChannelID("media");
+  channel_id_ = IPC::Channel::GenerateVerifiedChannelID("media_player_channel");
 }
 
 MediaChannel::~MediaChannel() {}
