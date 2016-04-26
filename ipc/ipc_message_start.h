@@ -71,7 +71,7 @@ enum IPCMessageStart {
   CCMsgStart,
   MediaPlayerMsgStart,
 #if defined(USE_GSTREAMER)
-  MediaMsgStart,
+  MediaPlayerChannelMsgStart,
 #endif
   TracingMsgStart,
   PeerConnectionTrackerMsgStart,

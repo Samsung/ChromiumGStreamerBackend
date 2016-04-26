@@ -13,7 +13,7 @@
 namespace content {
 
 MediaMessageFilter::MediaMessageFilter(int render_process_id)
-    : BrowserMessageFilter(MediaMsgStart),
+    : BrowserMessageFilter(MediaPlayerChannelMsgStart),
       media_process_id_(0),  // There is only one media process.
       render_process_id_(render_process_id),
       weak_ptr_factory_(this) {
