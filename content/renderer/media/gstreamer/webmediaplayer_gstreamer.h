@@ -138,9 +138,9 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   scoped_refptr<media::VideoFrame> GetCurrentFrame() override;
   void PutCurrentFrame() override;
 
-  virtual void load(LoadType load_type,
-                    const blink::WebURL& url,
-                    CORSMode cors_mode) override;
+  void load(LoadType load_type,
+            const blink::WebMediaPlayerSource& source,
+            CORSMode cors_mode) override;
 
   // Playback controls.
   virtual void play() override;
@@ -180,6 +180,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   virtual blink::WebMediaPlayer::NetworkState getNetworkState() const override;
   virtual blink::WebMediaPlayer::ReadyState getReadyState() const override;
 
+  blink::WebString getErrorMessage() override;
   virtual bool didLoadingProgress() override;
 
   virtual bool hasSingleSecurityOrigin() const override;

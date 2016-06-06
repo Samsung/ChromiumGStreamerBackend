@@ -57,6 +57,7 @@
 #include "third_party/WebKit/public/platform/URLConversion.h"
 #include "third_party/WebKit/public/platform/WebEncryptedMediaTypes.h"
 #include "third_party/WebKit/public/platform/WebMediaPlayerEncryptedMediaClient.h"
+#include "third_party/WebKit/public/platform/WebMediaPlayerSource.h"
 #include "third_party/WebKit/public/platform/WebMediaSource.h"
 #include "third_party/WebKit/public/platform/WebRect.h"
 #include "third_party/WebKit/public/platform/WebSize.h"
@@ -586,7 +587,7 @@ void WebMediaPlayerGStreamer::OnSeekCompleted(
 }
 
 void WebMediaPlayerGStreamer::OnMediaError(int error) {
-  DVLOG(1) << __FUNCTION__ << "(" << error << ")";
+  VLOG(1) << __FUNCTION__ << "(" << error << ")";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   if (ready_state_ == WebMediaPlayer::ReadyStateHaveNothing) {
@@ -735,8 +736,10 @@ void WebMediaPlayerGStreamer::OnNeedKey(const std::string& system_id,
 }
 
 void WebMediaPlayerGStreamer::load(LoadType load_type,
-                                   const blink::WebURL& url,
+                                   const blink::WebMediaPlayerSource& source,
                                    CORSMode cors_mode) {
+  DCHECK(source.isURL());
+  blink::WebURL url = source.getAsURL();
   DVLOG(1) << __FUNCTION__ << "(" << load_type << ", " << url << ", "
            << cors_mode << ")";
 
@@ -985,6 +988,11 @@ blink::WebTimeRanges WebMediaPlayerGStreamer::seekable() const {
   // expected, disabling this breaks semi-live players, http://crbug.com/427412.
   const blink::WebTimeRange seekable_range(0.0, seekable_end);
   return blink::WebTimeRanges(&seekable_range, 1);
+}
+
+blink::WebString WebMediaPlayerGStreamer::getErrorMessage() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  return blink::WebString::fromUTF8(media_log_->GetLastErrorMessage());
 }
 
 bool WebMediaPlayerGStreamer::didLoadingProgress() {
