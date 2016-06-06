@@ -63,6 +63,13 @@ bool MediaPlayerChannelHost::Send(IPC::Message* msg) {
   message->set_unblock(false);
 
   if (IsMainThread()) {
+    // channel_ is only modified on the main thread, so we don't need to take a
+    // lock here.
+    if (!channel_) {
+      DVLOG(1) << "GpuChannelHost::Send failed: Channel already destroyed";
+      return false;
+    }
+
     base::ThreadRestrictions::ScopedAllowWait allow_wait;
     bool result = channel_->Send(message.release());
     if (!result)
@@ -71,6 +78,10 @@ bool MediaPlayerChannelHost::Send(IPC::Message* msg) {
   }
 
   bool result = sync_filter_->Send(message.release());
+
+  if (!result)
+    VLOG(1) << "MediaPlayerChannelHost::Send SyncMessageFilter failed";
+
   return result;
 }
 
