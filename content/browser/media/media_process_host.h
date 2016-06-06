@@ -56,7 +56,7 @@ class GpuMessageFilter : public BrowserMessageFilter {
   // Message handlers called on the browser IO thread:
   void OnEstablishGpuChannel(CauseForGpuLaunch,
                              IPC::Message* reply);
-  void EstablishGpuChannelCallback(scoped_ptr<IPC::Message> reply,
+  void EstablishGpuChannelCallback(std::unique_ptr<IPC::Message> reply,
                                 const IPC::ChannelHandle& channel,
                                 const gpu::GPUInfo& gpu_info);
 
@@ -172,7 +172,7 @@ class MediaProcessHost : public BrowserChildProcessHostDelegate,
 
   MediaProcessKind kind_;
 
-  scoped_ptr<base::Thread> in_process_media_thread_;
+  std::unique_ptr<base::Thread> in_process_media_thread_;
 
   // Whether we actually launched a Media process.
   bool process_launched_;
@@ -182,7 +182,7 @@ class MediaProcessHost : public BrowserChildProcessHostDelegate,
 
   int gpu_client_id_;
 
-  scoped_ptr<BrowserChildProcessHostImpl> process_;
+  std::unique_ptr<BrowserChildProcessHostImpl> process_;
 
   // Used to allow a RenderWidgetHost to intercept various messages on the
   // IO thread.

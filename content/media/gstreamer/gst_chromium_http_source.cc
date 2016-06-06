@@ -66,7 +66,7 @@ struct _ChromiumHttpSrcPrivate {
 
   std::mutex mutex_data_source_;
   std::condition_variable condition_data_source_;
-  scoped_ptr<content::GStreamerBufferedDataSource> gst_data_source_;
+  std::unique_ptr<content::GStreamerBufferedDataSource> gst_data_source_;
 };
 
 enum {
@@ -719,7 +719,7 @@ static void onResetDataSource(GstBaseSrc* basesrc) {
           content::GStreamerBufferedDataSourceFactory::Get()
               ->data_source_task_runner()));
 
-  scoped_ptr<scheduler::WebTaskRunnerImpl> task_runner(
+  std::unique_ptr<scheduler::WebTaskRunnerImpl> task_runner(
       new scheduler::WebTaskRunnerImpl(taskRunnerWrapper));
 
   content::WebURLLoaderImpl* url_loader = new content::WebURLLoaderImpl(

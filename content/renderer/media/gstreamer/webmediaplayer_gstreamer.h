@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -278,7 +277,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   // blocked.
   cc::VideoFrameProvider::Client* video_frame_provider_client_;
   const scoped_refptr<base::SingleThreadTaskRunner> compositor_loop_;
-  scoped_ptr<cc_blink::WebLayerImpl> video_weblayer_;
+  std::unique_ptr<cc_blink::WebLayerImpl> video_weblayer_;
   scoped_refptr<media::VideoFrame> current_frame_;
   base::Lock current_frame_lock_;
 

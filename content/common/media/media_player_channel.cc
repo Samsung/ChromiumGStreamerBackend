@@ -104,7 +104,7 @@ MediaPlayerGStreamer* MediaPlayerChannel::GetMediaPlayer(int player_id) {
   if (iter != media_players_.end())
     return iter->second;
 
-  scoped_ptr<MediaPlayerGStreamer> player(
+  std::unique_ptr<MediaPlayerGStreamer> player(
       channel_filter_->GetMediaPlayerFactory()->create(player_id, this));
   media_players_.set(player_id, std::move(player));
   return media_players_.find(player_id)->second;

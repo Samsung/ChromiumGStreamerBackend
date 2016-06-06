@@ -11,7 +11,6 @@
 
 #include "base/containers/scoped_ptr_hash_map.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -65,7 +64,7 @@ class CONTENT_EXPORT MediaPlayerChannelFilter : public IPC::MessageFilter {
   }
 
  private:
-  typedef base::ScopedPtrHashMap<int, scoped_ptr<MediaPlayerChannel>> MediaChannelMap;
+  typedef base::ScopedPtrHashMap<int, std::unique_ptr<MediaPlayerChannel>> MediaChannelMap;
 
   // Message handlers.
   void OnEstablishChannel(int client_id);
@@ -83,7 +82,7 @@ class CONTENT_EXPORT MediaPlayerChannelFilter : public IPC::MessageFilter {
   MediaChannelMap media_channels_;
   IPC::SyncChannel* channel_;
   scoped_refptr<IPC::MessageFilter> filter_;
-  scoped_ptr<MediaPlayerGStreamerFactory> media_player_factory_;
+  std::unique_ptr<MediaPlayerGStreamerFactory> media_player_factory_;
 
   // Member variables should appear before the WeakPtrFactory, to ensure
   // that any WeakPtrs to Controller are invalidated before its members

@@ -859,7 +859,7 @@ void WebMediaPlayerGStreamer::setSinkId(
     const blink::WebSecurityOrigin& security_origin,
     blink::WebSetSinkIdCallbacks* web_callback) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  scoped_ptr<blink::WebSetSinkIdCallbacks> callback(web_callback);
+  std::unique_ptr<blink::WebSetSinkIdCallbacks> callback(web_callback);
   callback->onError(blink::WebSetSinkIdError::NotSupported);
 }
 
@@ -1129,10 +1129,10 @@ void WebMediaPlayerGStreamer::OnAddTextTrack(
   const blink::WebString web_id =
       blink::WebString::fromUTF8(config.id());
 
-  scoped_ptr<WebInbandTextTrackImpl> web_inband_text_track(
+  std::unique_ptr<WebInbandTextTrackImpl> web_inband_text_track(
       new WebInbandTextTrackImpl(web_kind, web_label, web_language, web_id));
 
-  scoped_ptr<media::TextTrack> text_track(new TextTrackImpl(
+  std::unique_ptr<media::TextTrack> text_track(new TextTrackImpl(
       main_task_runner_, client_, std::move(web_inband_text_track)));
 
   done_cb.Run(std::move(text_track));
