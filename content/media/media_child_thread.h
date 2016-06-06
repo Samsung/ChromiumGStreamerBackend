@@ -20,10 +20,6 @@
 #include "content/common/media/media_player_channel_filter.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 
-namespace blink {
-class WebGraphicsContext3D;
-}
-
 namespace base {
 class MessageLoopProxy;
 class Thread;
@@ -47,7 +43,6 @@ class CompositorForwardingMessageFilter;
 class ContextProviderCommandBuffer;
 class GpuChannelHost;
 class MediaPlayerGStreamer;
-class WebGraphicsContext3DCommandBufferImpl;
 
 // The main thread of the media process. There will only ever be one of
 // these per process. It does process initialization and shutdown,
@@ -85,8 +80,6 @@ class MediaChildThread : public ChildThreadImpl, public gpu::GpuChannelHostFacto
   // If there is a pending asynchronous request, it will be completed by the
   // time this routine returns.
   gpu::GpuChannelHost* EstablishGpuChannelSync(CauseForGpuLaunch);
-
-  scoped_ptr<WebGraphicsContext3DCommandBufferImpl> CreateOffscreenContext3d();
 
   // Message handlers.
   void OnInitialize();

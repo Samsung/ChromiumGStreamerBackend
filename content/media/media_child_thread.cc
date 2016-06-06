@@ -144,15 +144,34 @@ MediaChildThread::CreateSharedContextProvider() {
   DCHECK(IsMainThread());
 
   if (!provider_.get()) {
-    provider_ = NULL;
+    provider_ = nullptr;
 
     if (!provider_.get()) {
       if (!gpu_channel_.get())
         EstablishGpuChannelSync(
             CAUSE_FOR_GPU_LAUNCH_MEDIA_GSTREAMER_CONTEXT_INITIALIZE);
 
-      provider_ = ContextProviderCommandBuffer::Create(
-          CreateOffscreenContext3d(), MEDIA_GSTREAMER_CONTEXT);
+      if (!gpu_channel_.get())
+        return nullptr;
+
+      gpu::gles2::ContextCreationAttribHelper attributes;
+      attributes.alpha_size = -1;
+      attributes.depth_size = 0;
+      attributes.stencil_size = 0;
+      attributes.samples = 0;
+      attributes.sample_buffers = 0;
+      attributes.bind_generates_resource = false;
+      attributes.lose_context_when_out_of_memory = true;
+      const bool automatic_flushes = false;
+      const bool support_locking = false;
+
+      provider_ = make_scoped_refptr(new ContextProviderCommandBuffer(
+          gpu_channel_, gpu::GPU_STREAM_DEFAULT, gpu::GpuStreamPriority::NORMAL,
+          gpu::kNullSurfaceHandle,
+          GURL("chrome://gpu/MediaChildThread::CreateOffscreenContext"),
+          gl::PreferIntegratedGpu, automatic_flushes, support_locking,
+          gpu::SharedMemoryLimits(), attributes, nullptr,
+          command_buffer_metrics::MEDIA_GSTREAMER_CONTEXT));
     }
   }
 
@@ -197,28 +216,6 @@ gpu::GpuChannelHost* MediaChildThread::EstablishGpuChannelSync(
       this, client_id, gpu_info, channel_handle,
       ChildProcess::current()->GetShutDownEvent(), gpu_memory_buffer_manager());
   return gpu_channel_.get();
-}
-
-scoped_ptr<WebGraphicsContext3DCommandBufferImpl>
-MediaChildThread::CreateOffscreenContext3d() {
-  gpu::gles2::ContextCreationAttribHelper attributes;
-  attributes.alpha_size = -1;
-  attributes.depth_size = 0;
-  attributes.stencil_size = 0;
-  attributes.samples = 0;
-  attributes.sample_buffers = 0;
-  attributes.bind_generates_resource = false;
-  attributes.lose_context_when_out_of_memory = true;
-  bool share_resources = true;
-  bool automatic_flushes = false;
-  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(EstablishGpuChannelSync(
-      CAUSE_FOR_GPU_LAUNCH_WEBGRAPHICSCONTEXT3DCOMMANDBUFFERIMPL_INITIALIZE));
-  return make_scoped_ptr(
-      WebGraphicsContext3DCommandBufferImpl::CreateOffscreenContext(
-          gpu_channel_host.get(), attributes, gfx::PreferIntegratedGpu,
-          share_resources, automatic_flushes,
-          GURL("chrome://gpu/MediaChildThread::CreateOffscreenContext3d"),
-          WebGraphicsContext3DCommandBufferImpl::SharedMemoryLimits(), NULL));
 }
 
 bool MediaChildThread::IsMainThread() {
