@@ -28,7 +28,6 @@
 #include "content/child/child_process.h"
 #include "content/renderer/media/gstreamer/webmediasource_gstreamer.h"
 #include "content/renderer/render_thread_impl.h"
-#include "gpu/blink/webgraphicscontext3d_impl.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "gpu/command_buffer/common/mailbox.h"
