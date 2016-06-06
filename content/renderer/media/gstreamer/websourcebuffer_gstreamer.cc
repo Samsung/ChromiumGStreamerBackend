@@ -106,8 +106,7 @@ void WebSourceBufferGStreamer::append(const unsigned char* data,
                           blink::WebString::fromUTF8(track->language())));
     }
 */
-    std::vector<blink::WebMediaPlayer::TrackId> blinkTrackIds =
-        client_->initializationSegmentReceived(trackInfoVector);
+    client_->initializationSegmentReceived(trackInfoVector);
   }
 
   base::TimeDelta old_offset = timestamp_offset_;
