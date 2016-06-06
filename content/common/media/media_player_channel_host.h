@@ -11,7 +11,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/containers/hash_tables.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
@@ -114,7 +113,7 @@ class MediaPlayerChannelHost : public IPC::Sender,
     bool lost_;
   };
 
-  scoped_ptr<IPC::SyncChannel> channel_;
+  std::unique_ptr<IPC::SyncChannel> channel_;
   scoped_refptr<MessageFilter> channel_filter_;
 
   // A filter for sending messages from thread other than the main thread.

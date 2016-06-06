@@ -62,7 +62,7 @@ class GStreamerBufferedDataSource {
 
  private:
   media::BufferedDataSourceHostImpl buffered_data_source_host_;
-  scoped_ptr<media::BufferedDataSource> data_source_;
+  std::unique_ptr<media::BufferedDataSource> data_source_;
 };
 
 class GStreamerBufferedDataSourceFactory {

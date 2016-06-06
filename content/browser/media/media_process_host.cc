@@ -129,7 +129,7 @@ void GpuMessageFilter::OnEstablishGpuChannel(
     CauseForGpuLaunch cause_for_gpu_launch,
     IPC::Message* reply_ptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  scoped_ptr<IPC::Message> reply(reply_ptr);
+  std::unique_ptr<IPC::Message> reply(reply_ptr);
 
 #if defined(OS_WIN) && defined(ARCH_CPU_X86_64)
   // TODO(jbauman): Remove this when we know why renderer processes are
@@ -167,7 +167,7 @@ void GpuMessageFilter::OnEstablishGpuChannel(
 }
 
 void GpuMessageFilter::EstablishGpuChannelCallback(
-    scoped_ptr<IPC::Message> reply,
+    std::unique_ptr<IPC::Message> reply,
     const IPC::ChannelHandle& channel,
     const gpu::GPUInfo& gpu_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

@@ -230,10 +230,10 @@ MediaChildThread::GetIOThreadTaskRunner() {
   return io_thread_task_runner_;
 }
 
-scoped_ptr<base::SharedMemory> MediaChildThread::AllocateSharedMemory(
+std::unique_ptr<base::SharedMemory> MediaChildThread::AllocateSharedMemory(
     size_t size) {
-  return scoped_ptr<base::SharedMemory>(
-      ChildThreadImpl::AllocateSharedMemory(size, thread_safe_sender()));
+  return ChildThreadImpl::AllocateSharedMemory(size, thread_safe_sender(),
+                                               nullptr);
 }
 
 class MessagePumpGlibLocal : public base::MessagePumpGlib {
@@ -247,10 +247,10 @@ class MessagePumpGlibLocal : public base::MessagePumpGlib {
   GMainContext* context_;
 };
 
-static scoped_ptr<base::MessagePump> CreateMessagePumpGlibLocal() {
+static std::unique_ptr<base::MessagePump> CreateMessagePumpGlibLocal() {
   GMainContext* context = g_main_context_new();
   g_main_context_push_thread_default(context);
-  return scoped_ptr<base::MessagePump>(new MessagePumpGlibLocal(context));
+  return std::unique_ptr<base::MessagePump>(new MessagePumpGlibLocal(context));
 }
 
 void MediaChildThread::OnInitialize() {
