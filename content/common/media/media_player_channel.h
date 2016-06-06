@@ -11,7 +11,6 @@
 #include "base/id_map.h"
 #include "base/containers/scoped_ptr_hash_map.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
 #include "base/memory/scoped_vector.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -134,7 +133,7 @@ class MediaPlayerChannel : public IPC::Listener, public IPC::Sender {
                    const std::vector<unsigned char>& init_data);
 
  private:
-  scoped_ptr<IPC::SyncChannel> channel_;
+  std::unique_ptr<IPC::SyncChannel> channel_;
 
   // The id of the client who is on the other side of the channel.
   int client_id_;
@@ -144,7 +143,7 @@ class MediaPlayerChannel : public IPC::Listener, public IPC::Sender {
 
   scoped_refptr<MediaPlayerChannelFilter> channel_filter_;
 
-  typedef base::ScopedPtrHashMap<int, scoped_ptr<MediaPlayerGStreamer>>
+  typedef base::ScopedPtrHashMap<int, std::unique_ptr<MediaPlayerGStreamer>>
       MediaPlayerMap;
   MediaPlayerMap media_players_;
 

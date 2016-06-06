@@ -9,7 +9,6 @@
 
 #include "base/memory/linked_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "content/common/media/media_process_launch_causes.h"
@@ -42,7 +41,7 @@ class MediaMessageFilter : public BrowserMessageFilter {
   void OnEstablishMediaChannel(CauseForMediaLaunch, IPC::Message* reply);
 
   // Helper callbacks for the message handlers.
-  void EstablishChannelCallback(scoped_ptr<IPC::Message> reply,
+  void EstablishChannelCallback(std::unique_ptr<IPC::Message> reply,
                                 const IPC::ChannelHandle& channel);
 
   int media_process_id_;

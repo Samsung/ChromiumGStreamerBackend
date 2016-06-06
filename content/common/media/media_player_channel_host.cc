@@ -57,7 +57,7 @@ void MediaPlayerChannelHost::Connect(const IPC::ChannelHandle& channel_handle,
 }
 
 bool MediaPlayerChannelHost::Send(IPC::Message* msg) {
-  scoped_ptr<IPC::Message> message(msg);
+  std::unique_ptr<IPC::Message> message(msg);
   // The media process never sends synchronous IPCs so clear the unblock flag to
   // preserve order.
   message->set_unblock(false);
