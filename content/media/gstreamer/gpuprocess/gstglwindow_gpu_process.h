@@ -15,6 +15,9 @@
 #undef GST_GL_HAVE_OPENGL
 #define GST_GL_HAVE_OPENGL 0
 
+#undef GST_GL_HAVE_GLES3
+#define GST_GL_HAVE_GLES3 0
+
 #include <gst/gl/gl.h>
 #include "gstglcontext_gpu_process.h"
 
