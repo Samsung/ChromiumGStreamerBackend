@@ -37,27 +37,6 @@ void SendOnIOThreadTask(int host_id, IPC::Message* msg) {
     delete msg;
 }
 
-class ScopedSendOnIOThread {
- public:
-  ScopedSendOnIOThread(int host_id, IPC::Message* msg)
-      : host_id_(host_id), msg_(msg), cancelled_(false) {}
-
-  ~ScopedSendOnIOThread() {
-    if (!cancelled_) {
-      BrowserThread::PostTask(
-          BrowserThread::IO, FROM_HERE,
-          base::Bind(&SendOnIOThreadTask, host_id_, msg_.release()));
-    }
-  }
-
-  void Cancel() { cancelled_ = true; }
-
- private:
-  int host_id_;
-  scoped_ptr<IPC::Message> msg_;
-  bool cancelled_;
-};
-
 }  // namespace
 
 void RouteToMediaProcessHostUIShimTask(int host_id, const IPC::Message& msg) {
