@@ -19,7 +19,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/memory/scoped_ptr.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "content/common/sandbox_linux/sandbox_bpf_base_policy_linux.h"
@@ -192,7 +192,7 @@ bool UpdateProcessTypeAndEnableSandbox(
   DCHECK(broker_sandboxer_allocator);
   UpdateProcessTypeToMediaBroker();
   return SandboxSeccompBPF::StartSandboxWithExternalPolicy(
-      make_scoped_ptr(broker_sandboxer_allocator()), base::ScopedFD());
+      base::WrapUnique(broker_sandboxer_allocator()), base::ScopedFD());
 }
 
 }  // namespace

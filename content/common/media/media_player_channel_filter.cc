@@ -66,7 +66,7 @@ void MediaPlayerChannelFilter::OnEstablishChannel(int client_id) {
 
   IPC::ChannelHandle channel_handle;
 
-  scoped_ptr<MediaPlayerChannel> channel(new MediaPlayerChannel(client_id, this));
+  std::unique_ptr<MediaPlayerChannel> channel(new MediaPlayerChannel(client_id, this));
   channel->Init(io_task_runner_.get(), shutdown_event_);
   channel_handle.name = channel->GetChannelName();
 

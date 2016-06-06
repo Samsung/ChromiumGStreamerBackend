@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/memory/scoped_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/process/kill.h"
 #include "base/synchronization/lock.h"
@@ -86,7 +85,7 @@ class CONTENT_EXPORT MediaDataManagerImpl
   ~MediaDataManagerImpl() override;
 
   mutable base::Lock lock_;
-  scoped_ptr<MediaDataManagerImplPrivate> private_;
+  std::unique_ptr<MediaDataManagerImplPrivate> private_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaDataManagerImpl);
 };

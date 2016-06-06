@@ -390,13 +390,16 @@ void AesDecryptor::UpdateSession(const std::string& session_id,
     base::AutoLock auto_lock(key_map_lock_);
     for (const auto& item : key_map_) {
       if (item.second->Contains(session_id)) {
-        scoped_ptr<CdmKeyInformation> key_info(
-            new CdmKeyInformation(item.first, CdmKeyInformation::USABLE, 0));
 #if defined(USE_GSTREAMER)
+        std::unique_ptr<CdmKeyInformation> key_info(
+            new CdmKeyInformation(item.first, CdmKeyInformation::USABLE, 0));
         item.second->LatestDecryptionKey()->decryption_key()->GetRawKey(
             &key_info->key);
+        keys_info.push_back(std::move(key_info));
+#else
+        keys_info.push_back(
+            new CdmKeyInformation(item.first, CdmKeyInformation::USABLE, 0));
 #endif
-        keys_info.push_back(key_info.release());
       }
     }
   }

@@ -39,7 +39,7 @@ void MediaMessageFilter::OnEstablishMediaChannel(
     CauseForMediaLaunch cause_for_media_launch,
     IPC::Message* reply_ptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  scoped_ptr<IPC::Message> reply(reply_ptr);
+  std::unique_ptr<IPC::Message> reply(reply_ptr);
 
   MediaProcessHost* host = MediaProcessHost::FromID(media_process_id_);
   if (!host) {
@@ -64,7 +64,7 @@ void MediaMessageFilter::OnEstablishMediaChannel(
 }
 
 void MediaMessageFilter::EstablishChannelCallback(
-    scoped_ptr<IPC::Message> reply,
+    std::unique_ptr<IPC::Message> reply,
     const IPC::ChannelHandle& channel) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DVLOG(1) << __FUNCTION__ << "(Media channel established)";

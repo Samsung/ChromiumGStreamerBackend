@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/child/blink_platform_impl.h"
@@ -79,7 +78,7 @@ class MediaChildThread : public ChildThreadImpl, public gpu::GpuChannelHostFacto
   // GpuChannelHostFactory implementation:
   bool IsMainThread() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner() override;
-  scoped_ptr<base::SharedMemory> AllocateSharedMemory(size_t size) override;
+  std::unique_ptr<base::SharedMemory> AllocateSharedMemory(size_t size) override;
 
   // Synchronously establish a channel to the GPU plugin if not previously
   // established or if it has been lost (for example if the GPU plugin crashed).
@@ -117,12 +116,12 @@ class MediaChildThread : public ChildThreadImpl, public gpu::GpuChannelHostFacto
   // GpuChannelHostFactory methods.
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner_;
 
-  scoped_ptr<base::Thread> gl_thread_;
+  std::unique_ptr<base::Thread> gl_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> gl_task_runner_;
 
   scoped_refptr<cc::ContextProvider> provider_;
 
-  scoped_ptr<content::BlinkPlatformImpl> blink_platform_;
+  std::unique_ptr<content::BlinkPlatformImpl> blink_platform_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaChildThread);
 };
