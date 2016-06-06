@@ -450,7 +450,7 @@ bool WebMediaPlayerGStreamer::UpdateCurrentFrame(base::TimeTicks deadline_min,
 
 bool WebMediaPlayerGStreamer::HasCurrentFrame() {
   base::AutoLock auto_lock(current_frame_lock_);
-  return current_frame_;
+  return static_cast<bool>(current_frame_);
 }
 
 scoped_refptr<media::VideoFrame> WebMediaPlayerGStreamer::GetCurrentFrame() {
@@ -512,8 +512,12 @@ void WebMediaPlayerGStreamer::OnSetCurrentFrame(
 
   // TODO: use ubercompositor to avoid inheriting from cc::VideoFrameProvider
   // and to avoid creating media::VideoFrame::WrapNativeTexture here.
-  scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapNativeTexture(
-      media::PIXEL_FORMAT_ARGB, gpu::MailboxHolder(mailbox, sync_token, target),
+  gpu::MailboxHolder holders[media::VideoFrame::kMaxPlanes] = {
+      gpu::MailboxHolder(mailbox, sync_token, target)};
+
+  scoped_refptr<media::VideoFrame> frame =
+      media::VideoFrame::WrapNativeTextures(
+      media::PIXEL_FORMAT_ARGB, holders,
       media::BindToCurrentLoop(base::Bind(
           &WebMediaPlayerGStreamer::OnReleaseTexture, AsWeakPtr(), texture_id)),
       gfx::Size(width, height), gfx::Rect(width, height),
