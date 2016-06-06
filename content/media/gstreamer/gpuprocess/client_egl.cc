@@ -44,11 +44,6 @@ bool ClientEGL_SetupCommandBufferProxy() {
     return false;
   }
 
-  if (gpu_ctrl->IsGpuChannelLost()) {
-    NOTREACHED() << "ClientEGL_SetupCommandBufferProxy, gpu channel is lost";
-    return false;
-  }
-
   gpu::CommandBufferProxyImpl* cmd_impl =
       static_cast<gpu::CommandBufferProxyImpl*>(gpu_ctrl);
 
