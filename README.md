@@ -191,28 +191,23 @@ git clone https://chromium.googlesource.com/chromium/chromium
 
 # fetch and sync all sub repos. (run all of this from chromium directory, not chromium/src)
 fetch --nohooks chromium # only the very first time
-git rebase-update
-gclient sync # see proxy section
-gclient runhooks # see proxy section
-build/install-build-deps.sh
 
 # go to chromium/src and build everything.
 cd src
+gclient sync # see proxy section
+gclient runhooks # see proxy section
 build/install-build-deps.sh
-ninja -C out/Release chrome
+use GYP or GN below
 
-# checkout Chromium GStreamer Backend
+# build Chromium GStreamer Backend
+cd src
 git remote add github_gstbackend https://github.com/Samsung/ChromiumGStreamerBackend
 git fetch github_gstbackend
 git checkout -b gstbackend --track github_gstbackend/master
 git replace f02f0f3341e753bfa512553db8c67f14eabc17cd ab317e073bd7b2cb74c405f23008d0a6d4db6270
-
-# build Chromium GStreamer Backend
-cd .. # to go to root chromium directory
-git rebase-update
 gclient sync # see proxy section
 gclient runhooks # see proxy section
-cd src
+use GYP or GN below
 
 # 2 ways to generate ninja build files:
 GYP (old but stable so we recommend it for now) and GN (new from a few months)
@@ -380,6 +375,9 @@ ninja -C out/Release media_blink_unittests
 
 # run all tests in "gpu" unit tests group that contains "GPUConfig"
 ./out/Release/gpu_unittests --gtest_filter=*GPUConfig* --single-process-tests
+
+# headless like none gpu try bots
+python testing/xvfb.py ./out/Release/ ./out/Release/views_unittests --gtest_filter=*WidgetTest.Transparency* --single-process
 ```
 
 ### Build and run browser tests ###
@@ -393,6 +391,10 @@ CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./content/test/gpu/run_gpu_test.
 
 # run browser tests with visible stdout
 CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox content/test/gpu/run_gpu_test.py --browser=release --show-stdout webgl_conformance
+
+# without sandbox
+./content/test/gpu/run_gpu_test.py --show-stdout --browser=release --extra-browser-args="--no-sandbox" gpu_process
+
 ```
 
 ### Build and run layout tests ###
@@ -401,7 +403,13 @@ CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox content/test/gpu/run_gpu_test.py
 ninja -C out/Debug content_shell
 
 # run
-./out/Debug/chrome --run-layout-test --no-sandbox inspector/network/network-domain-filter.html
+./out/Debug/chrome --run-layout-test --no-sandbox third_party/WebKit/LayoutTests/inspector/network/network-domain-filter.html
+./out/Release/chrome --run-layout-test --no-sandbox third_party/WebKit/LayoutTests/compositing/animation/animated-composited-inside-hidden.html
+
+# other way
+ninja -C out/Release blink_tests
+CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox python third_party/WebKit/Tools/Scripts/run-webkit-tests compositing
+CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox python third_party/WebKit/Tools/Scripts/run-webkit-tests --skipped=ignore --no-retry-failures plugins/can-create-without-renderer.html --driver-logging
 
 # official steps
 https://www.chromium.org/developers/testing/webkit-layout-tests
@@ -419,6 +427,7 @@ It should open a new tab in your browser starting by "localhost:8090" and after 
 Then you are ready to upload your patch by running "git cl upload".  
 To submit to a patch to an existing CL just type "git cl issue 1415793003" before uploading.  
 To make sure it creates a new CL just type "git cl issue 0".  
+To apply locally any CL just run git cl patch 1415793003.
 
 
 ### Issues and roadmap ###
