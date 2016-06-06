@@ -16,7 +16,7 @@
 #include "base/threading/thread.h"
 #include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/browser_child_process_host_impl.h"
-#include "content/browser/fileapi/chrome_blob_storage_context.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "storage/browser/fileapi/file_system_context.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/host_zoom_level_context.h"
