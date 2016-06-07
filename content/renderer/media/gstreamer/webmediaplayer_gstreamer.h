@@ -65,7 +65,7 @@ class WebMediaPlayerMessageDispatcher
   WebMediaPlayerMessageDispatcher(
       int player_id,
       base::WeakPtr<WebMediaPlayerGStreamer> player);
-  ~WebMediaPlayerMessageDispatcher();
+  ~WebMediaPlayerMessageDispatcher() override;
 
   void SendCreate();
   void SendLoad(GURL);
@@ -128,7 +128,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
       base::WeakPtr<WebMediaPlayerDelegate> delegate,
       blink::WebContentDecryptionModule* initial_cdm,
       MediaLog* media_log);
-  virtual ~WebMediaPlayerGStreamer();
+  ~WebMediaPlayerGStreamer() override;
 
   void SetVideoFrameProviderClient(
       cc::VideoFrameProvider::Client* client) override;
@@ -143,57 +143,57 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
             CORSMode cors_mode) override;
 
   // Playback controls.
-  virtual void play() override;
-  virtual void pause() override;
-  virtual bool supportsSave() const override;
-  virtual void seek(double seconds) override;
-  virtual void setRate(double rate) override;
-  virtual void setVolume(double volume) override;
-  virtual void setSinkId(const blink::WebString& sink_id,
+  void play() override;
+  void pause() override;
+  bool supportsSave() const override;
+  void seek(double seconds) override;
+  void setRate(double rate) override;
+  void setVolume(double volume) override;
+  void setSinkId(const blink::WebString& sink_id,
                          const blink::WebSecurityOrigin& security_origin,
                          blink::WebSetSinkIdCallbacks* web_callback) override;
-  virtual void setPreload(blink::WebMediaPlayer::Preload preload) override;
-  virtual blink::WebTimeRanges buffered() const override;
-  virtual blink::WebTimeRanges seekable() const override;
+  void setPreload(blink::WebMediaPlayer::Preload preload) override;
+  blink::WebTimeRanges buffered() const override;
+  blink::WebTimeRanges seekable() const override;
 
   // Methods for painting.
-  virtual void paint(blink::WebCanvas* canvas,
+  void paint(blink::WebCanvas* canvas,
                      const blink::WebRect& rect,
                      unsigned char alpha,
                      SkXfermode::Mode mode) override;
 
   // True if the loaded media has a playable video/audio track.
-  virtual bool hasVideo() const override;
-  virtual bool hasAudio() const override;
+  bool hasVideo() const override;
+  bool hasAudio() const override;
 
   // Dimensions of the video.
-  virtual blink::WebSize naturalSize() const override;
+  blink::WebSize naturalSize() const override;
 
   // Getters of playback state.
-  virtual bool paused() const override;
-  virtual bool seeking() const override;
-  virtual double duration() const override;
-  virtual double timelineOffset() const;
-  virtual double currentTime() const override;
+  bool paused() const override;
+  bool seeking() const override;
+  double duration() const override;
+  double timelineOffset() const;
+  double currentTime() const override;
 
   // Internal states of loading and network.
-  virtual blink::WebMediaPlayer::NetworkState getNetworkState() const override;
-  virtual blink::WebMediaPlayer::ReadyState getReadyState() const override;
+  blink::WebMediaPlayer::NetworkState getNetworkState() const override;
+  blink::WebMediaPlayer::ReadyState getReadyState() const override;
 
   blink::WebString getErrorMessage() override;
-  virtual bool didLoadingProgress() override;
+  bool didLoadingProgress() override;
 
-  virtual bool hasSingleSecurityOrigin() const override;
-  virtual bool didPassCORSAccessCheck() const override;
+  bool hasSingleSecurityOrigin() const override;
+  bool didPassCORSAccessCheck() const override;
 
-  virtual double mediaTimeForTimeValue(double timeValue) const override;
+  double mediaTimeForTimeValue(double timeValue) const override;
 
-  virtual unsigned decodedFrameCount() const override;
-  virtual unsigned droppedFrameCount() const override;
-  virtual size_t audioDecodedByteCount() const override;
-  virtual size_t videoDecodedByteCount() const override;
+  unsigned decodedFrameCount() const override;
+  unsigned droppedFrameCount() const override;
+  size_t audioDecodedByteCount() const override;
+  size_t videoDecodedByteCount() const override;
 
-  virtual void setContentDecryptionModule(
+  void setContentDecryptionModule(
       blink::WebContentDecryptionModule* cdm,
       blink::WebContentDecryptionModuleResult result) override;
 
@@ -289,7 +289,7 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   blink::WebMediaPlayer::ReadyState ready_state_;
 
   // Preload state for when |data_source_| is created after setPreload().
-  BufferedDataSource::Preload preload_;
+  // BufferedDataSource::Preload preload_;
 
   // Task runner for posting tasks on Chrome's main thread. Also used
   // for DCHECKs so methods calls won't execute in the wrong thread.

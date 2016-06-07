@@ -28,16 +28,17 @@ class WebMediaSourceGStreamer : public blink::WebMediaSource {
   WebMediaSourceGStreamer(WebMediaPlayerGStreamer* player,
                           WebMediaPlayerMessageDispatcher* message_dispatcher,
                           const SetNetworkStateCB& set_network_state_cb);
-  virtual ~WebMediaSourceGStreamer();
+  ~WebMediaSourceGStreamer() override;
 
   // blink::WebMediaSource implementation.
-  virtual AddStatus addSourceBuffer(const blink::WebString& type,
+  AddStatus addSourceBuffer(const blink::WebString& type,
                                     const blink::WebString& codecs,
-                                    blink::WebSourceBuffer** source_buffer);
-  virtual double duration();
-  virtual void setDuration(double duration);
-  virtual void markEndOfStream(EndOfStreamStatus status);
-  virtual void unmarkEndOfStream();
+                                    blink::WebSourceBuffer** source_buffer)
+                                    override;
+  double duration() override;
+  void setDuration(double duration) override;
+  void markEndOfStream(EndOfStreamStatus status) override;
+  void unmarkEndOfStream() override;
 
   void OnAddSourceId(const std::string& id);
   void OnRemoveSourceId(const std::string& id);

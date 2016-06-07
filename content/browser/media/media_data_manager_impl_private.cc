@@ -97,8 +97,7 @@ MediaDataManagerImplPrivate* MediaDataManagerImplPrivate::Create(
 MediaDataManagerImplPrivate::MediaDataManagerImplPrivate(
     MediaDataManagerImpl* owner)
     : observer_list_(new MediaDataManagerObserverList),
-      owner_(owner),
-      finalized_(false) {
+      owner_(owner) {
   DCHECK(owner_);
   /*
     const base::CommandLine* command_line =
