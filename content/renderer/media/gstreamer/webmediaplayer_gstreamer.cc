@@ -357,7 +357,7 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
       frame_(frame),
       network_state_(WebMediaPlayer::NetworkStateEmpty),
       ready_state_(WebMediaPlayer::ReadyStateHaveNothing),
-      preload_(BufferedDataSource::AUTO),
+      //preload_(BufferedDataSource::AUTO),
       main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       media_log_(media_log),
       load_type_(LoadTypeURL),

@@ -19,23 +19,23 @@ class WebSourceBufferGStreamer : public blink::WebSourceBuffer {
  public:
   WebSourceBufferGStreamer(const std::string& id,
                            WebMediaPlayerMessageDispatcher* message_dispatcher);
-  virtual ~WebSourceBufferGStreamer();
+  ~WebSourceBufferGStreamer() override;
 
   // blink::WebSourceBuffer implementation.
-  virtual void setClient(blink::WebSourceBufferClient* client);
-  virtual bool setMode(AppendMode mode);
-  virtual blink::WebTimeRanges buffered();
-  virtual bool evictCodedFrames(double currentPlaybackTime, size_t newDataSize);
-  virtual void append(const unsigned char* data,
+  void setClient(blink::WebSourceBufferClient* client) override;
+  bool setMode(AppendMode mode) override;
+  blink::WebTimeRanges buffered() override;
+  bool evictCodedFrames(double currentPlaybackTime, size_t newDataSize)
+                                override;
+  void append(const unsigned char* data,
                       unsigned length,
-                      double* timestamp_offset);
-  virtual void abort();
-  virtual void resetParserState();
-  virtual void remove(double start, double end);
-  virtual bool setTimestampOffset(double offset);
-  virtual void setAppendWindowStart(double start);
-  virtual void setAppendWindowEnd(double end);
-  virtual void removedFromMediaSource();
+                      double* timestamp_offset) override;
+  void resetParserState() override;
+  void remove(double start, double end) override;
+  bool setTimestampOffset(double offset) override;
+  void setAppendWindowStart(double start) override;
+  void setAppendWindowEnd(double end) override;
+  void removedFromMediaSource() override;
 
   void OnInitSegmentReceived();
   void OnBufferedRangeUpdate(const Ranges<base::TimeDelta>& ranges);

@@ -44,7 +44,6 @@ class CONTENT_EXPORT MediaPlayerChannelFilter : public IPC::MessageFilter {
                      base::WaitableEvent* shutdown_event,
                      IPC::SyncChannel* channel,
                      MediaPlayerGStreamerFactory* media_player_factory);
-  ~MediaPlayerChannelFilter() override;
 
   // Remove the channel for a particular renderer.
   void RemoveChannel(int client_id);
@@ -65,6 +64,8 @@ class CONTENT_EXPORT MediaPlayerChannelFilter : public IPC::MessageFilter {
 
  private:
   typedef base::ScopedPtrHashMap<int, std::unique_ptr<MediaPlayerChannel>> MediaChannelMap;
+
+  ~MediaPlayerChannelFilter() override;
 
   // Message handlers.
   void OnEstablishChannel(int client_id);

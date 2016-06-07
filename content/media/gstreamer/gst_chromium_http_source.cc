@@ -44,6 +44,13 @@ using GUniquePtr = std::unique_ptr<T, GPtrDeleter<T>>;
 
 WTF_DEFINE_GPTR_DELETER(GstStructure, gst_structure_free)
 
+namespace content {
+
+GStreamerBufferedDataSource::~GStreamerBufferedDataSource() {}
+
+GStreamerBufferedDataSourceFactory::~GStreamerBufferedDataSourceFactory() {}
+}
+
 struct _ChromiumHttpSrcPrivate {
   gchar* uri_;
   bool keepAlive_;
