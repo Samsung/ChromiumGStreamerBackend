@@ -150,17 +150,17 @@ class MEDIA_EXPORT WebMediaPlayerGStreamer
   void setRate(double rate) override;
   void setVolume(double volume) override;
   void setSinkId(const blink::WebString& sink_id,
-                         const blink::WebSecurityOrigin& security_origin,
-                         blink::WebSetSinkIdCallbacks* web_callback) override;
+                 const blink::WebSecurityOrigin& security_origin,
+                 blink::WebSetSinkIdCallbacks* web_callback) override;
   void setPreload(blink::WebMediaPlayer::Preload preload) override;
   blink::WebTimeRanges buffered() const override;
   blink::WebTimeRanges seekable() const override;
 
   // Methods for painting.
   void paint(blink::WebCanvas* canvas,
-                     const blink::WebRect& rect,
-                     unsigned char alpha,
-                     SkXfermode::Mode mode) override;
+             const blink::WebRect& rect,
+             unsigned char alpha,
+             SkXfermode::Mode mode) override;
 
   // True if the loaded media has a playable video/audio track.
   bool hasVideo() const override;
