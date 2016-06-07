@@ -82,8 +82,8 @@ class MEDIA_EXPORT AesDecryptor : public MediaKeys,
   void ResetDecoder(StreamType stream_type) override;
   void DeinitializeDecoder(StreamType stream_type) override;
 #if defined(USE_GSTREAMER)
-  virtual void EnableDecryptionProxy(const KeysChangeCB& keys_change_cb) override;
-  virtual bool IsDecryptorProxy() override;
+  void EnableDecryptionProxy(const KeysChangeCB& keys_change_cb) override;
+  bool IsDecryptorProxy() override;
 #endif
 
  private:

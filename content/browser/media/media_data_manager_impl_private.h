@@ -72,9 +72,6 @@ class CONTENT_EXPORT MediaDataManagerImplPrivate {
 
   MediaDataManagerImpl* owner_;
 
-  // True if all future Initialize calls should be ignored.
-  bool finalized_;
-
   DISALLOW_COPY_AND_ASSIGN(MediaDataManagerImplPrivate);
 };
 

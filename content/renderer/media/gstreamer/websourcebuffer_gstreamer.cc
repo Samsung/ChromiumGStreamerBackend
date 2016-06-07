@@ -123,10 +123,6 @@ void WebSourceBufferGStreamer::append(const unsigned char* data,
     *timestamp_offset = timestamp_offset_.InSecondsF();
 }
 
-void WebSourceBufferGStreamer::abort() {
-  resetParserState();
-}
-
 void WebSourceBufferGStreamer::resetParserState() {
   message_dispatcher_->SendAbort(id_);
 }

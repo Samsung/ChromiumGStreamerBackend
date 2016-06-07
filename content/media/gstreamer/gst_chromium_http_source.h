@@ -55,6 +55,8 @@ class GStreamerBufferedDataSource {
   GStreamerBufferedDataSource(GURL url,
                               media::BufferedResourceLoader::CORSMode cors_mode,
                               ChromiumHttpSrc* src);
+  ~GStreamerBufferedDataSource();
+
   media::BufferedDataSourceHostImpl* buffered_data_source_host() {
     return &buffered_data_source_host_;
   }
@@ -68,6 +70,7 @@ class GStreamerBufferedDataSource {
 class GStreamerBufferedDataSourceFactory {
  public:
   GStreamerBufferedDataSourceFactory();
+  ~GStreamerBufferedDataSourceFactory();
   void create(gchar* uri,
               media::BufferedResourceLoader::CORSMode cors_mode,
               ChromiumHttpSrc* src);
