@@ -25,11 +25,11 @@ class WebSourceBufferGStreamer : public blink::WebSourceBuffer {
   void setClient(blink::WebSourceBufferClient* client) override;
   bool setMode(AppendMode mode) override;
   blink::WebTimeRanges buffered() override;
-  bool evictCodedFrames(double currentPlaybackTime, size_t newDataSize)
-                                override;
+  bool evictCodedFrames(double currentPlaybackTime,
+                        size_t newDataSize) override;
   void append(const unsigned char* data,
-                      unsigned length,
-                      double* timestamp_offset) override;
+              unsigned length,
+              double* timestamp_offset) override;
   void resetParserState() override;
   void remove(double start, double end) override;
   bool setTimestampOffset(double offset) override;
