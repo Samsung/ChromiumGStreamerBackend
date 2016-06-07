@@ -32,9 +32,8 @@ class WebMediaSourceGStreamer : public blink::WebMediaSource {
 
   // blink::WebMediaSource implementation.
   AddStatus addSourceBuffer(const blink::WebString& type,
-                                    const blink::WebString& codecs,
-                                    blink::WebSourceBuffer** source_buffer)
-                                    override;
+                            const blink::WebString& codecs,
+                            blink::WebSourceBuffer** source_buffer) override;
   double duration() override;
   void setDuration(double duration) override;
   void markEndOfStream(EndOfStreamStatus status) override;
