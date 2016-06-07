@@ -721,10 +721,8 @@ void GpuDataManagerImplPrivate::AppendGpuCommandLine(
   }
 #if defined(USE_GSTREAMER)
   else {
-    // TODO: use kGLImplementationEGLName (egl/gles2, --use-gl=egl)
-    // Set to default for now (i.e. glx, --use-gl=desktop).
     command_line->AppendSwitchASCII(switches::kUseGL,
-                                    gl::kGLImplementationDesktopName);
+                                    gl::kGLImplementationEGLName);
   }
 #endif
 
