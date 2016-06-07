@@ -29,12 +29,6 @@ bool GLImageEGL::Initialize(EGLenum target,
                             const EGLint* attrs) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_EQ(EGL_NO_IMAGE_KHR, egl_image_);
-  egl_image_ = eglCreateImageKHR(GLSurfaceEGL::GetHardwareDisplay(),
-                                 EGL_NO_CONTEXT, target, buffer, attrs);
-  if (egl_image_ == EGL_NO_IMAGE_KHR) {
-    DLOG(ERROR) << "Error creating EGLImage: " << ui::GetLastEGLErrorString();
-    return false;
-  }
 
 #if defined(USE_GSTREAMER)
   dmabuf_fds_.clear();
@@ -48,6 +42,13 @@ bool GLImageEGL::Initialize(EGLenum target,
     }
   }
 #endif
+
+  egl_image_ = eglCreateImageKHR(GLSurfaceEGL::GetHardwareDisplay(),
+                                 EGL_NO_CONTEXT, target, buffer, attrs);
+  if (egl_image_ == EGL_NO_IMAGE_KHR) {
+    DLOG(ERROR) << "Error creating EGLImage: " << ui::GetLastEGLErrorString();
+    return false;
+  }
 
   return true;
 }
