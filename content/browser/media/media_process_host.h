@@ -34,6 +34,7 @@ struct ChannelHandle;
 namespace content {
 class BrowserChildProcessHostImpl;
 class MediaMainThread;
+class MojoApplicationHost;
 class RenderWidgetHelper;
 class InProcessChildThreadParams;
 
@@ -99,6 +100,9 @@ class MediaProcessHost : public BrowserChildProcessHostDelegate,
 
   CONTENT_EXPORT static void RegisterMediaMainThreadFactory(
       MediaMainThreadFactoryFunction create);
+
+  // BrowserChildProcessHostDelegate implementation.
+  ServiceRegistry* GetServiceRegistry() override;
 
   // Get the media process host for the media process with the given ID. Returns
   // null if the process no longer exists.
@@ -195,6 +199,11 @@ class MediaProcessHost : public BrowserChildProcessHostDelegate,
   // away, it posts a task to the IO thread to destroy it there, so we know that
   // it's valid if non-NULL.
   GpuMessageFilter* gpu_message_filter_;
+
+  // Browser-side Mojo endpoint which sets up a Mojo channel with the child
+  // process and contains the browser's ServiceRegistry.
+  const std::string child_token_;
+  std::unique_ptr<MojoApplicationHost> mojo_application_host_;
 
   // TODO: because of assert in debug mode we had to split weak factory for UI
   // and IO threads.
