@@ -89,7 +89,7 @@ bool WebSourceBufferGStreamer::evictCodedFrames(double currentPlaybackTime,
   return true;
 }
 
-void WebSourceBufferGStreamer::append(const unsigned char* data,
+bool WebSourceBufferGStreamer::append(const unsigned char* data,
                                       unsigned length,
                                       double* timestamp_offset) {
   if (initialization_segment_received) {
@@ -121,6 +121,8 @@ void WebSourceBufferGStreamer::append(const unsigned char* data,
   // more than microsecond precision.
   if (timestamp_offset && old_offset != timestamp_offset_)
     *timestamp_offset = timestamp_offset_.InSecondsF();
+
+  return true;
 }
 
 void WebSourceBufferGStreamer::resetParserState() {
