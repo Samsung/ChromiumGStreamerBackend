@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/arc/common",
+  "+content/public/gpu",
+  "+media/video",
+  "+media/base/video_frame.h",
+  "+mojo/edk/embedder",
+  "+services/shell/public/cpp",
+]

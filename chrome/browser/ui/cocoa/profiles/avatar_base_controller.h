@@ -1,0 +1,59 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_COCOA_PROFILES_AVATAR_BASE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_COCOA_PROFILES_AVATAR_BASE_CONTROLLER_H_
+
+#import <AppKit/AppKit.h>
+
+#include <memory>
+
+#import "base/mac/scoped_nsobject.h"
+#include "chrome/browser/ui/browser_window.h"
+#import "chrome/browser/ui/cocoa/has_weak_browser_pointer.h"
+#include "components/signin/core/browser/signin_header_helper.h"
+
+@class BaseBubbleController;
+class Browser;
+class ProfileAttributesUpdateObserver;
+
+// This view controller manages the button that sits in the top of the
+// window frame when using multi-profiles, and shows information about the
+// current profile. Clicking the button will open the profile menu.
+@interface AvatarBaseController : NSViewController<HasWeakBrowserPointer> {
+ @protected
+  Browser* browser_;
+
+  // The avatar button. Child classes are responsible for implementing it.
+  base::scoped_nsobject<NSButton> button_;
+
+ @private
+  // The menu controller, if the menu is open.
+  BaseBubbleController* menuController_;
+
+  // Observer that listens for updates to the ProfileAttributesStorage.
+  std::unique_ptr<ProfileAttributesUpdateObserver> profileAttributesObserver_;
+}
+
+// The avatar button view.
+@property(readonly, nonatomic) NSButton* buttonView;
+
+// Designated initializer.
+- (id)initWithBrowser:(Browser*)browser;
+
+// Shows the avatar bubble in the given mode.
+- (void)showAvatarBubbleAnchoredAt:(NSView*)anchor
+                          withMode:(BrowserWindow::AvatarBubbleMode)mode
+                   withServiceType:(signin::GAIAServiceType)serviceType
+                   fromAccessPoint:(signin_metrics::AccessPoint)accessPoint;
+
+@end
+
+@interface AvatarBaseController (ExposedForTesting)
+- (BaseBubbleController*)menuController;
+
+- (BOOL)isCtrlPressed;
+@end
+
+#endif  // CHROME_BROWSER_UI_COCOA_PROFILES_AVATAR_BASE_CONTROLLER_H_

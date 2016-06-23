@@ -1,0 +1,45 @@
+<html>
+<head>
+<script src="../inspector-test.js"></script>
+<script src="../resources-test.js"></script>
+<script src="resource-tree-test.js"></script>
+
+<link rel="stylesheet" href="resources/styles-initial.css">
+
+<script>
+function createIframe()
+{
+    var iframe = document.createElement("iframe");
+    iframe.setAttribute("src", "resources/resource-tree-frame-add-iframe.html");
+    document.body.appendChild(iframe);
+}
+
+function test()
+{
+    InspectorTest.addResult("Before addition");
+    InspectorTest.addResult("====================================");
+    InspectorTest.dumpResourceTreeEverything();
+    InspectorTest.addConsoleSniffer(step2);
+    InspectorTest.evaluateInPage("createIframe()");
+
+    function step2()
+    {
+        InspectorTest.addResult("");
+        InspectorTest.addResult("After addition");
+        InspectorTest.addResult("====================================");
+        InspectorTest.dumpResourceTreeEverything();
+        InspectorTest.completeTest();
+    }
+}
+
+</script>
+
+</head>
+
+<body onload="runTest()">
+<p>
+Tests resource tree model on iframe addition, compares resource tree against golden. Every line is important.
+</p>
+
+</body>
+</html>

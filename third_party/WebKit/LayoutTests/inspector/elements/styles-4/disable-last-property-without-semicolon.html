@@ -1,0 +1,102 @@
+<html>
+<head>
+
+<script src="../../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../../http/tests/inspector/elements-test.js"></script>
+<script>
+
+function test()
+{
+    var formattedStyle;
+
+    InspectorTest.cssModel.addEventListener(WebInspector.CSSModel.Events.StyleSheetChanged, onStyleSheetChanged, this);
+
+    function onStyleSheetChanged(event)
+    {
+        if (!event.data || !event.data.edit)
+            return;
+        formattedStyle.rebase(event.data.edit);
+    }
+
+    InspectorTest.runTestSuite([
+        function initFormattedStyle(next)
+        {
+            function callback(matchedResult)
+            {
+                if (!matchedResult) {
+                    InspectorTest.addResult("empty styles");
+                    InspectorTest.completeTest();
+                    return;
+                }
+
+                formattedStyle = matchedResult.nodeStyles()[1];
+                next();
+            }
+
+            function nodeCallback(node)
+            {
+                InspectorTest.cssModel.matchedStylesPromise(node.id, false, false).then(callback);
+            }
+            InspectorTest.selectNodeWithId("formatted", nodeCallback);
+        },
+
+        function testFormattedDisableLast(next)
+        {
+            formattedStyle.allProperties[1].setDisabled(true)
+                .then(dumpFormattedAndCallNext.bind(null, next));
+        },
+
+        function testFormattedInsertEnd(next)
+        {
+            formattedStyle.insertPropertyAt(2, "endProperty", "endValue", dumpFormattedAndCallNext.bind(null, next));
+        },
+
+        function testFormattedEnable(next)
+        {
+            formattedStyle.allProperties[1].setDisabled(false)
+                .then(dumpFormattedAndCallNext.bind(null, next));
+        },
+    ]);
+
+    // Data dumping
+
+    function dumpFormattedAndCallNext(next, success)
+    {
+        if (!success) {
+            InspectorTest.addResult("error: operation failed.");
+            InspectorTest.completeTest();
+            return;
+        }
+
+        dumpStyle(formattedStyle);
+        if (next)
+            next();
+    }
+
+    function dumpStyle(style)
+    {
+        if (!style)
+            return;
+        InspectorTest.addResult("raw cssText:");
+        InspectorTest.addResult("{" + style.cssText + "}");
+    }
+}
+</script>
+
+<style>
+
+#formatted { 
+    color: red;
+    margin: 0
+}
+
+</style>
+</head>
+
+<body id="mainBody" onload="runTest()">
+<p>
+Verifies that formatter adds a semicolon when enabling property.
+</p>
+<div id="formatted">Formatted</div>
+</body>
+</html>

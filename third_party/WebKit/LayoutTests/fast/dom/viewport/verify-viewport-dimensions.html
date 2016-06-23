@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<script src="../../../resources/js-test.js"></script>
+<style>
+    body {
+        height: 2000px;
+        width: 2000px;
+    }
+    ::-webkit-scrollbar {
+      width: 0px;
+      height: 0px;
+    }
+</style>
+
+<script>
+    window.jsTestIsAsync = true;
+
+    description("This test verifies the dimensions of the visual viewport \
+        returned by the JS visual viewport API.");
+
+    function runTest() {
+        if (!window.eventSender || !window.internals) {
+            finishJSTest();
+            return;
+        }
+
+        // Turn off smooth scrolling.
+        internals.settings.setScrollAnimatorEnabled(false);
+
+        // Scroll both viewports.
+        eventSender.mouseMoveTo(100, 100);
+        eventSender.continuousMouseScrollBy(100, 100);
+
+        debug("    **** Initial visual viewport dimensions *****");
+        shouldBe("window.visualViewport.scrollTop", "0");
+        shouldBe("window.visualViewport.scrollLeft", "0");
+        shouldBe("window.visualViewport.clientWidth", "800");
+        shouldBe("window.visualViewport.clientHeight", "600");
+        shouldBe("window.visualViewport.pageScale", "1");
+
+        // Scale and scroll visual viewport.
+        internals.setPageScaleFactor(2);
+        internals.setVisualViewportOffset(10, 10);
+
+        debug("    **** Viewport dimensions after scale and scroll *****");
+        shouldBe("window.visualViewport.scrollTop", "10");
+        shouldBe("window.visualViewport.scrollLeft", "10");
+        shouldBe("window.visualViewport.clientWidth", "400");
+        shouldBe("window.visualViewport.clientHeight", "300");
+        shouldBe("window.visualViewport.pageScale", "2");
+
+        window.visualViewport.scrollTop = 20;
+        window.visualViewport.scrollLeft = 0;
+        debug("    **** Writable viewport dimensions *****");
+        shouldBe("window.visualViewport.scrollTop", "20");
+        shouldBe("window.visualViewport.scrollLeft", "0");
+        window.visualViewport.scrollTop = -20;
+        shouldBe("window.visualViewport.scrollTop", "0");
+        window.visualViewport.scrollTop = 20.5;
+        shouldBe("window.visualViewport.scrollTop", "20.5");
+
+        finishJSTest();
+    }
+</script>
+
+<body onload="runTest()"></body>

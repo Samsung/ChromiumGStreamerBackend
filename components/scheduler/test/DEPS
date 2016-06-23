@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/scheduler/base",
+  "+components/scheduler/child",
+  "+components/scheduler/renderer",
+]

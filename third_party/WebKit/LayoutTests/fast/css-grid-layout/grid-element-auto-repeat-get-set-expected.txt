@@ -1,0 +1,62 @@
+Test that setting/getting grid-template-{columns|rows} with repeat(auto-fill|auto-fit,) works as expected
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+Test auto-repeat syntax.
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "[foo bar] 200px [foo bar] 200px [foo bar] 200px [foo bar] 200px"
+PASS element.style.gridTemplateColumns is "repeat(auto-fill, [foo bar] 200px)"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "200px [foo bar] 200px [foo bar] 200px [foo bar]"
+PASS element.style.gridTemplateRows is "repeat(auto-fill, 20em [foo bar])"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "[foo bar] 400px [foo bar] 400px"
+PASS element.style.gridTemplateColumns is "repeat(auto-fill, [foo bar] minmax(300px, 1fr))"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "[foo] 175px [bar foo] 175px [bar foo] 175px [bar]"
+PASS element.style.gridTemplateRows is "repeat(auto-fill, [foo] minmax(175px, max-content) [bar])"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "100px 100px 100px 250px 250px"
+PASS element.style.gridTemplateColumns is "repeat(auto-fill, minmax(50px, 100px)) 250px 250px"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "450px 50px [bar] 50px [bar foo] 10px [foo] 10px"
+PASS element.style.gridTemplateRows is "450px repeat(auto-fill, minmax(max-content, 5em) [bar]) [foo] 1em [foo] 1em"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "[start] 80px [foo bar] 200px [foo bar] 200px [foo bar] 200px [end]"
+PASS element.style.gridTemplateColumns is "[start] 10% repeat(auto-fill, [foo bar] 200px) [end]"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "75px [prev] 200px [foo bar next] 150px [last end]"
+PASS element.style.gridTemplateRows is "75px [prev] repeat(auto-fill, 20em [foo bar]) [next] 15em [last end]"
+FAIL getComputedStyle(element, '').getPropertyValue('grid-template-columns') should be none. Was [foo bar] 150px [foo bar] 150px [foo bar] 150px [foo bar] 150px [foo bar] 150px.
+PASS element.style.gridTemplateColumns is "repeat(auto-fit, [foo bar] 150px)"
+FAIL getComputedStyle(element, '').getPropertyValue('grid-template-rows') should be none. Was 240px [foo bar] 240px [foo bar].
+PASS element.style.gridTemplateRows is "repeat(auto-fit, 24em [foo bar])"
+FAIL getComputedStyle(element, '').getPropertyValue('grid-template-columns') should be none. Was [foo bar] 400px [foo bar] 400px.
+PASS element.style.gridTemplateColumns is "repeat(auto-fit, [foo bar] minmax(270px, 1fr))"
+FAIL getComputedStyle(element, '').getPropertyValue('grid-template-rows') should be none. Was [foo] 200px [bar foo] 200px [bar foo] 200px [bar].
+PASS element.style.gridTemplateRows is "repeat(auto-fit, [foo] minmax(20em, max-content) [bar])"
+FAIL getComputedStyle(element, '').getPropertyValue('grid-template-columns') should be 20px 20px. Was 300px 300px 20px 20px.
+PASS element.style.gridTemplateColumns is "repeat(auto-fit, minmax(300px, min-content)) 20px 20px"
+FAIL getComputedStyle(element, '').getPropertyValue('grid-template-rows') should be 60px [foo] 10px [foo] 10px. Was 60px 300px [bar foo] 10px [foo] 10px.
+PASS element.style.gridTemplateRows is "10% repeat(auto-fit, minmax(30em, max-content) [bar]) [foo] 1em [foo] 1em"
+
+Test invalid repeat syntax.
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

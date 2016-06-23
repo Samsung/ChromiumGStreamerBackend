@@ -1,0 +1,190 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [10, 132, 292, 144],
+          "reason": "forced by layout"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [10, 281, 292, 50],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [10, 132, 242, 180],
+          "reason": "forced by layout"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [10, 317, 242, 50],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutTableCell TD id='col1'",
+          "rect": [10, 331, 242, 36],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [9, 276, 241, 36],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutTableCell TD id='target'",
+          "rect": [254, 132, 52, 235],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutTableCell TD id='col1'",
+          "rect": [252, 132, 50, 199],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [250, 132, 36, 144],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'Curabitur pretium, quam quis semper'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'malesuada, est libero feugiat libero, vel'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'fringilla orci nibh sed neque. Quisque eu'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'nulla non nisi molestie accumsan. Etiam'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'tellus urna, laoreet ac, laoreet non, suscipit'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'sed, sapien. Phasellus vehicula, sem at'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'posuere vehicula, augue nibh molestie nisl,'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'nec ullamcorper lacus ante vulputate pede.'",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutTableCell TD id='col1'",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutBlockFlow DIV",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'Curabitur pretium, quam quis semper'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'malesuada, est libero feugiat libero,'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'vel fringilla orci nibh sed neque.'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'Quisque eu nulla non nisi molestie'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'accumsan. Etiam tellus urna, laoreet'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'ac, laoreet non, suscipit sed, sapien.'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'Phasellus vehicula, sem at posuere'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'vehicula, augue nibh molestie nisl,'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'nec ullamcorper lacus ante vulputate'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'pede.'",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutBlockFlow DIV",
+      "reason": "bounds change"
+    },
+    {
+      "object": "LayoutTableCell TD id='target'",
+      "reason": "bounds change"
+    }
+  ]
+}
+

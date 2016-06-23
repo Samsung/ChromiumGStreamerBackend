@@ -1,0 +1,38 @@
+<html>
+<head>
+<script src="../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../http/tests/inspector/debugger-test.js"></script>
+<script src="../../http/tests/inspector/workspace-test.js"></script>
+<script>
+function test()
+{
+    var contentScriptsNavigatorView = new WebInspector.ContentScriptsNavigatorView();
+    contentScriptsNavigatorView.setWorkspace(WebInspector.workspace);
+    contentScriptsNavigatorView.show(WebInspector.inspectorView.element);
+
+    var mockExecutionContext = {
+        id: 1234567,
+        isDefault: false,
+        origin: "chrome-extension://113581321345589144",
+        name: "FibExtension"
+    };
+    var mockContentScriptURL = mockExecutionContext.origin + "/script.js";
+
+    InspectorTest.runTestSuite([
+        function testAddExecutionContextBeforeFile(next)
+        {
+            InspectorTest.runtimeModel._executionContextCreated(mockExecutionContext);
+            var contentProvider = WebInspector.StaticContentProvider.fromString(mockContentScriptURL, WebInspector.resourceTypes.Script, "");
+            WebInspector.NetworkProject.forTarget(InspectorTest.mainTarget).addFile(contentProvider, InspectorTest.mainFrame(), true);
+            InspectorTest.dumpNavigatorView(contentScriptsNavigatorView);
+            next();
+        },
+    ]);
+}
+
+</script>
+</head>
+<body onload="runTest()">
+<p>The test verifies that extension names are resolved properly in navigator view.</p>
+</body>
+</html>

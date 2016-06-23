@@ -1,0 +1,24 @@
+CONSOLE ERROR: line 12: Uncaught (in promise) Error: Handled error
+CONSOLE ERROR: line 12: Uncaught (in promise) Error: Handled error
+CONSOLE ERROR: line 12: Uncaught (in promise) Error: Handled error
+CONSOLE MESSAGE: Handler added to rejected promise
+CONSOLE MESSAGE: Handler added to rejected promise
+Tests that console revokes lazily handled promise rejections.
+
+Creating promise
+Message added: error log
+Message added: error log
+Message added: error log
+
+3 errors
+console-message-wrapper console-error-level
+console-message-wrapper console-error-level
+console-message-wrapper console-error-level
+
+Handling promise
+1 error
+2 handled promise rejections
+console-message-wrapper console-revokedError-level
+console-message-wrapper console-error-level
+console-message-wrapper console-revokedError-level
+

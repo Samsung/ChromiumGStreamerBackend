@@ -1,0 +1,50 @@
+<html>
+<head>
+<script src="../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../http/tests/inspector/elements-test.js"></script>
+<script>
+function startAnimation()
+{
+    player = node.animate([], { duration: 200, delay: 100 });
+}
+
+var initialize_Animations = function() {
+
+    InspectorTest.preloadModule("animation");
+}
+
+function test()
+{
+    InspectorTest.addSniffer(WebInspector.TabbedPane.prototype, "changeTabView", onChangeTabView, true);
+    WebInspector.inspectorView.showViewInDrawer("animations", true);
+    var timeline;
+
+    function onChangeTabView(id, view)
+    {
+        if (!timeline && id === "animations") {
+            timeline = view;
+            InspectorTest.assertTrue(timeline instanceof WebInspector.AnimationTimeline);
+            InspectorTest.evaluateInPage("startAnimation()");
+            InspectorTest.addSniffer(WebInspector.AnimationModel.prototype, "animationStarted", animationStarted);
+        }
+    }
+
+    function animationStarted()
+    {
+        InspectorTest.addResult(timeline._previewMap.size);
+        InspectorTest.completeTest();
+    }
+}
+
+</script>
+</head>
+
+<body onload="runTest()">
+<p>
+Tests the empty web animations do not show up in animation timeline.
+</p>
+
+<div id="node" style="background-color: red; height: 100px"></div>
+
+</body>
+</html>

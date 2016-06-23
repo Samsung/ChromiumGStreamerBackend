@@ -1,0 +1,10 @@
+AXWebArea
+++AXGroup
+++++AXGroup AXDescription='Browser Engines:' AXTitleUIElement='AXGroup'
+++++++AXGroup
+++++++++AXStaticText AXValue='Browser Engines:'
+++++++AXGroup
+++++++++AXStaticText AXValue='Browser: '
+++++++++AXTextField
+++++++++AXStaticText AXValue=' Rendering Engine: '
+++++++++AXTextField

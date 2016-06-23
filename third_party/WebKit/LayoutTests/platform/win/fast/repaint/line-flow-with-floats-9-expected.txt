@@ -1,0 +1,115 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow HTML",
+          "rect": [0, 0, 500, 600],
+          "reason": "forced by layout"
+        },
+        {
+          "object": "LayoutView #document",
+          "rect": [0, 0, 485, 600],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutBlockFlow P",
+          "rect": [8, 569, 418, 21],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow P",
+          "rect": [8, 572, 418, 18],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [14, 494, 406, 90],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [14, 476, 406, 90],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [14, 440, 355, 53],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [14, 422, 355, 53],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [14, 404, 355, 36],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [14, 404, 354, 36],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [65, 386, 304, 18],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [65, 368, 304, 18],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [65, 386, 303, 36],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [178, 350, 146, 18],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [65, 368, 145, 18],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) SPAN id='greenFloat'",
+          "rect": [372, 389, 48, 81],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) SPAN id='greenFloat'",
+          "rect": [372, 371, 48, 81],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) SPAN id='yellowFloat'",
+          "rect": [372, 245, 48, 49],
+          "reason": "layoutObject insertion"
+        },
+        {
+          "object": "LayoutView #document",
+          "rect": [485, 0, 15, 600],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutView #document",
+          "rect": [485, 0, 15, 600],
+          "reason": "scroll"
+        }
+      ]
+    }
+  ]
+}
+

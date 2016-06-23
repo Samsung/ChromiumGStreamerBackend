@@ -1,0 +1,14 @@
+
+This tests that we report the correct enabled state on a listbox.
+
+
+PASS axSelectElement.isEnabled is true
+PASS axSelectElement.childAtIndex(0).isEnabled is true
+PASS axSelectElement.childAtIndex(1).isEnabled is true
+PASS axSelectElement.childAtIndex(2).isEnabled is false
+PASS axSelectElement.childAtIndex(3).isEnabled is false
+PASS axSelectElement.childAtIndex(4).isEnabled is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -1,0 +1,48 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutTable TABLE",
+          "rect": [8, 172, 46, 20],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [8, 74, 46, 20],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutTableCell TD id='cell'",
+          "rect": [10, 170, 42, 20],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow DIV",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutBlockFlow DIV id='target'",
+      "reason": "became visible"
+    },
+    {
+      "object": "LayoutTable TABLE",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutTableCell TD id='cell'",
+      "reason": "incremental"
+    }
+  ]
+}
+

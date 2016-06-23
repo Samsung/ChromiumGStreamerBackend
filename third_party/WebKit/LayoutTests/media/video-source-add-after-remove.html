@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Add &lt;source> after removing failed candidate</title>
+        <!-- TODO(foolip): Convert test to testharness.js. crbug.com/588956
+             (Please avoid writing new tests using video-test.js) -->
+        <script src=video-test.js></script>
+        <script src=media-file.js></script>
+        <script>
+            function error()
+            {
+                findMediaElement();
+                video.removeChild(video.firstChild);
+                var source = document.createElement("source");
+                source.src = findMediaFile("video", "content/test");
+                video.appendChild(source);
+                waitForEventAndEnd("loadedmetadata");
+            }
+        </script>
+    </head>
+
+    <body>
+        <video><source onerror="error()"></video>
+    </body>
+</html>

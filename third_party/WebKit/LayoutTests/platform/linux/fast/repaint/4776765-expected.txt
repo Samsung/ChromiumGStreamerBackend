@@ -1,0 +1,65 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [7, 43, 786, 62],
+          "reason": "outline"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='div'",
+          "rect": [8, 84, 784, 20],
+          "reason": "layoutObject insertion"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='div'",
+          "rect": [7, 83, 3, 21],
+          "reason": "invalidate paint rectangle"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='div'",
+          "rect": [7, 63, 3, 21],
+          "reason": "invalidate paint rectangle"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow DIV",
+      "reason": "outline"
+    },
+    {
+      "object": "LayoutBlockFlow DIV id='div'",
+      "reason": "layoutObject insertion"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "layoutObject insertion"
+    },
+    {
+      "object": "LayoutBR BR",
+      "reason": "layoutObject insertion"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "layoutObject insertion"
+    },
+    {
+      "object": "LayoutBlockFlow DIV id='div'",
+      "reason": "invalidate paint rectangle"
+    },
+    {
+      "object": "LayoutBlockFlow DIV id='div'",
+      "reason": "invalidate paint rectangle"
+    }
+  ]
+}
+

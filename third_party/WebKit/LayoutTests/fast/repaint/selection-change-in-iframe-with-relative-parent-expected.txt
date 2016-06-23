@@ -1,0 +1,55 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutText #text",
+          "rect": [18, 238, 40, 10],
+          "reason": "selection"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [18, 218, 30, 10],
+          "reason": "selection"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [18, 198, 30, 10],
+          "reason": "selection"
+        },
+        {
+          "object": "LayoutBR BR",
+          "rect": [58, 238, 10, 10],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBR BR",
+          "rect": [48, 218, 10, 10],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBR BR",
+          "rect": [48, 198, 10, 10],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBR BR",
+          "rect": [18, 228, 10, 10],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBR BR",
+          "rect": [18, 208, 10, 10],
+          "reason": "bounds change"
+        }
+      ]
+    }
+  ]
+}
+

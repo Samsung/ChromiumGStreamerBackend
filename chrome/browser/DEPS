@@ -1,0 +1,114 @@
+include_rules = [
+  "+apps",
+  "+ash",
+  "+chrome/app",
+  "+chrome/chrome_watcher",
+  "+chrome/grit",  # For generated headers
+  "+chrome/installer",
+  "+chrome_elf/blacklist",
+  "+chrome_elf/chrome_elf_constants.h",
+  "+chrome_elf/create_file",
+  "+chrome_elf/dll_hash",
+  "+chromeos",
+  "+components",
+  "+content/public/browser",
+  "+content/test/net",
+  "+courgette",
+  "+device/bluetooth",
+  "+device/core",
+  "+device/hid",
+  "+device/media_transfer_protocol",
+  "+device/usb",
+  "+extensions/browser",
+  "+extensions/common",
+  "+extensions/components/javascript_dialog_extensions_client",
+  "+extensions/grit",
+  "+extensions/test",
+  "+gin",
+  "+google/cacheinvalidation",  # Sync invalidation API protobuf files.
+  "+google_apis",
+  "+google_update",
+  "+grit",  # TODO(thestig) Remove. For generated headers
+  "+installer_util_strings",  # For generated headers
+  "+jni",
+  "+media/audio", # For media audio hang monitor.
+  "+media/base",  # For media switches
+  "+media/cdm/cdm_paths.h",
+  "+media/midi",  # For midi switches
+  "+media/mojo",  # For mojo media services.
+  "+mojo/converters",
+  "+mojo/runner/child",
+  "+services/shell/public/cpp",
+  "+policy",  # For generated headers and source
+  "+ppapi/c",  # For various types.
+  "+ppapi/host",
+  "+ppapi/proxy",
+  "+ppapi/shared_impl",
+  "+rlz",
+  "+sandbox/win/src",  # The path doesn't say it, but this is the Windows sandbox.
+  "+services/shell",
+  "+skia/ext",
+  "+sync/api",  # Sync API files.
+  "+sync/internal_api/public/attachments",  # Needed for tests.
+  "+sync/internal_api/public/base",
+  "+sync/protocol",  # Sync protobuf files.
+  "+sync/util",  # Sync utilities like GetSessionName.
+  "+syzygy/kasko",
+  "+third_party/cros_system_api",
+  "+third_party/kasko",
+  "+win8/util",
+
+  # chrome only needs switches from cc. All usage of the compositor is from
+  # content. Definitely don't include generic stuff from cc/base here, if this
+  # is needed these files need to move to base/
+  "+cc/base/switches.h",
+
+  # Unsafe to use from //chrome, see http://goo.gl/QQG5wo
+  "-content/public/test/test_browser_context.h",
+
+  "+storage/browser",
+  "+storage/common",
+
+  "-chrome/browser/ui/views",
+  "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h",
+  "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views_linux.h",
+  "+chrome/browser/ui/views/ash/chrome_browser_main_extra_parts_ash.h",
+
+  # Explicitly disallow using SyncMessageFilter to prevent browser from
+  # sending synchronous IPC messages on non-UI threads.
+  "-ipc/ipc_sync_message_filter.h",
+
+  # Other libraries.
+  "+libxml",
+  "+third_party/google_toolbox_for_mac/src",
+  "+third_party/icu/source/common/unicode",
+  "+third_party/icu/source/i18n/unicode",
+  "+third_party/leveldatabase",
+  "+third_party/libxml",
+  "+third_party/mozilla",     # Mozilla interface headers.
+  "+third_party/protobuf/src/google/protobuf",
+  "+third_party/re2",
+  "+third_party/smhasher",
+  "+third_party/sqlite",
+  "+third_party/zlib",
+
+  # No inclusion of WebKit from the browser, other than strictly enum/POD,
+  # header-only types, and some selected common code.
+  "-third_party/WebKit",
+  "+third_party/WebKit/public/platform/WebDisplayMode.h",
+  "+third_party/WebKit/public/platform/WebLoadingBehaviorFlag.h",
+  "+third_party/WebKit/public/platform/WebReferrerPolicy.h",
+  "+third_party/WebKit/public/platform/modules/app_banner/WebAppBannerPromptReply.h",
+  "+third_party/WebKit/public/platform/modules/notifications/WebNotificationConstants.h",
+  "+third_party/WebKit/public/platform/modules/push_messaging/WebPushPermissionStatus.h",
+  "+third_party/WebKit/public/platform/modules/screen_orientation/WebScreenOrientationLockType.h",
+  "+third_party/WebKit/public/platform/modules/permissions/permission_status.mojom.h",
+  "+third_party/WebKit/public/web/WebCache.h",
+  "+third_party/WebKit/public/web/WebContextMenuData.h",
+  "+third_party/WebKit/public/web/WebFindOptions.h",
+  "+third_party/WebKit/public/web/WebInputEvent.h",
+  "+third_party/WebKit/public/web/WebMediaPlayerAction.h",
+  "+third_party/WebKit/public/web/WebPluginAction.h",
+  "+third_party/WebKit/public/web/WebTextDirection.h",
+  "+third_party/WebKit/public/web/WebWindowFeatures.h",
+]

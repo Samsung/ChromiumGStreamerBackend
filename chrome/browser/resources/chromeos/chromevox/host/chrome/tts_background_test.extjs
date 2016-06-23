@@ -1,0 +1,93 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js',
+             '../../testing/assert_additions.js']);
+
+// E2E tests for TtsBackground.
+
+/**
+ * Test fixture.
+ * @constructor
+ * @extends {ChromeVoxE2ETest}
+ */
+function CvoxTtsBackgroundTest() {
+  ChromeVoxE2ETest.call(this);
+}
+
+CvoxTtsBackgroundTest.prototype = {
+  __proto__: ChromeVoxE2ETest.prototype
+};
+
+SYNC_TEST_F('CvoxTtsBackgroundTest', 'Preprocess', function() {
+  var tts = new cvox.TtsBackground(false);
+  var preprocess = tts.preprocess.bind(tts);
+
+  // Punctuation.
+  assertEquals('dot', preprocess('.'));
+  assertEquals('x.', preprocess('x.'));
+  assertEquals('.x', preprocess('.x'));
+  assertEquals('space', preprocess(' '));
+  assertEquals('', preprocess('  '));
+  assertEquals('A', preprocess('a'));
+  assertEquals('A', preprocess('A'));
+  assertEquals('a.', preprocess('a.'));
+  assertEquals('.a', preprocess('.a'));
+
+  assertEquals('10 equal signs', preprocess('=========='));
+
+  assertEquals('new line', preprocess('\n'));
+  assertEquals('return', preprocess('\r'));
+});
+
+SYNC_TEST_F('CvoxTtsBackgroundTest', 'UpdateVoice', function() {
+  var tts = new cvox.TtsBackground(false);
+  var voices = [
+    {lang: 'zh-CN', voiceName: 'Chinese'},
+    {lang: 'zh-TW', voiceName: 'Chinese (Taiwan)'},
+    {lang: 'en-US', voiceName: 'U.S. English'}
+  ];
+
+  chrome.tts.getVoices = function(callback) {
+    callback(voices);
+  };
+  
+  assertTrue(!tts.currentVoice);
+  
+  tts.updateVoice_('');
+  assertEquals('U.S. English', tts.currentVoice);
+
+  voices[2].lang = 'en';
+  tts.updateVoice_('');
+  assertEquals('U.S. English', tts.currentVoice);
+
+  voices[2].lang = 'fr-FR';
+  voices[2].voiceName = 'French';
+  tts.updateVoice_('');
+  assertEquals('Chinese', tts.currentVoice);
+
+  tts.updateVoice_('French');
+  assertEquals('French', tts.currentVoice);
+});
+
+SYNC_TEST_F('CvoxTtsBackgroundTest', 'EmptyStringCallsCallbacks', function() {
+  var tts = new cvox.TtsBackground(false);
+  chrome.tts.speak = assertNotReached.bind(
+      null, 'chrome.tts.speak shouldn\t be called.');
+
+  assertCallsCallbacks = function(text) {
+    var startCalls = 0;
+    var endCalls = 0;
+    tts.speak(text, cvox.QueueMode.QUEUE,
+              {startCallback: function() { ++startCalls; },
+               endCallback: function() { ++endCalls; }});
+    assertEquals(1, startCalls, text);
+    assertEquals(1, endCalls, text);
+  }.bind(this);
+
+  assertCallsCallbacks('');
+  assertCallsCallbacks('  ');
+  assertCallsCallbacks(' \u00a0 ');
+});

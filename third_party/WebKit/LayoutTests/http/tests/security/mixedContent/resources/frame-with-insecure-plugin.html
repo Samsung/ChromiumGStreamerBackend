@@ -1,0 +1,9 @@
+<script>
+window.onload = function() {
+  if (window.opener)
+    window.opener.postMessage('done', '*');
+}
+</script>
+<object name='plugin' type='application/x-blink-test-plugin'>
+  <param name='movie' value='http://example.test:8000/security/mixedContent/resources/dummy.swf' />
+</object>

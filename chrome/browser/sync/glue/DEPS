@@ -1,0 +1,6 @@
+include_rules = [
+  "-sync/engine",
+  "-sync/sessions",
+  "-sync/syncable",
+  "+sync/util",
+]

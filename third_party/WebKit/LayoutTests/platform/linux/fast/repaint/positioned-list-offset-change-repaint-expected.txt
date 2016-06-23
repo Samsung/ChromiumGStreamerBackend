@@ -1,0 +1,59 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutListItem (positioned) LI",
+          "rect": [8, 64, 214, 237],
+          "reason": "forced by layout"
+        },
+        {
+          "object": "LayoutImage IMG",
+          "rect": [8, 64, 214, 232],
+          "reason": "location change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "InlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "InlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutListItem (positioned) LI",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "LayoutListMarker (anonymous)",
+      "reason": "none"
+    },
+    {
+      "object": "LayoutImage IMG",
+      "reason": "location change"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "none"
+    }
+  ]
+}
+

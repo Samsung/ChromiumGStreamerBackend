@@ -1,0 +1,76 @@
+{
+  "bounds": [800, 600],
+  "children": [
+    {
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutTable TABLE",
+          "rect": [8, 58, 113, 4],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutTable TABLE",
+          "rect": [8, 60, 113, 2],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [10, 10, 110, 50],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutTableSection TBODY",
+          "rect": [10, 10, 110, 50],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [9, 9, 107, 50],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutTableSection TBODY",
+          "rect": [9, 9, 107, 50],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutTableCell TD id='foo'",
+          "rect": [8, 8, 59, 54],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutTableCell TD",
+          "rect": [63, 8, 58, 54],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutTableCell TD",
+          "rect": [62, 8, 55, 52],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutTable TABLE",
+          "rect": [116, 8, 5, 54],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutTable TABLE",
+          "rect": [117, 8, 4, 54],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutTableCell TD",
+          "reason": "full"
+        },
+        {
+          "object": "LayoutTableCell TD id='foo'",
+          "reason": "full"
+        }
+      ]
+    }
+  ]
+}
+

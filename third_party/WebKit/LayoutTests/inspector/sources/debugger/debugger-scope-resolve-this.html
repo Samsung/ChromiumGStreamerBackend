@@ -1,0 +1,40 @@
+<html>
+<head>
+<script src="../../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../../http/tests/inspector/debugger-test.js"></script>
+<script src="resources/resolve-this.js"></script>
+<script>
+function test()
+{
+    Runtime.experiments.enableForTest("resolveVariableNames");
+
+    InspectorTest.waitForScriptSource("resolve-this.ts", onSourceMapLoaded);
+
+    function onSourceMapLoaded()
+    {
+        InspectorTest.startDebuggerTest(() => InspectorTest.runTestFunctionAndWaitUntilPaused());
+        InspectorTest.addSniffer(WebInspector.ScopeChainSidebarPane.prototype, "_sidebarPaneUpdatedForTest", onSidebarRendered, true);
+    }
+
+    function onSidebarRendered()
+    {
+        InspectorTest.expandScopeVariablesSidebarPane(onSidebarsExpanded);
+    }
+
+    function onSidebarsExpanded()
+    {
+        InspectorTest.addResult("");
+        InspectorTest.dumpScopeVariablesSidebarPane();
+        InspectorTest.completeDebuggerTest();
+    }
+}
+
+</script>
+</head>
+
+<body onload="runTest()">
+<p>
+Tests resolving this object name via source maps.
+</p>
+</body>
+</html>

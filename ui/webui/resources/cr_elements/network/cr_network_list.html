@@ -1,0 +1,36 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/cr_elements/network/cr_network_list_item.html">
+<link rel="import" href="chrome://resources/cr_elements/network/cr_onc_types.html">
+
+<dom-module id="cr-network-list">
+  <template>
+    <style>
+      #container {
+        max-height: 1000px;
+        min-height: 50px;
+        overflow-y: auto;
+      }
+
+      /* Note: the 'flex' attribute on core-list doesn't work as expected. */
+      #networkList {
+        flex: 1;
+      }
+
+      cr-network-list-item:not(:last-of-type) {
+        border-bottom: 1px solid lightgrey;
+      }
+    </style>
+    <iron-collapse opened="{{opened}}">
+      <div id="container" class="layout vertical flex">
+        <template is="dom-repeat" items="[[networks]]">
+          <cr-network-list-item network-state="[[item]]"
+              list-item-type="[[listType]]" on-tap="onTap_">
+          </cr-network-list-item>
+        </template>
+      </div>
+    </iron-collapse>
+  </template>
+  <script src="cr_network_list.js"></script>
+</dom-module>

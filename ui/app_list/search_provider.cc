@@ -1,0 +1,35 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ui/app_list/search_provider.h"
+
+#include <utility>
+
+#include "ui/app_list/search_result.h"
+
+namespace app_list {
+
+SearchProvider::SearchProvider() {
+}
+SearchProvider::~SearchProvider() {
+}
+
+void SearchProvider::Add(std::unique_ptr<SearchResult> result) {
+  results_.push_back(std::move(result));
+  FireResultChanged();
+}
+
+void SearchProvider::ClearResults() {
+  results_.clear();
+  FireResultChanged();
+}
+
+void SearchProvider::FireResultChanged() {
+  if (result_changed_callback_.is_null())
+    return;
+
+  result_changed_callback_.Run();
+}
+
+}  // namespace app_list

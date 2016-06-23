@@ -1,0 +1,63 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGRect rect id='clipper'",
+          "rect": [0, 100, 300, 200],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGRect rect id='masker'",
+          "rect": [0, 0, 300, 100],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGRect rect id='clipper'",
+          "rect": [100, 0, 200, 300],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGRect rect id='masker'",
+          "rect": [100, 0, 200, 300],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGContainer g",
+          "rect": [150, 50, 100, 100],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGContainer g",
+          "rect": [50, 150, 100, 100],
+          "reason": "bounds change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutSVGContainer g",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGRect rect id='masker'",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGContainer g",
+      "reason": "bounds change"
+    },
+    {
+      "object": "LayoutSVGRect rect id='clipper'",
+      "reason": "full"
+    }
+  ]
+}
+

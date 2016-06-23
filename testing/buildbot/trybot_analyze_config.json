@@ -1,0 +1,60 @@
+{
+  "android_webview": {
+    "exclusions": [
+      "android_webview/.*"
+    ]
+  },
+  "base": {
+    "exclusions": [
+      ".*isolate",
+      "build/.*gyp[i]?",
+      "build/android/.*py",
+      "build/android/devil/.*",
+      "build/android/play_services/.*",
+      "build/android/pylib/.*",
+      "build/compiler_version.py",
+      "build/get_landmines.py",
+      "build/gyp_chromium",
+      "build/linux/sysroot_ld_path.sh",
+      "build/toolchain/get_concurrent_links.py",
+      "build/toolchain/mac/*.py",
+      "build/util/lib/common/unittest_util.py",
+      "infra/.*",
+      "DEPS",
+      "testing/buildbot/.*",
+      "testing/scripts/.*",
+      "testing/test_env.py",
+      "third_party/android_platform/development/scripts/.*",
+      "tools/clang/blink_gc_plugin/CMakeLists.txt",
+      "tools/luci-go/.*"
+    ]
+  },
+  "chromium": {
+    "exclusions": [
+      "chrome/test/data/.*",
+      "chrome/installer/linux/sysroot_scripts/install-debian.wheezy.sysroot.py",
+      "components/test/data/.*",
+      "content/test/data/.*",
+      "content/test/gpu/.*",
+      "extensions/test/data/.*",
+      "gpu/gles2_conform_support/gles2_conform_test_expectations.txt",
+      "mojo/tools/.*",
+      "media/test/data/.*",
+      "net/data/.*",
+      "sql/test/data/.*",
+      "third_party/accessibility-audit/axs_testing.js",
+      "third_party/hunspell_dictionaries/.*",
+      "third_party/zlib/google/test/data/.*",
+      "tools/clang/scripts/update.py",
+      "tools/mb/.*",
+      "tools/metrics/histograms/histograms.xml",
+      "tools/perf/.*",
+      "tools/telemetry/.*"
+    ]
+  },
+  "ios": {
+    "exclusions": [
+      "ios/build/bots/.*"
+    ]
+  }
+}

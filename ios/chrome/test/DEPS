@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/network_time",
+  "+components/prefs",
+  "+ios/chrome/browser",
+  "+ios/public/provider/chrome",
+  "+ios/public/test",
+  "+ios/web/public",
+  "+net/url_request",
+  "+ui",
+]

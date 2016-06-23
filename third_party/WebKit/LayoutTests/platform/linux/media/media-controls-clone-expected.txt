@@ -1,0 +1,43 @@
+layer at (0,0) size 800x600
+  LayoutView at (0,0) size 800x600
+layer at (0,0) size 800x326
+  LayoutBlockFlow {HTML} at (0,0) size 800x326
+    LayoutBlockFlow {BODY} at (8,8) size 784x310
+      LayoutBlockFlow {DIV} at (0,0) size 784x155
+      LayoutBlockFlow {DIV} at (0,155) size 784x155
+layer at (8,8) size 300x150
+  LayoutVideo {VIDEO} at (0,0) size 300x150
+layer at (308,126) size 300x32
+  LayoutMedia {AUDIO} at (300,118) size 300x32
+layer at (8,163) size 300x150
+  LayoutVideo {VIDEO} at (0,0) size 300x150
+layer at (308,281) size 300x32
+  LayoutMedia {AUDIO} at (300,118) size 300x32
+layer at (8,8) size 300x150
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 300x150
+    LayoutBlockFlow {DIV} at (0,118) size 300x32
+layer at (8,8) size 300x108
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 300x108
+layer at (8,126) size 300x32
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 300x32 [bgcolor=#FAFAFA]
+    LayoutButton {INPUT} at (0,0) size 32x32
+layer at (308,126) size 300x32
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 300x32
+    LayoutBlockFlow {DIV} at (0,0) size 300x32
+layer at (308,126) size 300x32
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 300x32 [bgcolor=#FAFAFA]
+    LayoutButton {INPUT} at (0,0) size 32x32
+layer at (8,163) size 300x150
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 300x150
+    LayoutBlockFlow {DIV} at (0,118) size 300x32
+layer at (8,163) size 300x108
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 300x108
+layer at (8,281) size 300x32
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 300x32 [bgcolor=#FAFAFA]
+    LayoutButton {INPUT} at (0,0) size 32x32
+layer at (308,281) size 300x32
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 300x32
+    LayoutBlockFlow {DIV} at (0,0) size 300x32
+layer at (308,281) size 300x32
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 300x32 [bgcolor=#FAFAFA]
+    LayoutButton {INPUT} at (0,0) size 32x32

@@ -1,0 +1,130 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV id='test'",
+          "rect": [38, 79, 152, 99],
+          "reason": "invalidate paint rectangle"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='test'",
+          "rect": [38, 99, 152, 81],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='test'",
+          "rect": [38, 100, 152, 80],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [39, 79, 146, 99],
+          "reason": "layoutObject removal"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='test'",
+          "rect": [38, 78, 3, 21],
+          "reason": "invalidate paint rectangle"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "InlineTextBox 'hello world hello world'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox ' '",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'hello world hello world'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox ' '",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'hello world hello world'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox ' '",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'hello world hello world'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox ' '",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'hello'",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "layoutObject removal"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutBlockFlow DIV id='test'",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutBlockFlow DIV id='test'",
+      "reason": "invalidate paint rectangle"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutBR BR",
+      "reason": "bounds change"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "bounds change"
+    },
+    {
+      "object": "LayoutBlockFlow DIV id='test'",
+      "reason": "invalidate paint rectangle"
+    }
+  ]
+}
+

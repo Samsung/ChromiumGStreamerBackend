@@ -1,0 +1,184 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// The Safe Browsing service is responsible for downloading anti-phishing and
+// anti-malware tables and checking urls against them.
+
+#ifndef CHROME_BROWSER_SAFE_BROWSING_UI_MANAGER_H_
+#define CHROME_BROWSER_SAFE_BROWSING_UI_MANAGER_H_
+
+#include <string>
+#include <vector>
+
+#include "base/callback.h"
+#include "base/macros.h"
+#include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
+#include "base/time/time.h"
+#include "components/safe_browsing_db/hit_report.h"
+#include "components/safe_browsing_db/util.h"
+#include "content/public/browser/browser_thread.h"
+#include "url/gurl.h"
+
+namespace base {
+class Thread;
+}  // namespace base
+
+namespace content {
+class NavigationEntry;
+}  // namespace content
+
+namespace net {
+class SSLInfo;
+}  // namespace net
+
+namespace safe_browsing {
+
+class SafeBrowsingService;
+
+// Construction needs to happen on the main thread.
+class SafeBrowsingUIManager
+    : public base::RefCountedThreadSafe<SafeBrowsingUIManager> {
+ public:
+  // Passed a boolean indicating whether or not it is OK to proceed with
+  // loading an URL.
+  typedef base::Callback<void(bool /*proceed*/)> UrlCheckCallback;
+
+  // Structure used to pass parameters between the IO and UI thread when
+  // interacting with the blocking page.
+  struct UnsafeResource {
+    UnsafeResource();
+    UnsafeResource(const UnsafeResource& other);
+    ~UnsafeResource();
+
+    // Returns true if this UnsafeResource is a main frame load that was blocked
+    // while the navigation is still pending. Note that a main frame hit may not
+    // be blocking, eg. client side detection happens after the load is
+    // committed.
+    bool IsMainPageLoadBlocked() const;
+
+    // Returns the NavigationEntry for this resource (for a main frame hit) or
+    // for the page which contains this resource (for a subresource hit).
+    // This method must only be called while the UnsafeResource is still
+    // "valid".
+    // I.e,
+    //   For MainPageLoadBlocked resources, it must not be called if the load
+    //   was aborted (going back or replaced with a different navigation),
+    //   or resumed (proceeded through warning or matched whitelist).
+    //   For non-MainPageLoadBlocked resources, it must not be called if any
+    //   other navigation has committed (whether by going back or unrelated
+    //   navigations), though a pending navigation is okay.
+    content::NavigationEntry* GetNavigationEntryForResource() const;
+
+    GURL url;
+    GURL original_url;
+    std::vector<GURL> redirect_urls;
+    bool is_subresource;
+    bool is_subframe;
+    SBThreatType threat_type;
+    ThreatMetadata threat_metadata;
+    UrlCheckCallback callback;  // This is called back on |callback_thread|.
+    scoped_refptr<base::SingleThreadTaskRunner> callback_thread;
+    int render_process_host_id;
+    int render_frame_id;
+    safe_browsing::ThreatSource threat_source;
+  };
+
+  // Observer class can be used to get notified when a SafeBrowsing hit
+  // was found.
+  class Observer {
+   public:
+    // The |resource| was classified as unsafe by SafeBrowsing, and is
+    // not whitelisted.
+    // The |resource| must not be accessed after OnSafeBrowsingHit returns.
+    // This method will be called on the UI thread.
+    virtual void OnSafeBrowsingHit(const UnsafeResource& resource) = 0;
+
+   protected:
+    Observer() {}
+    virtual ~Observer() {}
+
+   private:
+    DISALLOW_COPY_AND_ASSIGN(Observer);
+  };
+
+  explicit SafeBrowsingUIManager(
+      const scoped_refptr<SafeBrowsingService>& service);
+
+  // Called to stop or shutdown operations on the io_thread. This may be called
+  // multiple times during the life of the UIManager. Should be called
+  // on IO thread. If shutdown is true, the manager is disabled permanently.
+  void StopOnIOThread(bool shutdown);
+
+  // Called on the UI thread to display an interstitial page.
+  // |url| is the url of the resource that matches a safe browsing list.
+  // If the request contained a chain of redirects, |url| is the last url
+  // in the chain, and |original_url| is the first one (the root of the
+  // chain). Otherwise, |original_url| = |url|.
+  virtual void DisplayBlockingPage(const UnsafeResource& resource);
+
+  // Returns true if we already displayed an interstitial for that top-level
+  // site in a given WebContents. Called on the UI thread.
+  bool IsWhitelisted(const UnsafeResource& resource);
+
+  // The blocking page on the UI thread has completed.
+  void OnBlockingPageDone(const std::vector<UnsafeResource>& resources,
+                          bool proceed);
+
+  // Log the user perceived delay caused by SafeBrowsing. This delay is the time
+  // delta starting from when we would have started reading data from the
+  // network, and ending when the SafeBrowsing check completes indicating that
+  // the current page is 'safe'.
+  void LogPauseDelay(base::TimeDelta time);
+
+  // Called on the IO thread by the ThreatDetails with the serialized
+  // protocol buffer, so the service can send it over.
+  virtual void SendSerializedThreatDetails(const std::string& serialized);
+
+  // Report hits to the unsafe contents (malware, phishing, unsafe download URL)
+  // to the server. Can only be called on UI thread.  If |post_data| is
+  // non-empty, the request will be sent as a POST instead of a GET.
+  // Will report only for UMA || is_extended_reporting.
+  virtual void MaybeReportSafeBrowsingHit(
+      const safe_browsing::HitReport& hit_report);
+
+  // Report an invalid TLS/SSL certificate chain to the server. Can only
+  // be called on UI thread.
+  void ReportInvalidCertificateChain(const std::string& serialized_report,
+                                     const base::Closure& callback);
+
+  // Add and remove observers.  These methods must be invoked on the UI thread.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* remove);
+
+ protected:
+  virtual ~SafeBrowsingUIManager();
+
+ private:
+  friend class base::RefCountedThreadSafe<SafeBrowsingUIManager>;
+  friend class SafeBrowsingUIManagerTest;
+  friend class TestSafeBrowsingUIManager;
+
+  // Call protocol manager on IO thread to report hits of unsafe contents.
+  void ReportSafeBrowsingHitOnIOThread(
+      const safe_browsing::HitReport& hit_report);
+
+  // Sends an invalid certificate chain report over the network.
+  void ReportInvalidCertificateChainOnIOThread(
+      const std::string& serialized_report);
+
+  // Updates the whitelist state.  Called on the UI thread.
+  void AddToWhitelist(const UnsafeResource& resource);
+
+  // Safebrowsing service.
+  scoped_refptr<SafeBrowsingService> sb_service_;
+
+  base::ObserverList<Observer> observer_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUIManager);
+};
+
+}  // namespace safe_browsing
+
+#endif  // CHROME_BROWSER_SAFE_BROWSING_UI_MANAGER_H_

@@ -1,0 +1,217 @@
+<html>
+<head>
+<script src="../http/tests/inspector/inspector-test.js"></script>
+<script src="../http/tests/inspector/debugger-test.js"></script>
+<script src="../http/tests/inspector/workspace-test.js"></script>
+<script src="../http/tests/inspector/isolated-filesystem-test.js"></script>
+<script>
+function test()
+{
+    function dumpUISourceCodes(uiSourceCodes, next)
+    {
+        innerDumpUISourceCodes(uiSourceCodes, 0, next);
+
+        function innerDumpUISourceCodes(uiSourceCodes, startIndex, next)
+        {
+            InspectorTest.addResult("");
+            if (startIndex === uiSourceCodes.length) {
+                next();
+                return;
+            }
+
+            InspectorTest.dumpUISourceCode(uiSourceCodes[startIndex], innerDumpUISourceCodes.bind(this, uiSourceCodes, startIndex + 1, next));
+        }
+    }
+
+    function dumpUISourceCodeLocations(uiSourceCodes, lineNumber)
+    {
+        InspectorTest.addResult("Dumping uiSourceCode location link texts:");
+        for (var i = 0; i < uiSourceCodes.length; ++i) {
+            var uiSourceCode = uiSourceCodes[i];
+            var uiLocation = uiSourceCode.uiLocation(lineNumber);
+            InspectorTest.addResult(" - " + uiLocation.linkText());
+        }
+    }
+
+    function dumpWorkspaceUISourceCodes()
+    {
+        InspectorTest.addResult("Dumping uiSourceCodes origin URLs:");
+        var uiSourceCodes = InspectorTest.fileSystemUISourceCodes();
+        for (var i = 0; i < uiSourceCodes.length; ++i)
+            InspectorTest.addResult("  - " + uiSourceCodes[i].url());
+    }
+
+    function createFileSystem(name, callback)
+    {
+        var fs = new InspectorTest.TestFileSystem(name);
+        fs.root.mkdir("html").addFile("foo.js", "");
+        fs.root.mkdir(".git").addFile("foogit.js", "");
+        fs.root.addFile("bar.js", "");
+        fs.root.mkdir("html2").addFile("foo.js", "");
+        fs.reportCreated(callback.bind(null, fs));
+    }
+
+    InspectorTest.runTestSuite([
+        function testFileSystems(next)
+        {
+            InspectorTest.addResult("Adding first file system.");
+            var fs1 = new InspectorTest.TestFileSystem("file:///var/www");
+            var fs2 = new InspectorTest.TestFileSystem("file:///foo/bar");
+            InspectorTest.addResult("Adding second file system.");
+
+            var uiSourceCodes;
+
+            fs1.reportCreated(function() {});
+            fs2.reportCreated(fileSystemCreated);
+
+            function fileSystemCreated()
+            {
+                InspectorTest.addResult("Adding file mappings.");
+                WebInspector.fileSystemMapping.addFileMapping("file:///var/www", "http://localhost/", "/localhost/");
+                WebInspector.fileSystemMapping.addFileMapping("file:///foo/bar", "http://www.example.com/", "/");
+
+                InspectorTest.addResult("Adding files to file systems.");
+
+                var localhostDir = fs1.root.mkdir("localhost");
+                localhostDir.addFile("foo.js", "<foo content>");
+                fs1.root.addFile("bar.js", "<bark content>");
+
+                fs2.root.addFile("baz.js", "<bazzz content>");
+                InspectorTest.refreshFileSystemProjects(onProjectsRefreshed);
+            }
+
+            function onProjectsRefreshed()
+            {
+                uiSourceCodes = InspectorTest.fileSystemUISourceCodes();
+                dumpUISourceCodes(uiSourceCodes, uiSourceCodesDumped);
+            }
+
+            function uiSourceCodesDumped()
+            {
+                dumpUISourceCodeLocations(uiSourceCodes, 5);
+                InspectorTest.addResult("UISourceCode uri to url mappings:");
+                for (var i = 0; i < uiSourceCodes.length; ++i) {
+                    var url = WebInspector.networkMapping.networkURL(uiSourceCodes[i]);
+                    if (!url)
+                        continue;
+                    InspectorTest.addResult("    " + uiSourceCodes[i].url() + " -> " + url);
+                }
+                InspectorTest.addResult("UISourceCode url to uri mappings:");
+                for (var i = 0; i < uiSourceCodes.length; ++i) {
+                    var url = WebInspector.networkMapping.networkURL(uiSourceCodes[i]);
+                    if (!url)
+                        continue;
+                    var uri = WebInspector.networkMapping.uiSourceCodeForURLForAnyTarget(url).url();
+                    InspectorTest.addResult("    " + url + " -> " + uri);
+                }
+                WebInspector.workspace.addEventListener(WebInspector.Workspace.Events.WorkingCopyCommitted, contentCommitted, this);
+                uiSourceCodes[0].addRevision("<Modified UISourceCode content>");
+            }
+
+            function contentCommitted()
+            {
+                InspectorTest.addResult("After revision added:");
+                InspectorTest.dumpUISourceCode(uiSourceCodes[0], finalize);
+            }
+
+            function finalize()
+            {
+                fs1.reportRemoved();
+                fs2.reportRemoved();
+                next();
+            }
+        },
+
+        function testDefaultExcludes(next)
+        {
+            createFileSystem("file:///var/www", dumpExcludes);
+
+            function dumpExcludes(fs)
+            {
+                InspectorTest.addResult("");
+                InspectorTest.addResult("-- Default excludes --");
+                dumpWorkspaceUISourceCodes();
+                fs.reportRemoved();
+                next();
+            }
+        },
+
+        function testExcludesSettings(next)
+        {
+            WebInspector.settings.createLocalSetting("workspaceExcludedFolders", {}).set({"file:///var/www2":["/html/"]});
+            createFileSystem("file:///var/www2", dumpExcludes);
+
+            function dumpExcludes(fs)
+            {
+                InspectorTest.addResult("");
+                InspectorTest.addResult("-- Excluded /html/ --");
+                dumpWorkspaceUISourceCodes();
+                fs.reportRemoved();
+                next();
+            }
+        },
+
+        function testExcludesViaDelegate(next)
+        {
+            createFileSystem("file:///var/www3", dumpExcludes);
+
+            function dumpExcludes(fs)
+            {
+                InspectorTest.fileSystemUISourceCodes()[0].project().excludeFolder("file:///var/www3/html2/");
+                InspectorTest.addResult("");
+                InspectorTest.addResult("-- Excluded /html2/ --");
+                dumpWorkspaceUISourceCodes();
+                fs.reportRemoved();
+                next();
+            }
+        },
+
+        function testExcludesViaProject(next)
+        {
+            var fs = new InspectorTest.TestFileSystem("file:///var/www3");
+            fs.root.addFile(".devtools", JSON.stringify({excludes:["/html2/"]}));
+            fs.root.mkdir("html").addFile("foo.js", "");
+            fs.root.mkdir(".git").addFile("foogit.js", "");
+            fs.root.addFile("bar.js", "");
+            fs.root.mkdir("html2").addFile("foo.js", "");
+            fs.reportCreated(dumpExcludes);
+
+            function dumpExcludes()
+            {
+                InspectorTest.addResult("");
+                InspectorTest.addResult("-- Excluded /html2/ via .devtools --");
+                dumpWorkspaceUISourceCodes();
+                fs.reportRemoved();
+                next();
+            }
+        },
+
+        function testFileAddedExternally(next)
+        {
+            var fs = new InspectorTest.TestFileSystem("file:///var/www4");
+            var dir = fs.root.mkdir("html");
+            dir.addFile("foo.js", "");
+            fs.reportCreated(dumpFileSystem);
+
+            function dumpFileSystem()
+            {
+                InspectorTest.addResult("-- Original tree --");
+                dumpWorkspaceUISourceCodes();
+
+                dir.addFile("bar.js", "");
+                InspectorFrontendHost.events.dispatchEventToListeners(InspectorFrontendHostAPI.Events.FileSystemFilesChanged, ["/var/www4/html/bar.js"]);
+
+                InspectorTest.addResult("-- File added externally --");
+                dumpWorkspaceUISourceCodes();
+                fs.reportRemoved();
+                next();
+            }
+        }
+    ]);
+};
+</script>
+</head>
+<body onload="runTest()">
+<p>Tests file system project.</p>
+</body>
+</html>

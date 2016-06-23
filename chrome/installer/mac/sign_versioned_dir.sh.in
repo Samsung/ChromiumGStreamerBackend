@@ -1,0 +1,93 @@
+#!/bin/bash -p
+
+# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Using codesign, sign the contents of the versioned directory. Namely, this
+# includes the framework and helper app. After signing, the signatures are
+# verified.
+
+set -eu
+
+# Environment sanitization. Set a known-safe PATH. Clear environment variables
+# that might impact the interpreter's operation. The |bash -p| invocation
+# on the #! line takes the bite out of BASH_ENV, ENV, and SHELLOPTS (among
+# other features), but clearing them here ensures that they won't impact any
+# shell scripts used as utility programs. SHELLOPTS is read-only and can't be
+# unset, only unexported.
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+unset BASH_ENV CDPATH ENV GLOBIGNORE IFS POSIXLY_CORRECT
+export -n SHELLOPTS
+
+ME="$(basename "${0}")"
+readonly ME
+
+if [[ ${#} -ne 3 ]]; then
+  echo "usage: ${ME} app_path codesign_keychain codesign_id" >& 2
+  exit 1
+fi
+
+app_path="${1}"
+codesign_keychain="${2}"
+codesign_id="${3}"
+
+versioned_dir="${app_path}/Contents/Versions/@VERSION@"
+
+# An .app bundle to be signed can be signed directly. Normally, signing a
+# framework bundle requires that each version within be signed individually.
+# http://developer.apple.com/mac/library/technotes/tn2007/tn2206.html#TNTAG13
+# In Chrome's case, the framework bundle is unversioned, so it too can be
+# signed directly. See copy_framework_unversioned.sh.
+
+framework="${versioned_dir}/@MAC_PRODUCT_NAME@ Framework.framework"
+crashpad_handler="${framework}/Helpers/crashpad_handler"
+helper_app="${versioned_dir}/@MAC_PRODUCT_NAME@ Helper.app"
+app_mode_loader_app="${framework}/Resources/app_mode_loader.app"
+app_mode_loader="${app_mode_loader_app}/Contents/MacOS/app_mode_loader"
+
+requirement_suffix="\
+and certificate leaf = H\"85cee8254216185620ddc8851c7a9fc4dfe120ef\"\
+"
+
+enforcement_flags="restrict"
+
+codesign --sign "${codesign_id}" --keychain "${codesign_keychain}" \
+    "${crashpad_handler}" \
+    -r="designated => identifier \"crashpad_handler\" \
+${requirement_suffix}" --options "${enforcement_flags}"
+
+# The app mode loader bundle is modified dynamically at runtime. Just sign the
+# executable, which shouldn't change. In order to do this, the executable needs
+# to be copied out of the bundle, signed, and then copied back in. The resulting
+# bundle's signature won't validate normally, but if the executable file is
+# verified in isolation or with --ignore-resources, it will. Because the
+# bundle's signature won't validate on its own, don't set any of the enforcement
+# flags.
+app_mode_loader_tmp="$(mktemp -t app_mode_loader)"
+cp "${app_mode_loader}" "${app_mode_loader_tmp}"
+codesign --sign "${codesign_id}" --keychain "${codesign_keychain}" \
+    "${app_mode_loader_tmp}" \
+    -r="designated => identifier \"app_mode_loader\" \
+${requirement_suffix}"
+cp "${app_mode_loader_tmp}" "${app_mode_loader}"
+rm -f "${app_mode_loader_tmp}"
+
+codesign --sign "${codesign_id}" --keychain "${codesign_keychain}" \
+    "${framework}" \
+    -r="designated => identifier \"com.google.Chrome.framework\" \
+${requirement_suffix}"
+
+codesign --sign "${codesign_id}" --keychain "${codesign_keychain}" \
+    "${helper_app}" \
+    -r="designated => identifier \"com.google.Chrome.helper\" \
+${requirement_suffix}" --options "${enforcement_flags}"
+
+# Verify everything. Don't use --deep on the framework because Keystone's
+# signature is in a transitional state (radar 18474911). Don't verify
+# app_mode_loader independently because --ignore-resources is unrecognized
+# before 10.11 (bug 565859).
+codesign --verify --deep "${crashpad_handler}"
+# codesign --verify --ignore-resources "${app_mode_loader}"
+codesign --verify "${framework}"
+codesign --verify --deep "${helper_app}"

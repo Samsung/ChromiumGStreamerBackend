@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/invalidation",
+  "+components/sync_driver",
+  "+components/sync_sessions",
+  "+components/wifi_sync",
+  "+google/cacheinvalidation",
+  "+sync/internal_api/public",
+]

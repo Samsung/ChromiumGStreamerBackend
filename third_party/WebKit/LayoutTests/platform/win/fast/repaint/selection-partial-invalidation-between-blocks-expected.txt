@@ -1,0 +1,89 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutText #text",
+          "rect": [11, 33, 79, 17],
+          "reason": "selection"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [11, 11, 61, 17],
+          "reason": "selection"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [85, 33, 5, 17],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [67, 11, 5, 17],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow HTML",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBlockFlow BODY",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutTable TABLE",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutTableCell TD id='firstCell'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'First cell'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'First cell'",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutTableCell TD id='secondCell'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'Second cell'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'Second cell'",
+      "reason": "incremental"
+    }
+  ]
+}
+

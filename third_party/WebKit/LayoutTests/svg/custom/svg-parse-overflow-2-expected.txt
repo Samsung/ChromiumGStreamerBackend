@@ -1,0 +1,2 @@
+CONSOLE ERROR: line 9: Error: <rect> attribute height: Expected length, "-105000000000000…".
+

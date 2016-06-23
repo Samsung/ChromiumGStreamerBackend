@@ -1,0 +1,95 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow P",
+          "rect": [8, 120, 418, 479],
+          "reason": "invalidate paint rectangle"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [14, 359, 407, 20],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [14, 239, 406, 20],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [14, 420, 355, 79],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [14, 380, 355, 59],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [134, 360, 131, 19],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [65, 360, 131, 19],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) DIV id='pinkFloat'",
+          "rect": [378, 138, 70, 30],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [303, 420, 67, 19],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [244, 420, 65, 19],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [369, 80, 52, 119],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) SPAN id='blueFloat'",
+          "rect": [14, 363, 48, 65],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) SPAN id='blueFloat'",
+          "rect": [14, 343, 48, 65],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [151, 180, 40, 19],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [84, 180, 40, 19],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [420, 180, 1, 59],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ]
+}
+

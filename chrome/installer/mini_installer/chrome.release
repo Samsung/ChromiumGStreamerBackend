@@ -1,0 +1,77 @@
+# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+[GENERAL]
+#
+# Chrome Application dir entries, sorted alphabetically.
+#
+chrome.exe: %(ChromeDir)s\
+wow_helper.exe: %(ChromeDir)s\
+#
+# Chrome version dir assembly manifest.
+# The name of this file must match the name of the version dir, so we cannot
+# hard-code it.
+# // TODO(caitkp): Find a way to do this without wildcards.
+#
+*.*.*.*.manifest: %(VersionDir)s\
+#
+# Chrome version dir entries, sorted alphabetically.
+#
+chrome.dll: %(VersionDir)s\
+chrome_100_percent.pak: %(VersionDir)s\
+chrome_child.dll: %(VersionDir)s\
+chrome_elf.dll: %(VersionDir)s\
+chrome_watcher.dll: %(VersionDir)s\
+d3dcompiler_47.dll: %(VersionDir)s\
+ffmpeg.dll: %(VersionDir)s\
+kasko.dll: %(VersionDir)s\
+icudt.dll: %(VersionDir)s\
+icudtl.dat: %(VersionDir)s\
+libEGL.dll: %(VersionDir)s\
+libGLESv2.dll: %(VersionDir)s\
+nacl64.exe: %(VersionDir)s\
+nacl_irt_x86_32.nexe: %(VersionDir)s\
+nacl_irt_x86_64.nexe: %(VersionDir)s\
+natives_blob.bin: %(VersionDir)s\
+resources.pak: %(VersionDir)s\
+snapshot_blob.bin: %(VersionDir)s\
+syzyasan_rtl.dll: %(VersionDir)s\
+#
+# Sub directories living in the version dir
+#
+default_apps\*.crx: %(VersionDir)s\default_apps\
+default_apps\external_extensions.json: %(VersionDir)s\default_apps\
+Extensions\*.*: %(VersionDir)s\Extensions\
+locales\*.dll: %(VersionDir)s\Locales
+locales\*.pak: %(VersionDir)s\Locales
+
+[HIDPI]
+chrome_200_percent.pak: %(VersionDir)s\
+
+[TOUCH]
+
+[GOOGLE_CHROME]
+SecondaryTile.png: %(VersionDir)s\
+#
+# Widevine CDM sub-dir
+#
+WidevineCdm\manifest.json: %(VersionDir)s\WidevineCdm\
+WidevineCdm\_platform_specific\win_x86\widevinecdm.dll: %(VersionDir)s\WidevineCdm\_platform_specific\win_x86\
+WidevineCdm\_platform_specific\win_x86\widevinecdmadapter.dll: %(VersionDir)s\WidevineCdm\_platform_specific\win_x86\
+WidevineCdm\_platform_specific\win_x64\widevinecdm.dll: %(VersionDir)s\WidevineCdm\_platform_specific\win_x64\
+WidevineCdm\_platform_specific\win_x64\widevinecdmadapter.dll: %(VersionDir)s\WidevineCdm\_platform_specific\win_x64\
+#
+# Pepper Flash sub-dir.
+#
+PepperFlash\manifest.json: %(VersionDir)s\PepperFlash\
+PepperFlash\pepflashplayer.dll: %(VersionDir)s\PepperFlash\
+#
+# Win8 sub-dir.
+#
+# All or none of the following 3 files need to be present as the creation of
+# VisualElementsManifest.xml is based on the existence of
+# %(VersionDir)\VisualElements. On a similar note, no other files should be
+# packaged in this directory.
+Logo.png: %(VersionDir)s\VisualElements\
+SmallLogo.png: %(VersionDir)s\VisualElements\

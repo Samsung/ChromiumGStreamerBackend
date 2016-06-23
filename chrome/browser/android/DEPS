@@ -1,0 +1,20 @@
+include_rules = [
+  "-components/devtools_bridge",
+  "+cc/layers/layer.h",
+  "+components/devtools_discovery",
+  "+components/devtools_http_handler",
+  "+components/ntp_snippets",
+  "+components/service_tab_launcher",
+  "+components/toolbar",
+  "+components/web_contents_delegate_android",
+  "+sandbox/linux/seccomp-bpf/sandbox_bpf.h",
+  "+sync/android",
+  "+sync/test/fake_server/android",
+]
+
+specific_include_rules = {
+  # Special-case where monochrome composes chrome+webview
+  "monochrome_entry_point\.cc": [
+    "+android_webview",
+  ]
+}

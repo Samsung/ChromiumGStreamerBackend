@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<div id="root"></div>
+<div id="target"></div>
+<script src="../resources/js-test.js"></script>
+<script src="../resources/gc.js"></script>
+<script>
+  description("Test for observer exceptions.");
+  let rootDiv = document.getElementById("root");
+  var exc;
+
+  try {
+    new IntersectionObserver(e => {}, {threshold: [1.1]});
+    testFailed("IntersectionObserver constructor did not throw due to invalid threshold.");
+  } catch(e) {
+    exc = e;
+    shouldBeType("exc", "RangeError");
+  }
+
+  try {
+    new IntersectionObserver(e => {}, {rootMargin: "1"});
+    testFailed("IntersectionObserver constructor did not throw due to invalid rootMargin.");
+  } catch(e) {
+    exc = e;
+    shouldBeType("exc", "DOMException");
+    shouldBe("exc.code", "DOMException.SYNTAX_ERR");
+  }
+
+  try {
+    new IntersectionObserver(e => {}, {rootMargin: "2em"});
+    testFailed("IntersectionObserver constructor did not throw due to invalid rootMargin.");
+  } catch(e) {
+    exc = e;
+    shouldBeType("exc", "DOMException");
+    shouldBe("exc.code", "DOMException.SYNTAX_ERR");
+  }
+
+  try {
+    new IntersectionObserver(e => {}, {rootMargin: "auto"});
+    testFailed("IntersectionObserver constructor did not throw due to invalid rootMargin.");
+  } catch(e) {
+    exc = e;
+    shouldBeType("exc", "DOMException");
+    shouldBe("exc.code", "DOMException.SYNTAX_ERR");
+  }
+
+  let observer = new IntersectionObserver(c => {}, {});
+  try {
+    observer.observe("foo");
+    testFailed("IntersectionObserver.observe with a bad target argument did not throw.");
+  } catch(e) {
+    exc = e;
+    shouldBeType("exc", "TypeError");
+  }
+
+  observer = new IntersectionObserver(c => {}, {root: rootDiv});
+  rootDiv.parentNode.removeChild(rootDiv);
+  rootDiv = null;
+  gc();
+
+  try {
+    observer.observe(target);
+    testFailed("IntersectionObserver.observe() with a deleted root did not throw.");
+  } catch(e) {
+    exc = e;
+    shouldBeType("exc", "DOMException");
+    shouldBe("exc.code", "DOMException.INVALID_STATE_ERR");
+  }
+
+  try {
+    observer.unobserve(target);
+    testFailed("IntersectionObserver.unobserve() with a deleted root did not throw.");
+  } catch(e) {
+    exc = e;
+    shouldBeType("exc", "DOMException");
+    shouldBe("exc.code", "DOMException.INVALID_STATE_ERR");
+  }
+
+  try {
+    observer.disconnect();
+    testFailed("IntersectionObserver.disconnect() with a deleted root did not throw.");
+  } catch(e) {
+    exc = e;
+    shouldBeType("exc", "DOMException");
+    shouldBe("exc.code", "DOMException.INVALID_STATE_ERR");
+  }
+
+  try {
+    observer.takeRecords();
+    testFailed("IntersectionObserver.takeRecords() with a deleted root did not throw.");
+  } catch(e) {
+    exc = e;
+    shouldBeType("exc", "DOMException");
+    shouldBe("exc.code", "DOMException.INVALID_STATE_ERR");
+  }
+</script>

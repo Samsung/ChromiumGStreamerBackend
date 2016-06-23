@@ -1,0 +1,2 @@
+CONSOLE ERROR: line 9: Error: <foreignObject> attribute y: Expected length, "105.0e50".
+

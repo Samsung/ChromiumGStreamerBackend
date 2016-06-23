@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+# Copyright 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import os
+import sys
+
+
+from chrome_telemetry_build import chromium_config
+sys.path.append(chromium_config.GetTelemetryDir())
+
+from telemetry import record_wpr
+
+# This is required to resolve importing davclient in tools/perf/third_party/
+# when record_wpr try to dynamically discover benchmark classes.
+import third_party  # pylint: disable=unused-import
+
+
+if __name__ == '__main__':
+  sys.exit(record_wpr.Main(environment=chromium_config.ChromiumConfig()))

@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+PASS blur 
+PASS error 
+PASS focus 
+PASS load 
+PASS resize 
+PASS scroll 
+FAIL afterprint assert_equals: expected (function) function "function f() {
+  return 0;
+}" but got (undefined) undefined
+FAIL beforeprint assert_equals: expected (function) function "function f() {
+  return 0;
+}" but got (undefined) undefined
+PASS beforeunload 
+PASS hashchange 
+PASS languagechange 
+PASS message 
+PASS offline 
+PASS online 
+PASS pagehide 
+PASS pageshow 
+PASS popstate 
+PASS storage 
+PASS unload 
+Harness: the test ran to completion.
+

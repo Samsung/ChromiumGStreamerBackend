@@ -1,0 +1,19 @@
+<script>
+window.onmessage = function (e) {
+  var id = e.data['id'];
+  try {
+    var sw = window.navigator.serviceWorker;
+  } catch (e) {
+    window.top.postMessage({id: id, result:e.toString()}, '*');
+    return;
+  }
+
+  window.navigator.serviceWorker.getRegistration()
+    .then(function() {
+        window.top.postMessage({id: id, result:'ok'}, '*');
+      })
+    .catch(function(e) {
+        window.top.postMessage({id: id, result:e.toString()}, '*');
+      });
+};
+</script>

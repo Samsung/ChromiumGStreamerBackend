@@ -1,0 +1,35 @@
+<html>
+<head>
+
+<link rel="stylesheet" href="resources/test-mapping-many-scss/base.css">
+
+<script src="../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../http/tests/inspector/debugger-test.js"></script>
+<script src="./sass-test.js"></script>
+<script>
+
+function test()
+{
+    var header = InspectorTest.cssModel.styleSheetHeaders().find(header => !!header.sourceMapURL);
+    InspectorTest.loadASTMapping(header, onMappingLoaded);
+
+    function onMappingLoaded(map)
+    {
+        if (!map) {
+            InspectorTest.addResult("ERROR: mapping is not valid.");
+            InspectorTest.completeTest();
+            return;
+        }
+        InspectorTest.validateMapping(map);
+        InspectorTest.completeTest();
+    }
+}
+
+</script>
+
+</head>
+
+<body onload="runTest()">
+<p>Verifies mapping correctly loads multiple SCSS files.</p>
+</body>
+</html>

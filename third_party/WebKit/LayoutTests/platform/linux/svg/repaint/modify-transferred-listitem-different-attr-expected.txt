@@ -1,0 +1,106 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGText text id='target'",
+          "rect": [23, 8, 85, 23],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGRoot svg",
+          "rect": [23, 61, 85, 10],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutSVGText text id='source'",
+          "rect": [58, 45, 50, 26],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGInlineText #text",
+          "rect": [58, 61, 50, 10],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutSVGInlineText #text",
+          "rect": [103, 8, 5, 23],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'A'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox ' B C'",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'X'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox ' Y Z'",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGRoot svg",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutSVGText text id='target'",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGInlineText #text",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'A'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox ' B C'",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutSVGText text id='source'",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGInlineText #text",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'X Y Z'",
+      "reason": "incremental"
+    }
+  ]
+}
+

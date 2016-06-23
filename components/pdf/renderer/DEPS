@@ -1,0 +1,6 @@
+include_rules = [
+  "+gin",
+  "+grit/components_scaled_resources.h",
+  "+skia/ext",
+  "+ui/gfx",
+]

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>This test ensures that media element fires the "playing" event every time it starts playing after eos. It also ensure that "pause" and "ended" events are fired when media playback ends.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="media-file.js"></script>
+<audio></audio>
+<script>
+// TODO(srirama.m): Modify the test to record events and check for order
+// at the end of test. See autoplay-with-preload-none.html for help.
+async_test(function(t) {
+    var loop = true;
+    var audio = document.querySelector("audio");
+    audio.src = findMediaFile("audio", "content/silence");
+
+    audio.onloadedmetadata = t.step_func(function() {
+        audio.onplaying = t.step_func(mediaPlaying);
+
+        audio.onpause = t.step_func(function() {
+            assert_true(audio.paused);
+        });
+
+        audio.onended = t.step_func(function() {
+            assert_true(audio.ended, true);
+
+            if (!loop) {
+                t.done();
+                return;
+            }
+
+            loop = false;
+            audio.onplaying = t.step_func(mediaPlaying);
+            audio.play();
+        });
+
+        audio.play();
+    });
+
+    function mediaPlaying() {
+        audio.onplaying = null;
+        audio.currentTime = audio.duration - 0.2;
+    }
+});
+</script>

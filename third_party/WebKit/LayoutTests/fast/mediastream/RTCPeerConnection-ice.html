@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+<!-- TODO(guidou): Convert test to testharness.js. crbug.com/614963 -->
+</head>
+<body>
+<script>
+description("Tests the RTCPeerConnection Ice functionality.");
+
+var pc = null;
+var iceCandidate = null;
+
+function onIceChange2()
+{
+    if (pc.iceConnectionState === "closed") {
+        testPassed("iceConnectionState is closed.");
+        finishJSTest();
+    }
+}
+
+function addIceCandidateSuccess1()
+{
+    testPassed("addIceCandidateSuccess1 was called.");
+    shouldNotThrow('pc.addIceCandidate({candidate: "candidate", sdpMid: 0}, addIceCandidateSuccess2, unexpectedCallback);');
+}
+
+function addIceCandidateSuccess2()
+{
+    testPassed("addIceCandidateSuccess2 was called.");
+    shouldNotThrow('pc.addIceCandidate({candidate: "candidate", sdpMLineIndex: 0}, addIceCandidateSuccess3, unexpectedCallback);');
+}
+
+function addIceCandidateSuccess3()
+{
+    testPassed("addIceCandidateSuccess3 was called.");
+    shouldNotThrow('pc.addIceCandidate({candidate: "candidate", sdpMid: 0, sdpMLineIndex: 0}, addIceCandidateSuccess4, unexpectedCallback);');
+}
+
+function addIceCandidateSuccess4()
+{
+    testPassed("addIceCandidateSuccess4 was called.");
+    pc.oniceconnectionstatechange = onIceChange2;
+    pc.close();
+}
+
+function unexpectedCallback()
+{
+    testFailed("unexpectedCallback was called.");
+    finishJSTest();
+}
+
+function expectedTypeError(error)
+{
+  window.error = error;
+  shouldBe('error.name', '"TypeError"');
+  testPassed("expectedTypeError was called.");
+}
+
+function onIceChange1()
+{
+    if (pc.iceConnectionState === "completed") {
+        testPassed("iceConnectionState is completed");
+        iceCandidate = new RTCIceCandidate({candidate:"nano nano"});
+        shouldNotThrow('pc.addIceCandidate(null, unexpectedCallback, unexpectedCallback).catch(expectedTypeError);');
+        shouldNotThrow('pc.addIceCandidate({candidate: "candidate"}, unexpectedCallback, unexpectedCallback).catch(expectedTypeError);');
+        shouldNotThrow('pc.addIceCandidate(iceCandidate, null, unexpectedCallback).catch(expectedTypeError);');
+        shouldNotThrow('pc.addIceCandidate(iceCandidate, unexpectedCallback, null).catch(expectedTypeError);');
+        shouldNotThrow('pc.addIceCandidate(iceCandidate, addIceCandidateSuccess1, unexpectedCallback);');
+    }
+}
+
+function testExecutionOrderClosedConnection()
+{
+    var localPeerConnection = new webkitRTCPeerConnection(null, null);
+    localPeerConnection.close();
+    var counter = 0;
+    window.events = [];
+    Promise.resolve().then(_ => events[counter++] = 1);
+    var iceCandidate = new RTCIceCandidate({candidate:"nano nano"});
+    localPeerConnection.addIceCandidate(iceCandidate, unexpectedCallback, error => {
+        window.error = error;
+        shouldBe('error.name', '"InvalidStateError"');
+        shouldBe('error.toString()', '"InvalidStateError: The RTCPeerConnection\'s signalingState is \'closed\'."');
+        events[counter++] = 2;
+    });
+    Promise.resolve().then(_ => {
+        events[counter++] = 3; 
+        shouldBe('events', '[1,2,3]');
+    });
+}
+
+shouldNotThrow('testExecutionOrderClosedConnection()');
+shouldNotThrow('pc = new webkitRTCPeerConnection(null, null);');
+pc.oniceconnectionstatechange = onIceChange1;
+
+window.jsTestIsAsync = true;
+window.successfullyParsed = true;
+</script>
+</body>
+</html>

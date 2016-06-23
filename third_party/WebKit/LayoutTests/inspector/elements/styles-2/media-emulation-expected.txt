@@ -1,0 +1,60 @@
+Tests that emulated CSS media is reflected in the Styles pane.
+
+Original style:
+[expanded] 
+element.style { ()
+
+[expanded] 
+#main { (media-emulation.html:5 -> media-emulation.html:5:1)
+    color: red;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+print media emulated:
+[expanded] 
+element.style { ()
+
+[expanded] 
+@media print
+#main { (media-emulation.html:8 -> media-emulation.html:8:1)
+    color: black;
+
+[expanded] 
+#main { (media-emulation.html:5 -> media-emulation.html:5:1)
+/-- overloaded --/     color: red;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+tty media emulated:
+[expanded] 
+element.style { ()
+
+[expanded] 
+#main { (media-emulation.html:12 -> media-emulation.html:12:1)
+    color: green;
+
+[expanded] 
+#main { (media-emulation.html:5 -> media-emulation.html:5:1)
+/-- overloaded --/     color: red;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+No media emulated:
+[expanded] 
+element.style { ()
+
+[expanded] 
+#main { (media-emulation.html:5 -> media-emulation.html:5:1)
+    color: red;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+

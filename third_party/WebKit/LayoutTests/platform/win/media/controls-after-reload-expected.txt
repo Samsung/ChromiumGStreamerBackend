@@ -1,0 +1,39 @@
+layer at (0,0) size 800x600
+  LayoutView at (0,0) size 800x600
+layer at (0,0) size 800x600
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (8,8) size 784x584
+      LayoutBlockFlow {P} at (0,0) size 784x18
+        LayoutText {#text} at (0,0) size 368x17
+          text run at (0,0) width 368: "Making sure the controller looks ok after a second load()."
+      LayoutBlockFlow (anonymous) at (0,34) size 784x240
+        LayoutText {#text} at (0,0) size 0x0
+layer at (8,42) size 320x240
+  LayoutVideo {VIDEO} at (0,0) size 320x240
+layer at (8,42) size 320x240
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 320x240
+    LayoutBlockFlow {DIV} at (0,208) size 320x32
+layer at (8,42) size 320x198
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 320x198
+layer at (8,250) size 320x32 scrollHeight 40
+  LayoutFlexibleBox (relative positioned) {DIV} at (0,0) size 320x32 [bgcolor=#FAFAFA]
+    LayoutButton {INPUT} at (0,0) size 32x32
+    LayoutFlexibleBox {DIV} at (32,0) size 24x32 [color=#5A5A5A]
+      LayoutBlockFlow (anonymous) at (0,0) size 24x32
+        LayoutText {#text} at (0,8) size 24x15
+          text run at (0,8) width 24: "0:00"
+    LayoutFlexibleBox {DIV} at (56,0) size 34x32 [color=#5A5A5A]
+      LayoutBlockFlow (anonymous) at (4,0) size 30x32
+        LayoutText {#text} at (0,8) size 30x15
+          text run at (0,8) width 30: "/ 0:06"
+    LayoutSlider {INPUT} at (108,15) size 69x2
+      LayoutFlexibleBox {DIV} at (0,0) size 69x2
+        LayoutBlockFlow {DIV} at (-18,-23) size 105x48
+          LayoutBlockFlow {DIV} at (0,0) size 36x48
+    LayoutButton {INPUT} at (195,0) size 32x32
+    LayoutSlider {INPUT} at (245,15) size 25x2
+      LayoutFlexibleBox {DIV} at (0,0) size 25x2
+        LayoutBlockFlow {DIV} at (-18,-23) size 61x48
+          LayoutBlockFlow {DIV} at (25,0) size 36x48
+layer at (296,250) size 32x32
+  LayoutButton {INPUT} at (288,0) size 32x32
