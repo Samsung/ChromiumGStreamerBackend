@@ -110,6 +110,7 @@ class DBMessageFilter;
 class DevToolsAgentFilter;
 class DomStorageDispatcher;
 class EmbeddedWorkerDispatcher;
+class FrameSwapMessageQueue;
 class IndexedDBDispatcher;
 class InputHandlerManager;
 class MediaChannelHost;
@@ -231,6 +232,16 @@ class CONTENT_EXPORT RenderThreadImpl
   // blink::scheduler::RendererScheduler::RAILModeObserver implementation.
   void OnRAILModeChanged(v8::RAILMode rail_mode) override;
 
+#if defined(USE_GSTREAMER)
+  // Synchronously establish a channel to the media process if not previously
+  // established or if it has been lost or get the current channel.
+  MediaPlayerChannelHost* EstablishMediaChannelSync(
+      CauseForMediaLaunch = CAUSE_FOR_MEDIA_LAUNCH_RENDERER);
+
+  // Get media channel if it is created and not lost.
+  MediaPlayerChannelHost* GetMediaChannel();
+#endif
+
   // Synchronously establish a channel to the GPU plugin if not previously
   // established or if it has been lost (for example if the GPU plugin crashed).
   // If there is a pending asynchronous request, it will be completed by the
@@ -242,16 +253,6 @@ class CONTENT_EXPORT RenderThreadImpl
       int routing_id,
       scoped_refptr<FrameSwapMessageQueue> frame_swap_message_queue,
       const GURL& url);
-
-#if defined(USE_GSTREAMER)
-  // Synchronously establish a channel to the media process if not previously
-  // established or if it has been lost or get the current channel.
-  MediaPlayerChannelHost* EstablishMediaChannelSync(
-      CauseForMediaLaunch = CAUSE_FOR_MEDIA_LAUNCH_RENDERER);
-
-  // Get media channel if it is created and not lost.
-  MediaPlayerChannelHost* GetMediaChannel();
-#endif
 
   std::unique_ptr<cc::SwapPromise> RequestCopyOfOutputForLayoutTest(
       int32_t routing_id,
