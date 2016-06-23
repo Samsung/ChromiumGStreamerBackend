@@ -2622,7 +2622,8 @@ blink::WebMediaPlayer* RenderFrameImpl::createMediaPlayer(
     blink::WebMediaPlayer* player_gst = new media::WebMediaPlayerGStreamer(
         frame_, client, encrypted_client,
         GetWebMediaPlayerDelegate()->AsWeakPtr(),
-        initial_cdm, new RenderMediaLog());
+        initial_cdm, new RenderMediaLog(
+            blink::WebStringToGURL(frame_->getSecurityOrigin().toString())));
 
     if (!player_gst) {
       LOG(ERROR) << "Failed to create WebMediaPlayerGStreamer";
