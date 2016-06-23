@@ -223,8 +223,13 @@ static void chromium_http_src_init(ChromiumHttpSrc* src) {
   priv->gst_data_source_ = nullptr;
   priv->data_source_initialized_ = false;
 
-  priv->aborted_ = new base::WaitableEvent{true, false};
-  priv->read_complete_ = new base::WaitableEvent{false, false};
+  priv->aborted_ = new base::WaitableEvent(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  priv->read_complete_ = new base::WaitableEvent(
+      base::WaitableEvent::ResetPolicy::AUTOMATIC,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   gst_base_src_set_blocksize(GST_BASE_SRC(src), DEFAULT_BLOCKSIZE);
 }
