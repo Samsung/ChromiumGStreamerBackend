@@ -107,6 +107,7 @@ class DBMessageFilter;
 class DevToolsAgentFilter;
 class DomStorageDispatcher;
 class EmbeddedWorkerDispatcher;
+class FrameSwapMessageQueue;
 class IndexedDBDispatcher;
 class InputHandlerManager;
 class MediaChannelHost;
@@ -226,19 +227,6 @@ class CONTENT_EXPORT RenderThreadImpl
   bool AreImageDecodeTasksEnabled() override;
   bool IsThreadedAnimationEnabled() override;
 
-  // Synchronously establish a channel to the GPU plugin if not previously
-  // established or if it has been lost (for example if the GPU plugin crashed).
-  // If there is a pending asynchronous request, it will be completed by the
-  // time this routine returns.
-  scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync(CauseForGpuLaunch);
-
-<<<<<<< HEAD
-  std::unique_ptr<cc::OutputSurface> CreateCompositorOutputSurface(
-      bool use_software,
-      int routing_id,
-      scoped_refptr<FrameSwapMessageQueue> frame_swap_message_queue,
-      const GURL& url);
-=======
 #if defined(USE_GSTREAMER)
   // Synchronously establish a channel to the media process if not previously
   // established or if it has been lost or get the current channel.
@@ -248,7 +236,18 @@ class CONTENT_EXPORT RenderThreadImpl
   // Get media channel if it is created and not lost.
   MediaPlayerChannelHost* GetMediaChannel();
 #endif
->>>>>>> Add GStreamer backend for media playback in Chromium.
+
+  // Synchronously establish a channel to the GPU plugin if not previously
+  // established or if it has been lost (for example if the GPU plugin crashed).
+  // If there is a pending asynchronous request, it will be completed by the
+  // time this routine returns.
+  scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync(CauseForGpuLaunch);
+
+  std::unique_ptr<cc::OutputSurface> CreateCompositorOutputSurface(
+      bool use_software,
+      int routing_id,
+      scoped_refptr<FrameSwapMessageQueue> frame_swap_message_queue,
+      const GURL& url);
 
   // True if we are running layout tests. This currently disables forwarding
   // various status messages to the console, skips network error pages, and
