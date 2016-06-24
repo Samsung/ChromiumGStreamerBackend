@@ -227,7 +227,7 @@ It should open a file then put the following flags inside:
   is_clang = false
   use_sysroot = false
   proprietary_codecs = true
-  ffmpeg_branding = Chrome
+  ffmpeg_branding = "Chrome"
   is_component_build = true
   enable_nacl = false
   media_use_ffmpeg = false
