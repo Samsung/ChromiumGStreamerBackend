@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(
   RunsAudioVideoCall60SecsAndLogsInternalMetrics("VP9");
 }
 
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(RTC_USE_H264) && !defined(MEDIA_DISABLE_FFMPEG)
 
 IN_PROC_BROWSER_TEST_F(
     WebRtcPerfBrowserTest,
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(
   RunsAudioVideoCall60SecsAndLogsInternalMetrics("H264");
 }
 
-#endif  // BUILDFLAG(RTC_USE_H264)
+#endif  // BUILDFLAG(RTC_USE_H264) && !defined(MEDIA_DISABLE_FFMPEG)
 
 IN_PROC_BROWSER_TEST_F(
     WebRtcPerfBrowserTest,

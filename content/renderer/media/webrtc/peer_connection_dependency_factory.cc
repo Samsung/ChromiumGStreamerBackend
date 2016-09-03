@@ -168,7 +168,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
 
   DVLOG(1) << "PeerConnectionDependencyFactory::CreatePeerConnectionFactory()";
 
-#if BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(RTC_USE_H264) && !defined(MEDIA_DISABLE_FFMPEG)
   // Building /w |rtc_use_h264|, is the corresponding run-time feature enabled?
   if (base::FeatureList::IsEnabled(kWebRtcH264WithOpenH264FFmpeg)) {
     // |H264DecoderImpl| may be used which depends on FFmpeg, therefore we need
@@ -178,6 +178,8 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
     // Feature is to be disabled, no need to make sure FFmpeg is initialized.
     webrtc::DisableRtcUseH264();
   }
+#else
+  webrtc::DisableRtcUseH264();
 #endif
 
   base::MessageLoop::current()->AddDestructionObserver(this);
