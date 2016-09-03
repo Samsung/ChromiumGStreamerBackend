@@ -21,6 +21,8 @@ if (is_android) {
 }
 
 declare_args() {
+  use_gstreamer = is_linux
+
   enable_pdf = !is_android && !is_ios && !is_chromecast
 
   # Enables Native Client support.

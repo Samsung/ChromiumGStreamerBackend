@@ -539,6 +539,12 @@ source_set("common") {
       "external_ipc_dumper.h",
     ]
   }
+
+  if (use_gstreamer) {
+    configs += [
+      "//build/config/linux:gstreamer"
+    ]
+  }
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.

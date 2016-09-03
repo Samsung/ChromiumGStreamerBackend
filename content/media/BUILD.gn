@@ -1,0 +1,86 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//media/media_options.gni")
+
+# See //content/BUILD.gn for how this works.
+group("media") {
+  visibility = [ "//content/*" ]  # This is an internal content API.
+
+  if (is_component_build) {
+    public_deps = [
+      "//content",
+    ]
+  } else {
+    public_deps = [
+      ":media_sources",
+    ]
+  }
+}
+
+source_set("media_sources") {
+  # This is an internal content API. Code outside of the content "component"
+  # (like content/test and content/shell) should depend on ":media" above.
+  visibility = [ "//content/*" ]
+
+  configs += [
+    "//build/config/linux:gstreamer"
+  ]
+
+  sources = [
+    "in_process_media_thread.cc",
+    "in_process_media_thread.h",
+    "media_child_thread.cc",
+    "media_child_thread.h",
+    "media_main.cc",
+    "media_process.cc",
+    "media_process.h",
+    "gstreamer/gpuprocess/client_egl.h",
+    "gstreamer/gpuprocess/client_egl.cc",
+    "gstreamer/gpuprocess/gstglcontext_gpu_process.c",
+    "gstreamer/gpuprocess/gstglcontext_gpu_process.h",
+    "gstreamer/gpuprocess/gstgldisplay_gpu_process.c",
+    "gstreamer/gpuprocess/gstgldisplay_gpu_process.h",
+    "gstreamer/gpuprocess/gstglwindow_gpu_process.c",
+    "gstreamer/gpuprocess/gstglwindow_gpu_process.h",
+    "gstreamer/gst_chromium_http_source.cc",
+    "gstreamer/gst_chromium_http_source.h",
+    "gstreamer/gst_chromium_media_src.cc",
+    "gstreamer/gst_chromium_media_src.h",
+    "gstreamer/gst_chromium_aes_ctr.cc",
+    "gstreamer/gst_chromium_aes_ctr.h",
+    "gstreamer/gst_chromium_common_encryption_decryptor.cc",
+    "gstreamer/gst_chromium_common_encryption_decryptor.h",
+    "gstreamer/media_player_gstreamer.cc",
+    "gstreamer/media_player_gstreamer.h",
+  ]
+
+  configs += [ "//content:content_implementation" ]
+
+  deps = [
+    "//base",
+    "//base/third_party/dynamic_annotations",
+    "//components/tracing",
+    "//content:export",
+    "//content:export",
+    "//content/child",
+    "//content/common",
+    "//content/public/child:child_sources",
+    "//content/public/common:common_sources",
+    "//gpu:gpu",
+    "//gpu/ipc/common:command_buffer_traits",
+    "//ipc",
+    "//services/shell/public/interfaces",
+    "//skia",
+    "//ui/events/ipc",
+    "//ui/gfx/ipc",
+    "//ui/gl",
+    "//ui/gl/init",
+  ]
+
+  if (use_x11) {
+    deps += [ "//ui/events/platform/x11" ]
+  }
+}
