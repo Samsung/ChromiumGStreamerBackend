@@ -21,6 +21,8 @@ if (is_android) {
 }
 
 declare_args() {
+  use_gstreamer = is_linux
+
   # Multicast DNS.
   enable_mdns = is_win || is_linux
 

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//content/browser/browser.gni")
+import("//build/config/features.gni")
 import("//build/config/ui.gni")
 
 # See //content/BUILD.gn for how this works.
@@ -72,5 +73,12 @@ source_set("browser_sources") {
   if (use_aura) {
     sources -= [ "context_factory.h" ]
     deps += [ "//ui/aura" ]
+  }
+
+  if (use_gstreamer) {
+    sources += [
+      "media_data_manager.h",
+      "media_data_manager_observer.h",
+    ]
   }
 }

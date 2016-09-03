@@ -71,6 +71,11 @@ if (!is_nacl_nonsfi) {
     content_shared_components +=
         [ "//content/ppapi_plugin:ppapi_plugin_sources" ]
   }
+
+  if (use_gstreamer) {
+    content_shared_components +=
+        [ "//content/media:media_sources" ]
+  }
 }
 
 if (is_component_build) {

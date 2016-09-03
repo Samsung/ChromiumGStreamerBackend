@@ -489,6 +489,21 @@ source_set("browser") {
     configs += [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]
   }
 
+  if (use_gstreamer) {
+    sources += [
+      "media/media_data_manager_impl.cc",
+      "media/media_data_manager_impl.h",
+      "media/media_data_manager_impl_private.cc",
+      "media/media_data_manager_impl_private.h",
+      "media/media_process_host.cc",
+      "media/media_process_host.h",
+      "media/media_process_host_ui_shim.cc",
+      "media/media_process_host_ui_shim.h",
+      "renderer_host/media_message_filter.cc",
+      "renderer_host/media_message_filter.h",
+    ]
+  }
+
   if (use_minikin_hyphenation) {
     sources += [
       "hyphenation/hyphenation_impl.cc",

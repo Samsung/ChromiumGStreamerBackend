@@ -286,6 +286,10 @@ target(link_target_type, "child") {
     "//content:content_implementation",
     "//build/config/compiler:no_size_t_to_int_warning",
   ]
+
+  if (use_gstreamer) {
+    visibility += [ "//content/media/*" ]
+  }
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.
