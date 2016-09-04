@@ -269,7 +269,6 @@ void AesDecryptor::CreateSessionAndGenerateRequest(
   // TODO(jrummell): Validate |session_type|.
 
   std::vector<uint8_t> message;
-<<<<<<< HEAD
   std::vector<std::vector<uint8_t>> keys;
   switch (init_data_type) {
     case EmeInitDataType::WEBM:
