@@ -148,8 +148,7 @@ MediaChildThread::CreateSharedContextProvider() {
 
     if (!provider_.get()) {
       if (!gpu_channel_.get())
-        EstablishGpuChannelSync(
-            CAUSE_FOR_GPU_LAUNCH_MEDIA_GSTREAMER_CONTEXT_INITIALIZE);
+        EstablishGpuChannelSync();
 
       if (!gpu_channel_.get())
         return nullptr;
@@ -178,44 +177,49 @@ MediaChildThread::CreateSharedContextProvider() {
   return provider_;
 }
 
-gpu::GpuChannelHost* MediaChildThread::EstablishGpuChannelSync(
-    CauseForGpuLaunch cause_for_gpu_launch) {
+scoped_refptr<gpu::GpuChannelHost> MediaChildThread::EstablishGpuChannelSync() {
   TRACE_EVENT0("media", "MediaChildThread::EstablishGpuChannelSync");
 
-  if (gpu_channel_.get()) {
+  if (gpu_channel_) {
     // Do nothing if we already have a GPU channel or are already
     // establishing one.
     if (!gpu_channel_->IsLost())
-      return gpu_channel_.get();
+      return gpu_channel_;
 
     // Recreate the channel if it has been lost.
     gpu_channel_->DestroyChannel();
-    gpu_channel_ = NULL;
+    gpu_channel_ = nullptr;
   }
 
-  // Ask the browser for the channel name.
-  int client_id = 0;
-  IPC::ChannelHandle channel_handle;
-  gpu::GPUInfo gpu_info;
-  if (!Send(new ChildProcessHostMsg_EstablishGpuChannel(
-      cause_for_gpu_launch, &client_id,
-      &channel_handle, &gpu_info)) ||
-#if defined(OS_POSIX)
-      channel_handle.socket.fd == -1 ||
+  if (!IsRunningInMash()) {
+    int client_id = 0;
+    IPC::ChannelHandle channel_handle;
+    gpu::GPUInfo gpu_info;
+    // Ask the browser for the channel name.
+    if (!Send(new ChildProcessHostMsg_EstablishGpuChannel(
+            &client_id, &channel_handle, &gpu_info)) ||
+        !channel_handle.mojo_handle.is_valid()) {
+      // Otherwise cancel the connection.
+      return nullptr;
+    }
+    GetContentClient()->SetGpuInfo(gpu_info);
+
+    // Cache some variables that are needed on the compositor thread for our
+    // implementation of GpuChannelHostFactory.
+    io_thread_task_runner_ = ChildProcess::current()->io_task_runner();
+
+    gpu_channel_ =
+        gpu::GpuChannelHost::Create(this, client_id, gpu_info, channel_handle,
+                                    ChildProcess::current()->GetShutDownEvent(),
+                                    gpu_memory_buffer_manager());
+  } else {
+#if defined(USE_AURA)
+    gpu_channel_ = gpu_service_->EstablishGpuChannelSync();
+#else
+    NOTREACHED();
 #endif
-      channel_handle.name.empty()) {
-    // Otherwise cancel the connection.
-    return NULL;
   }
-
-  GetContentClient()->SetGpuInfo(gpu_info);
-
-  io_thread_task_runner_ = ChildProcess::current()->io_task_runner();
-
-  gpu_channel_ = gpu::GpuChannelHost::Create(
-      this, client_id, gpu_info, channel_handle,
-      ChildProcess::current()->GetShutDownEvent(), gpu_memory_buffer_manager());
-  return gpu_channel_.get();
+  return gpu_channel_;
 }
 
 bool MediaChildThread::IsMainThread() {

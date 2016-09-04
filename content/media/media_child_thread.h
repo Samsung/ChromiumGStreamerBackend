@@ -79,7 +79,7 @@ class MediaChildThread : public ChildThreadImpl, public gpu::GpuChannelHostFacto
   // established or if it has been lost (for example if the GPU plugin crashed).
   // If there is a pending asynchronous request, it will be completed by the
   // time this routine returns.
-  gpu::GpuChannelHost* EstablishGpuChannelSync(CauseForGpuLaunch);
+  scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync(CauseForGpuLaunch);
 
   // Message handlers.
   void OnInitialize();
