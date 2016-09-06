@@ -34,7 +34,6 @@ struct ChannelHandle;
 namespace content {
 class BrowserChildProcessHostImpl;
 class MediaMainThread;
-class MojoApplicationHost;
 class RenderWidgetHelper;
 class InProcessChildThreadParams;
 
@@ -55,8 +54,7 @@ class GpuMessageFilter : public BrowserMessageFilter {
   ~GpuMessageFilter() override;
 
   // Message handlers called on the browser IO thread:
-  void OnEstablishGpuChannel(CauseForGpuLaunch,
-                             IPC::Message* reply);
+  void OnEstablishGpuChannel(IPC::Message* reply);
   void EstablishGpuChannelCallback(std::unique_ptr<IPC::Message> reply,
                                 const IPC::ChannelHandle& channel,
                                 const gpu::GPUInfo& gpu_info);
@@ -101,9 +99,6 @@ class MediaProcessHost : public BrowserChildProcessHostDelegate,
   CONTENT_EXPORT static void RegisterMediaMainThreadFactory(
       MediaMainThreadFactoryFunction create);
 
-  // BrowserChildProcessHostDelegate implementation.
-  ServiceRegistry* GetServiceRegistry() override;
-
   // Get the media process host for the media process with the given ID. Returns
   // null if the process no longer exists.
   static MediaProcessHost* FromID(int host_id);
@@ -127,6 +122,8 @@ class MediaProcessHost : public BrowserChildProcessHostDelegate,
   void ForceShutdown();
 
  private:
+  class ConnectionFilterImpl;
+
   static bool ValidateHost(MediaProcessHost* host);
 
   MediaProcessHost(int host_id, MediaProcessKind kind);
@@ -153,7 +150,7 @@ class MediaProcessHost : public BrowserChildProcessHostDelegate,
   void OnInitialized(bool result);
   void OnChannelEstablished(const IPC::ChannelHandle& channel_handle);
 
-  bool LaunchMediaProcess(const std::string& channel_id);
+  bool LaunchMediaProcess();
 
   void SendOutstandingReplies();
 
@@ -199,11 +196,6 @@ class MediaProcessHost : public BrowserChildProcessHostDelegate,
   // away, it posts a task to the IO thread to destroy it there, so we know that
   // it's valid if non-NULL.
   GpuMessageFilter* gpu_message_filter_;
-
-  // Browser-side Mojo endpoint which sets up a Mojo channel with the child
-  // process and contains the browser's ServiceRegistry.
-  const std::string child_token_;
-  std::unique_ptr<MojoApplicationHost> mojo_application_host_;
 
   // TODO: because of assert in debug mode we had to split weak factory for UI
   // and IO threads.

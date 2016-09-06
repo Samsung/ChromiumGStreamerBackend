@@ -35,6 +35,7 @@
         '<(DEPTH)/services/shell/shell.gyp:catalog_manifest',
         'content_app_browser_manifest',
         'content_app_gpu_manifest',
+        'content_app_media_manifest',
         'content_app_renderer_manifest',
         'content_app_utility_manifest',
       ],

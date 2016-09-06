@@ -14,6 +14,7 @@
       // We allow the browser to connect to any interfaces exposed by its child
       // processes.
       "exe:content_gpu": { "classes": [ "all_interfaces" ] },
+      "exe:content_media": { "classes": [ "all_interfaces" ] },
       "exe:content_plugin": { "classes": [ "all_interfaces" ] },
       "exe:content_renderer": { "classes": [ "all_interfaces" ] },
       "exe:content_utility": { "classes": [ "all_interfaces" ] },

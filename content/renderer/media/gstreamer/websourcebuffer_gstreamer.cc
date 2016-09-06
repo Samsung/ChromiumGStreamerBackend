@@ -21,7 +21,7 @@ static base::TimeDelta DoubleToTimeDelta(double time) {
   DCHECK_NE(time, -std::numeric_limits<double>::infinity());
 
   if (time == std::numeric_limits<double>::infinity())
-    return kInfiniteDuration();
+    return kInfiniteDuration;
 
   // Don't use base::TimeDelta::Max() here, as we want the largest finite time
   // delta.
@@ -43,7 +43,7 @@ WebSourceBufferGStreamer::WebSourceBufferGStreamer(
       message_dispatcher_(message_dispatcher),
       client_(NULL),
       initialization_segment_received(false),
-      append_window_end_(kInfiniteDuration()) {
+      append_window_end_(kInfiniteDuration) {
   DCHECK(message_dispatcher);
 }
 
@@ -81,6 +81,10 @@ blink::WebTimeRanges WebSourceBufferGStreamer::buffered() {
   }
 
   return result;
+}
+
+double WebSourceBufferGStreamer::highestPresentationTimestamp() {
+  return 0;
 }
 
 bool WebSourceBufferGStreamer::evictCodedFrames(double currentPlaybackTime,

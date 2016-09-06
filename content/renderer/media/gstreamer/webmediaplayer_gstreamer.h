@@ -28,7 +28,6 @@
 #include "media/base/renderer_factory.h"
 #include "media/base/text_track.h"
 #include "media/base/time_delta_interpolator.h"
-#include "media/blink/buffered_data_source.h"
 #include "media/blink/buffered_data_source_host_impl.h"
 #include "media/blink/webmediaplayer_delegate.h"
 #include "media/blink/webmediaplayer_util.h"
@@ -36,6 +35,7 @@
 #include "third_party/WebKit/public/platform/WebMediaPlayer.h"
 #include "third_party/WebKit/public/platform/WebMediaPlayerClient.h"
 #include "third_party/WebKit/public/platform/WebSetSinkIdCallbacks.h"
+#include "third_party/WebKit/public/platform/WebSize.h"
 #include "url/gurl.h"
 
 namespace base {

@@ -9,12 +9,11 @@
 
 #include "base/callback.h"
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
-#include "components/scheduler/base/task_queue.h"
-#include "components/scheduler/child/web_task_runner_impl.h"
 #include "content/child/child_process.h"
-#include "content/child/child_thread_impl.h"
 #include "content/child/web_url_loader_impl.h"
+#include "content/media/media_child_thread.h"
 #include "url/gurl.h"
 
 #define DEFAULT_BLOCKSIZE 4 * 1024

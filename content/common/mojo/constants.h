@@ -11,6 +11,7 @@ namespace content {
 
 extern const char CONTENT_EXPORT kBrowserMojoApplicationName[];
 extern const char CONTENT_EXPORT kGpuMojoApplicationName[];
+extern const char CONTENT_EXPORT kMediaMojoApplicationName[];
 extern const char CONTENT_EXPORT kPluginMojoApplicationName[];
 extern const char CONTENT_EXPORT kRendererMojoApplicationName[];
 extern const char CONTENT_EXPORT kUtilityMojoApplicationName[];

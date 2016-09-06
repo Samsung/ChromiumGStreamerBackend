@@ -227,6 +227,8 @@ MojoShellContext::MojoShellContext() {
                                            IDR_MOJO_CONTENT_BROWSER_MANIFEST);
     manifest_provider->AddManifestResource(kGpuMojoApplicationName,
                                            IDR_MOJO_CONTENT_GPU_MANIFEST);
+    manifest_provider->AddManifestResource(kMediaMojoApplicationName,
+                                           IDR_MOJO_CONTENT_MEDIA_MANIFEST);
     manifest_provider->AddManifestResource(kPluginMojoApplicationName,
                                            IDR_MOJO_CONTENT_PLUGIN_MANIFEST);
     manifest_provider->AddManifestResource(kRendererMojoApplicationName,

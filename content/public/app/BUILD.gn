@@ -21,6 +21,7 @@
 #       //content/public/app:both_sources (source set)
 
 import("//build/config/chrome_build.gni")
+import("//build/config/features.gni")
 import("//services/shell/public/service_manifest.gni")
 
 public_app_shared_sources = [
@@ -184,6 +185,14 @@ service_manifest("gpu_manifest") {
   type = "exe"
   name = "content_gpu"
   source = "mojo/content_gpu_manifest.json"
+}
+
+if (use_gstreamer) {
+  service_manifest("media_manifest") {
+    type = "exe"
+    name = "content_media"
+    source = "mojo/content_media_manifest.json"
+  }
 }
 
 service_manifest("plugin_manifest") {
