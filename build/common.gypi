@@ -134,11 +134,8 @@
             # Whether we're a traditional desktop unix.
             ['(OS=="linux" or OS=="freebsd" or OS=="openbsd" or OS=="solaris") and chromeos==0', {
               'desktop_linux%': 1,
-              'use_gstreamer%': 1,
-              'use_sysroot%': 0,
             }, {
               'desktop_linux%': 0,
-              'use_gstreamer%': 0,
             }],
 
             # Embedded implies ozone.
@@ -167,7 +164,6 @@
         'use_aura%': '<(use_aura)',
         'use_ash%': '<(use_ash)',
         'use_cras%': '<(use_cras)',
-        'use_gstreamer%': '<(use_gstreamer)',
         'use_ozone%': '<(use_ozone)',
         'embedded%': '<(embedded)',
         'use_libpci%': '<(use_libpci)',
@@ -353,7 +349,6 @@
       'use_aura%': '<(use_aura)',
       'use_ash%': '<(use_ash)',
       'use_cras%': '<(use_cras)',
-      'use_gstreamer%': '<(use_gstreamer)',
       'use_libpci%': '<(use_libpci)',
       'use_ozone%': '<(use_ozone)',
       'use_ozone_evdev%': '<(use_ozone_evdev)',
@@ -1147,7 +1142,6 @@
     'use_glib%': '<(use_glib)',
     'use_pango%': '<(use_pango)',
     'use_cairo%': '<(use_cairo)',
-    'use_gstreamer%': '<(use_gstreamer)',
     'use_ozone%': '<(use_ozone)',
     'use_ozone_evdev%': '<(use_ozone_evdev)',
     'use_xkbcommon%': '<(use_xkbcommon)',
@@ -2691,9 +2685,6 @@
       }],
       ['use_cairo==1', {
         'defines': ['USE_CAIRO=1'],
-      }],
-      ['use_gstreamer==1', {
-        'defines': ['USE_GSTREAMER=1'],
       }],
       ['use_cras==1', {
         'defines': ['USE_CRAS=1'],

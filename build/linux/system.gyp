@@ -1266,50 +1266,5 @@
         }],
       ],
     },
-    {
-      'target_name': 'gstreamer',
-      'type': 'none',
-      'toolsets': ['host', 'target'],
-      'variables': {
-        'gstreamer_packages': 'gstreamer-1.0 gstreamer-base-1.0 gstreamer-audio-1.0 gstreamer-video-1.0 gstreamer-app-1.0 gstreamer-gl-1.0 gstreamer-player-1.0',
-      },
-      'conditions': [
-        ['_toolset=="target"', {
-          'direct_dependent_settings': {
-            'cflags': [
-              '<!@(<(pkg-config) --cflags <(gstreamer_packages))',
-            ],
-            'defines': [
-              'GST_USE_UNSTABLE_API',
-            ],
-          },
-          'link_settings': {
-            'ldflags': [
-              '<!@(<(pkg-config) --libs-only-L --libs-only-other <(gstreamer_packages))',
-            ],
-            'libraries': [
-              '<!@(<(pkg-config) --libs-only-l <(gstreamer_packages))',
-            ],
-          },
-        }, {
-          'direct_dependent_settings': {
-            'cflags': [
-              '<!@(<(pkg-config) --cflags <(gstreamer_packages))',
-            ],
-            'defines': [
-              'GST_USE_UNSTABLE_API',
-            ],
-          },
-          'link_settings': {
-            'ldflags': [
-              '<!@(<(pkg-config) --libs-only-L --libs-only-other <(gstreamer_packages))',
-            ],
-            'libraries': [
-              '<!@(<(pkg-config) --libs-only-l <(gstreamer_packages))',
-            ],
-          },
-        }],
-      ],
-    },
   ],
 }

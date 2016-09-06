@@ -1827,22 +1827,6 @@
         'browser/file_descriptor_info_impl.h',
       ]
     }],
-    ['use_gstreamer==1', {
-      'sources': [
-        'public/browser/media_data_manager.h',
-        'public/browser/media_data_manager_observer.h',
-        'browser/media/media_data_manager_impl.cc',
-        'browser/media/media_data_manager_impl.h',
-        'browser/media/media_data_manager_impl_private.cc',
-        'browser/media/media_data_manager_impl_private.h',
-        'browser/media/media_process_host.cc',
-        'browser/media/media_process_host.h',
-        'browser/media/media_process_host_ui_shim.cc',
-        'browser/media/media_process_host_ui_shim.h',
-        'browser/renderer_host/media_message_filter.cc',
-        'browser/renderer_host/media_message_filter.h',
-      ]
-    }],
     ['debug_devtools==1', {
       'defines': [
         'DEBUG_DEVTOOLS=1',
