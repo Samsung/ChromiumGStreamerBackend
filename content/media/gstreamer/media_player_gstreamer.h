@@ -20,8 +20,6 @@
 #include "content/media/gstreamer/gst_chromium_http_source.h"
 #include "content/renderer/media/render_media_log.h"
 #include "media/base/time_delta_interpolator.h"
-#include "media/blink/buffered_data_source.h"
-#include "media/blink/buffered_data_source_host_impl.h"
 #include "third_party/WebKit/public/web/WebLocalFrame.h"
 #include "third_party/WebKit/public/web/WebFrameClient.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -47,7 +45,6 @@ struct RunHolder;
 class MediaPlayerGStreamer;
 class MediaPlayerChannel;
 class ResourceDispatcher;
-class GStreamerBufferedDataSourceFactory;
 
 class MediaPlayerGStreamerFactory {
  public:
@@ -158,7 +155,6 @@ class MediaPlayerGStreamer {
   content::MediaPlayerChannel* media_channel_;
 
   scoped_refptr<media::MediaLog> media_log_;
-  media::BufferedDataSourceHostImpl buffered_data_source_host_;
 
   blink::WebLocalFrame* web_frame_;
 
