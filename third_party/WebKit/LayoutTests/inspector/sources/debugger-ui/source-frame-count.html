@@ -1,0 +1,88 @@
+<html>
+<head>
+<script src="../../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../../http/tests/inspector/debugger-test.js"></script>
+
+<script>
+function createScriptsAndRun()
+{
+    eval("window.foo1 = function() {}\n//# sourceURL=script1.js");
+    eval("window.foo2 = function() {}\n//# sourceURL=script2.js");
+    eval("window.foo3 = function() {}\n//# sourceURL=script3.js");
+    eval("window.foo4 = function() {}\n//# sourceURL=script4.js");
+    eval("window.foo5 = function() {}\n//# sourceURL=script5.js");
+
+    runTest();
+}
+
+function test()
+{
+    var framesOpened = 0;
+
+    InspectorTest.runDebuggerTestSuite([
+        function testSourceFramesCount(next)
+        {
+            var panel = WebInspector.panels.sources;
+
+            InspectorTest.showScriptSource("source-frame-count.html", function() {});
+            InspectorTest.showScriptSource("script1.js", function() {});
+            InspectorTest.showScriptSource("script2.js", function() {});
+            InspectorTest.showScriptSource("script3.js", function() {});
+            InspectorTest.showScriptSource("script4.js", function() {});
+            InspectorTest.showScriptSource("script5.js", reloadThePage);
+
+            function reloadThePage()
+            {
+                InspectorTest.addResult("Reloading page...");
+                InspectorTest.reloadPage(didReload);
+                function didCreateSourceFrame()
+                {
+                    framesOpened++;
+                }
+                InspectorTest.addSniffer(WebInspector.SourceFrame.prototype, "wasShown", didCreateSourceFrame, true);
+
+            }
+
+            function didReload()
+            {
+                if (framesOpened > 3)
+                    InspectorTest.addResult("Too many frames opened: " + framesOpened);
+                else
+                    InspectorTest.addResult("Less than 3 frames opened");
+                InspectorTest.addResult("Visible view: " + panel.visibleView._uiSourceCode.name());
+                next();
+            }
+        }
+    ]);
+};
+
+</script>
+
+<script>
+function secondInlinedScriptInPage()
+{
+    return 0;
+}
+</script>
+
+<script>
+function thirdInlinedScriptInPage()
+{
+    return 0;
+}
+</script>
+
+<script>
+function fourthInlinedScriptInPage()
+{
+    return 0;
+}
+</script>
+
+</head>
+
+<body onload="createScriptsAndRun()">
+<p>Tests that scripts panel does not create too many source frames.</p>
+
+</body>
+</html>

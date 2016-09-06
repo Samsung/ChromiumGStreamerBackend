@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../../../resources/js-test.js"></script>
+<script>
+description('Tests that the window.DeviceOrientationEvent and window.ondeviceorientation and window.ondeviceorientationabsolute properties are present.');
+
+shouldBeTrue("typeof window.DeviceOrientationEvent == 'object'");
+shouldBeFalse("typeof window.DeviceOrientationEvent == 'function'");
+shouldBeFalse("window.propertyIsEnumerable('DeviceOrientationEvent')");
+shouldBeTrue("'DeviceOrientationEvent' in window");
+shouldBeTrue("window.hasOwnProperty('DeviceOrientationEvent')");
+
+function hasProperty(orientationProperty)
+{
+    for (var property in window) {
+        if (property == orientationProperty)
+            return true;
+    }
+    return false;
+}
+
+shouldBeTrue("typeof window.ondeviceorientation == 'object'");
+shouldBeTrue("typeof window.ondeviceorientationabsolute == 'object'");
+shouldBeTrue("hasProperty('ondeviceorientation')");
+shouldBeTrue("hasProperty('ondeviceorientationabsolute')");
+shouldBeTrue("'ondeviceorientation' in window");
+shouldBeTrue("'ondeviceorientationabsolute' in window");
+shouldBeTrue("window.hasOwnProperty('ondeviceorientation')");
+shouldBeTrue("window.hasOwnProperty('ondeviceorientationabsolute')");
+</script>
+</body>
+</html>
+

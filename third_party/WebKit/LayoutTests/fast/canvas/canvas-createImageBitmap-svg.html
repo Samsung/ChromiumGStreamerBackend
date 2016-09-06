@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+</head>
+<body>
+<script>
+
+description("Test createImageBitmap from a SVG image.");
+window.jsTestIsAsync = true;
+
+function shouldBeBlue(x, y) {
+    d = ctx.getImageData(x, y, 1, 1).data;
+    shouldBeEqualToNumber("d[0]", 0);
+    shouldBeEqualToNumber("d[1]", 0);
+    shouldBeEqualToNumber("d[2]", 255);
+    shouldBeEqualToNumber("d[3]", 255);
+}
+
+function checkBitmap(imageBitmap, width, height)
+{
+    bitmap = imageBitmap;
+    if (width == 200) {
+        shouldBe("bitmap.width", "200");
+        shouldBe("bitmap.height", "200");
+    } else {
+        shouldBe("bitmap.width", "50");
+        shouldBe("bitmap.height", "50");
+    }
+    ctx.clearRect(0, 0, 200, 200);
+    ctx.drawImage(bitmap, 0, 0);
+    shouldBeBlue(0, 0);
+    shouldBeBlue(0, width - 1);
+    shouldBeBlue(height - 1, 0);
+    shouldBeBlue(height - 1, width - 1);
+}
+
+var canvas = document.createElement("canvas");
+canvas.setAttribute("width", "200");
+canvas.setAttribute("height", "200");
+var ctx = canvas.getContext("2d");
+var bitmap;
+
+var image = new Image();
+image.onload = function() {
+    imageBitmaps = {};
+    var p1 = createImageBitmap(image).then(function(image) { imageBitmaps.noResize = image });
+    var p2 = createImageBitmap(image, {resizeWidth: 50, resizeHeight: 50, resizeQuality: "high"}).then(function(image) { imageBitmaps.resize = image });
+    Promise.all([p1, p2]).then(function() {
+        checkBitmap(imageBitmaps.noResize, 200, 200);
+        checkBitmap(imageBitmaps.resize, 50, 50);
+        finishJSTest();
+    }, function (e) {
+        testFailed("createImageBitmap promise rejected: " + e);
+        finishJSTest();
+    });
+}
+image.src = '../../svg/as-image/resources/200x200-blue-rect.svg';
+
+</script>
+</body>
+</html>

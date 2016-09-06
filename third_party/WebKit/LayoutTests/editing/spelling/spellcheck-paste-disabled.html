@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/util.js"></script>
+</head>
+<body>
+<div>
+<div id="src" contenteditable></div><br/>
+<div id="dst" contenteditable spellcheck="false"></div>
+</div>
+<script>
+var srcNode = document.getElementById('src');
+var dstNode = document.getElementById('dst');
+
+steps = [
+    // Insert a misspelled word to initialize a spellchecker.
+    // Break the insertion of 'zz apple' into two parts to wait for the spelling
+    // markers under 'zz' to appear.
+    function() {
+        srcNode.focus();
+        document.execCommand('InsertText', false, 'z');
+        document.execCommand('InsertText', false, 'z');
+        document.execCommand('InsertText', false, ' ');
+    },
+    function() {
+        document.execCommand('InsertText', false, 'a');
+        document.execCommand('InsertText', false, 'p');
+        document.execCommand('InsertText', false, 'p');
+        document.execCommand('InsertText', false, 'l');
+        document.execCommand('InsertText', false, 'e');
+    },
+    function() {
+        window.getSelection().selectAllChildren(srcNode);
+        document.execCommand('Copy');
+        dstNode.focus();
+        document.execCommand('Paste');
+    }
+];
+
+assertions = [
+    () => {},
+    () => assert_true(internals.hasSpellingMarker(document, 0, 2)),
+    () => assert_false(internals.hasSpellingMarker(document, 0, 2))
+];
+
+runSpellingTest(steps, assertions, 'Blink does not spellcheck text when pasting text to an element having spellchecking disabled.')
+</script>
+</body>
+</html>

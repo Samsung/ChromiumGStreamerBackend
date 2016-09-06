@@ -1,0 +1,18 @@
+include_rules = [
+  "+ash",
+  "+cc/output",
+  "+components/policy/core/common",
+  "+device/power_save_blocker",
+  "+extensions/browser/api/messaging",
+  "+google_apis",
+  "+jingle/glue",
+  "+net",
+  "+remoting/codec",
+  "+remoting/protocol",
+  "+remoting/signaling",
+  "+remoting/tools",
+  "+third_party/jsoncpp",
+  "+third_party/skia",
+  "+third_party/webrtc",
+  "+ui",
+]

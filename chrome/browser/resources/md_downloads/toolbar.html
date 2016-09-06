@@ -1,0 +1,40 @@
+<link rel="import" href="chrome://downloads/action_service.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/html/util.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-item/paper-item.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-menu/paper-menu.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toolbar/cr_toolbar.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+
+<dom-module id="downloads-toolbar">
+  <template>
+    <cr-toolbar id="toolbar" page-name="$i18n{title}"
+        search-prompt="$i18n{search}" clear-label="$i18n{clearSearch}"
+        spinner-active="{{spinnerActive}}" on-search-changed="onSearchChanged_">
+      <div class="more-actions">
+        <paper-menu-button id="more" horizontal-align="right"
+            allow-outside-scroll>
+          <paper-icon-button icon="cr:more-vert" title="$i18n{moreActions}"
+               class="dropdown-trigger"></paper-icon-button>
+          <paper-menu class="dropdown-content">
+            <paper-item class="clear-all" on-tap="onClearAllTap_"
+                on-blur="onItemBlur_">
+              $i18n{clearAll}
+            </paper-item>
+            <paper-item on-tap="onOpenDownloadsFolderTap_"
+                on-blur="onItemBlur_">
+              $i18n{openDownloadsFolder}
+            </paper-item>
+          </paper-menu>
+        </paper-menu-button>
+      </div>
+    </cr-toolbar>
+  </template>
+  <link rel="import" type="css" href="chrome://downloads/shared_style.css">
+  <link rel="import" type="css" href="chrome://downloads/toolbar.css">
+  <script src="chrome://downloads/toolbar.js"></script>
+</dom-module>

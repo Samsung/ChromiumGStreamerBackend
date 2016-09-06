@@ -1,0 +1,43 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutInline SPAN",
+          "rect": [210, -5, 50, 20],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [215, 0, 40, 10],
+          "reason": "style change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutInline SPAN",
+      "reason": "style change"
+    },
+    {
+      "object": "InlineFlowBox",
+      "reason": "style change"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "style change"
+    },
+    {
+      "object": "InlineTextBox 'Test'",
+      "reason": "style change"
+    }
+  ]
+}
+

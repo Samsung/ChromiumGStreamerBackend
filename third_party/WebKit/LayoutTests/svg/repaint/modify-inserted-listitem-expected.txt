@@ -1,0 +1,40 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGRoot svg",
+          "rect": [18, 18, 20, 30],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutSVGRect rect id='move'",
+          "rect": [28, 38, 10, 10],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGRect rect id='move'",
+          "rect": [18, 18, 10, 10],
+          "reason": "full"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutSVGRoot svg",
+      "reason": "bounds change"
+    },
+    {
+      "object": "LayoutSVGRect rect id='move'",
+      "reason": "full"
+    }
+  ]
+}
+

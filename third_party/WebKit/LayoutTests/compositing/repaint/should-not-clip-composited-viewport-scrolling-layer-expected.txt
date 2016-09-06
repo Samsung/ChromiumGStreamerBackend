@@ -1,0 +1,30 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [5008, 5016],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [5008, 5016],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV id='content'",
+          "rect": [8, 8, 5000, 5000],
+          "reason": "style change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow DIV id='content'",
+      "reason": "style change"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "style change"
+    }
+  ]
+}
+

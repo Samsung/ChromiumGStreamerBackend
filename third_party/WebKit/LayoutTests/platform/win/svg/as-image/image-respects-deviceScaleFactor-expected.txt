@@ -1,0 +1,14 @@
+layer at (0,0) size 1600x1200
+  LayoutView at (0,0) size 1600x1200
+layer at (0,0) size 1600x1200
+  LayoutBlockFlow {HTML} at (0,0) size 1600x1200
+    LayoutBlockFlow {BODY} at (16,16) size 1568x1168
+      LayoutBlockFlow {P} at (0,0) size 1568x37
+        LayoutText {#text} at (0,0) size 1054x36
+          text run at (0,0) width 1054: "This test passes if both of the circles have sharp edges when deviceScaleFactor=2."
+      LayoutBlockFlow (anonymous) at (0,69) size 1568x264
+        LayoutImage {IMG} at (0,0) size 256x256
+        LayoutText {#text} at (256,227) size 8x36
+          text run at (256,227) width 8: " "
+        LayoutImage {IMG} at (264,0) size 256x256
+        LayoutText {#text} at (0,0) size 0x0

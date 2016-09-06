@@ -1,0 +1,77 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_BANNERS_APP_BANNER_INFOBAR_DELEGATE_DESKTOP_H_
+#define CHROME_BROWSER_BANNERS_APP_BANNER_INFOBAR_DELEGATE_DESKTOP_H_
+
+#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/strings/string16.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "content/public/common/manifest.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace extensions {
+class BookmarkAppHelper;
+class Extension;
+}
+
+namespace infobars {
+class InfoBar;
+}
+
+namespace banners {
+
+class AppBannerManager;
+
+class AppBannerInfoBarDelegateDesktop : public ConfirmInfoBarDelegate {
+
+ public:
+  ~AppBannerInfoBarDelegateDesktop() override;
+
+  static infobars::InfoBar* Create(
+      content::WebContents* web_contents,
+      base::WeakPtr<AppBannerManager> weak_manager,
+      extensions::BookmarkAppHelper* bookmark_app_helper,
+      const content::Manifest& manifest,
+      int event_request_id);
+
+  // ConfirmInfoBarDelegate overrides.
+  base::string16 GetMessageText() const override;
+  int GetButtons() const override;
+  base::string16 GetButtonLabel(InfoBarButton button) const override;
+
+  bool Accept() override;
+
+  // InfoBarDelegate override.
+  infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
+  void InfoBarDismissed() override;
+
+ protected:
+  AppBannerInfoBarDelegateDesktop(
+      base::WeakPtr<AppBannerManager> weak_manager,
+      extensions::BookmarkAppHelper* bookmark_app_helper,
+      const content::Manifest& manifest,
+      int event_request_id);
+
+ private:
+  base::WeakPtr<AppBannerManager> weak_manager_;
+  extensions::BookmarkAppHelper* bookmark_app_helper_;
+  content::Manifest manifest_;
+  int event_request_id_;
+  bool has_user_interaction_;
+
+  Type GetInfoBarType() const override;
+  int GetIconId() const override;
+  gfx::VectorIconId GetVectorIconId() const override;
+
+  DISALLOW_COPY_AND_ASSIGN(AppBannerInfoBarDelegateDesktop);
+};
+
+}  // namespace banners
+
+#endif  // CHROME_BROWSER_BANNERS_APP_BANNER_INFOBAR_DELEGATE_DESKTOP_H_

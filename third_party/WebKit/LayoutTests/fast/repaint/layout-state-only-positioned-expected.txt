@@ -1,0 +1,30 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV",
+          "rect": [88, 53, 15, 100],
+          "reason": "scroll"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow (positioned) DIV",
+      "reason": "scroll"
+    },
+    {
+      "object": "VerticalScrollbar",
+      "reason": "scroll"
+    }
+  ]
+}
+

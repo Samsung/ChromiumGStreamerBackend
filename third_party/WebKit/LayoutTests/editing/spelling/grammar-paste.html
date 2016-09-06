@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/util.js"></script>
+</head>
+<body>
+<div>
+<textarea id="testTextArea"></textarea>
+<input id="testInput" type="text"></input>
+<div id="testEditable" contenteditable></div>
+<div id="testSourcePlain">You has the right.</div>
+<div id="testSourceDecorated">I have a<b>n ki</b>wi. I have no idea.</div>
+<div id="testSourceMulti">I have an grape. I have an muscat. I don't know.</div>
+</div>
+<script>
+var testTextArea = document.getElementById('testTextArea');
+var testInput = document.getElementById('testInput');
+var testEditable = document.getElementById('testEditable');
+var testSourcePlain = document.getElementById('testSourcePlain');
+var testSourceDecorated = document.getElementById('testSourceDecorated');
+var testSourceMulti = document.getElementById('testSourceMulti');
+
+var sel = window.getSelection();
+
+function findFirstTextNode(node)
+{
+    function iterToFindFirstTextNode(node)
+    {
+        if (node instanceof Text)
+            return node;
+
+        var childNodes = node.childNodes;
+        for (var i = 0; i < childNodes.length; ++i) {
+            var n = iterToFindFirstTextNode(childNodes[i]);
+            if (n)
+                return n;
+        }
+
+        return null;
+    }
+
+
+    if (node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement)
+        return iterToFindFirstTextNode(internals.shadowRoot(node));
+    else
+        return iterToFindFirstTextNode(node);
+}
+
+function verifyMarker(node, expectedMarked)
+{
+    if (node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement)
+        node.focus();
+    else
+        sel.selectAllChildren(node);
+
+    var textNode = findFirstTextNode(node);
+    var num = internals.markerCountForNode(textNode, 'grammar');
+    assert_equals(num, expectedMarked.length);
+
+    for (var i = 0; i < num; ++i) {
+        var range = internals.markerRangeForNode(textNode, 'grammar', i);
+        assert_equals(range.toString(), expectedMarked[i]);
+    }
+}
+
+function pasteText(source, dest)
+{
+    sel.selectAllChildren(source);
+    document.execCommand('Copy');
+    if (dest instanceof HTMLInputElement || dest instanceof HTMLTextAreaElement) {
+        dest.value = '';
+        dest.focus();
+    } else {
+        dest.innerHTML = '';
+        sel.selectAllChildren(dest);
+    }
+    document.execCommand('Paste');
+};
+
+var steps = [
+    () => pasteText(testSourcePlain, testEditable),
+    () => pasteText(testSourceDecorated, testEditable),
+    () => pasteText(testSourceMulti, testEditable),
+
+    () => pasteText(testSourcePlain, testInput),
+    () => pasteText(testSourceDecorated, testInput),
+    () => pasteText(testSourceMulti, testInput),
+
+    () => pasteText(testSourcePlain, testTextArea),
+    () => pasteText(testSourceDecorated, testTextArea),
+    () => pasteText(testSourceMulti, testTextArea)
+];
+
+var assertions = [
+    () => verifyMarker(testEditable, ['has']),
+    () => verifyMarker(testEditable, ['a']), // Checks only 'a'.
+    () => verifyMarker(testEditable, ['an', 'an']),
+
+    () => verifyMarker(testInput, ['has']),
+    () => verifyMarker(testInput, ['an']),
+    () => verifyMarker(testInput, ['an', 'an']),
+
+    () => verifyMarker(testTextArea, ['has']),
+    () => verifyMarker(testTextArea, ['an']),
+    () => verifyMarker(testTextArea, ['an', 'an']),
+];
+
+runSpellingTest(steps, assertions, 'Grammar checking for pasted text.');
+</script>
+</body>
+</html>

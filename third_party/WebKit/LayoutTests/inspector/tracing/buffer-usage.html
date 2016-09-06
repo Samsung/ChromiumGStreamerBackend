@@ -1,0 +1,64 @@
+<html>
+<head>
+<script src="../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../http/tests/inspector/timeline-test.js"></script>
+<script>
+
+function test()
+{
+    WebInspector.TestTimelineLifecycleDelegate = function()
+    {
+        this._hadLoadingProgress = false;
+    }
+
+    WebInspector.TestTimelineLifecycleDelegate.prototype = {
+        recordingStarted: function()
+        {
+            InspectorTest.addResult("TimelineLifecycleDelegate.recordingStarted");
+        },
+
+        recordingProgress: function()
+        {
+            if (!controller)
+                return;
+            InspectorTest.addResult("TimelineLifecycleDelegate.recordingProgress");
+            controller.stopRecording();
+            controller = null;
+        },
+
+        loadingStarted: function()
+        {
+            InspectorTest.addResult("TimelineLifecycleDelegate.loadingStarted");
+        },
+
+        loadingProgress: function()
+        {
+            if (this._hadLoadingProgress)
+                return;
+            this._hadLoadingProgress = true;
+            InspectorTest.addResult("TimelineLifecycleDelegate.loadingProgress");
+        },
+
+        loadingComplete: function()
+        {
+            InspectorTest.addResult("TimelineLifecycleDelegate.loadingComplete");
+            InspectorTest.completeTest();
+        },
+
+        __proto__: WebInspector.TimelineLifecycleDelegate
+    };
+
+    var controller = new WebInspector.TimelineController(WebInspector.targetManager.mainTarget(), new WebInspector.TestTimelineLifecycleDelegate(), InspectorTest.createTracingModel());
+    controller.startRecording();
+}
+
+</script>
+</head>
+
+<body onload="runTest()">
+<p>
+Tests that buffer usage update are sent when recording trace events and
+TimelineLifecycleDelegate methods are properly invoked in the expected order.
+</p>
+</body>
+</html>

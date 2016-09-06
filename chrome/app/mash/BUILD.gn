@@ -1,0 +1,67 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//services/shell/public/service_manifest.gni")
+
+source_set("mash") {
+  sources = [
+    "mash_runner.cc",
+    "mash_runner.h",
+  ]
+  deps = [
+    "//ash/mus:lib",
+    "//ash/resources",
+    "//ash/touch_hud/mus:lib",
+    "//base:i18n",
+    "//components/tracing:startup_tracing",
+    "//content/public/common",
+    "//mash/package",
+    "//services/shell",
+    "//services/shell/background:lib",
+    "//services/shell/public/cpp",
+    "//services/shell/public/interfaces",
+    "//services/shell/runner/common",
+    "//services/shell/runner/host:child_process_base",
+    "//services/shell/runner/host:lib",
+    "//url",
+  ]
+  data_deps = [
+    ":manifest",
+  ]
+
+  if (is_linux && !is_android) {
+    deps += [ "//components/font_service:lib" ]
+  }
+}
+
+service_manifest("manifest") {
+  type = "exe"
+  name = "chrome_mash"
+  source = "chrome_mash_manifest.json"
+  deps = [
+    "//ash/mus:manifest",
+    "//ash/touch_hud/mus:manifest",
+    "//mash/app_driver:manifest",
+    "//mash/quick_launch:manifest",
+    "//mash/session:manifest",
+    "//mash/task_viewer:manifest",
+    "//services/ui:manifest",
+    "//services/ui/ime/test_ime_driver:manifest",
+  ]
+  packaged_services = [
+    "app_driver",
+    "ash",
+    "mash_session",
+    "quick_launch",
+    "task_viewer",
+    "test_ime_driver",
+    "touch_hud",
+    "ui",
+  ]
+
+  if (is_linux && !is_android) {
+    deps += [ "//components/font_service:manifest" ]
+    packaged_services += [ "font_service" ]
+  }
+}

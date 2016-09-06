@@ -1,0 +1,5 @@
+file://extensions/OWNERS
+
+per-file automation_internal_custom_bindings*=aboxhall@chromium.org
+per-file automation_internal_custom_bindings*=dmazzoni@chromium.org
+per-file automation_internal_custom_bindings*=dtseng@chromium.org

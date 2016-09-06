@@ -1,0 +1,47 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV id='box' class='green box blurry'",
+          "rect": [8, 8, 329, 329],
+          "reason": "subtree"
+        }
+      ],
+      "children": [
+        {
+          "name": "LayoutBlockFlow DIV id='box' class='green box blurry'",
+          "position": [8, 8],
+          "bounds": [200, 200],
+          "contentsOpaque": true,
+          "drawsContent": true,
+          "backgroundColor": "#008000",
+          "paintInvalidations": [
+            {
+              "object": "LayoutBlockFlow DIV id='box' class='green box blurry'",
+              "rect": [-29, -29, 258, 258],
+              "reason": "subtree"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow DIV id='box' class='green box blurry'",
+      "reason": "subtree"
+    },
+    {
+      "object": "LayoutBlockFlow DIV id='box' class='green box blurry'",
+      "reason": "subtree"
+    }
+  ]
+}
+

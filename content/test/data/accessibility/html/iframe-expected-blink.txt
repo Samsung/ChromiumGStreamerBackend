@@ -1,0 +1,4 @@
+rootWebArea
+++group
+++++iframe name='Empty iframe'
+++++++rootWebArea

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+
+<div id="testElement"></div>
+
+<script>
+
+var computedStyleMap = getComputedStyleMap(testElement);
+var computedStyle = getComputedStyle(testElement);
+
+test(function() {
+  assert_throws(new TypeError(), function() {
+    getComputedStyleMap(null);
+  });
+}, 'Test that passing null to getComputedStyleMap does not crash');
+
+test(function() {
+  var properties = computedStyleMap.getProperties();
+  assert_equals(properties.length, computedStyle.length);
+}, "Computed StyleMap.getProperties returns the same number of properties as ComputedStyle");
+
+test(function() {
+  var properties = computedStyleMap.getProperties();
+  for (var i = 0; i < properties.length; i++) {
+    var property = properties[i];
+    var styleValues = computedStyleMap.getAll(property);
+    if (styleValues.length == 1) {
+      // TODO(meade): Remove this if statement once all properties are supported.
+      // TODO(meade): Handle sequence types.
+      assert_equals(computedStyleMap.get(property).cssText, computedStyle[property]);
+    }
+  }
+}, 'Properties retrieved from ComputedStyleMap reflect the same values as from ComputedStyle');
+
+test(function() {
+  testElement.style.border = '1px solid #00ff00';
+  var styleValue = computedStyleMap.get('border');
+  assert_equals(styleValue.constructor, CSSStyleValue);
+  assert_equals(styleValue.cssText, testElement.style.border);
+}, 'Unsupported but serializable property returns a base CSSStyleValue.');
+
+test(function() {
+  testElement.style.border = '';
+  testElement.style.borderBottomColor = 'green';
+  assert_equals(computedStyleMap.get('border'), null);
+}, 'Unsupported and unserializable property returns null.');
+
+test(function() {
+  assert_false(computedStyleMap.has('max-zoom'));
+}, 'has() return false for an unsupported property.');
+
+test(function() {
+  assert_throws(null, function() { computedStyleMap.has('bananas'); });
+}, 'has() throws for an invalid property.');
+
+test(function() {
+  testElement.style.border = '1px solid black';
+  assert_true(computedStyleMap.has('border'));
+}, 'has() returns true for an unsupported but serializable shorthand property.');
+
+test(function() {
+  testElement.style.border = '';
+  testElement.style.borderTopColor = 'red';
+  assert_false(computedStyleMap.has('border'));
+}, 'has() return false for unsupported and unserializable shorthand properties.');
+
+test(function() {
+  assert_true(computedStyleMap.has('width'));
+}, 'has() returns true for a supported property.');
+
+</script>

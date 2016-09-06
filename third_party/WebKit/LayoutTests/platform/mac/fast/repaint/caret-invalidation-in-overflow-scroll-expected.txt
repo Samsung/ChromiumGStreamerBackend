@@ -1,0 +1,35 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutText #text",
+          "rect": [406, 11, 4, 13],
+          "reason": "invalidate paint rectangle"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [404, 11, 4, 13],
+          "reason": "invalidate paint rectangle"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "Caret",
+      "reason": "invalidate paint rectangle"
+    },
+    {
+      "object": "Caret",
+      "reason": "invalidate paint rectangle"
+    }
+  ]
+}
+

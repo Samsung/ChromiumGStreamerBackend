@@ -1,0 +1,11 @@
+*.Makefile
+*.mk
+*.rules
+*.sln
+*.tmp
+*.vcproj*
+*.vcxproj*
+*.xcodeproj*
+node_modules
+config.gypi
+npm-debug.log

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="testImage1"></div>
+<div id="testImage2"></div>
+<div id="testImage3"></div>
+<div id="testImage4"></div>
+
+<script>
+
+// list of available image properties
+var imageProperties = ["background-image", "border-image-source", "list-style-image", "content", "shape-outside"];
+
+function url() {
+  var c = document.location.href.split('/');
+  c[c.length - 1] = 'resources/1x1-green.png';
+  return c.join('/');
+}
+
+function base64Url() {
+  return "data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=";
+}
+
+function assertCorrectURLImageValue(image, expectedUrl, expectedWidth, expectedHeight, expectedRatio) {
+  assert_true(image instanceof CSSURLImageValue);
+  assert_equals(image.url, expectedUrl);
+  assert_equals(image.state, "loaded");
+  assert_equals(image.intrinsicWidth, expectedWidth);
+  assert_equals(image.intrinsicHeight, expectedHeight);
+  assert_equals(image.intrinsicRatio, expectedRatio);
+}
+
+test(function() {
+  var image = new CSSURLImageValue(url());
+  assert_equals(image.state, "unloaded");
+}, "Can construct a new CSSURLImageValue object with url");
+
+{
+  var test1 = async_test("Set available properties as CSSURLImageValue using URL");
+  var url1 = url();
+
+  var imageValue1 = new CSSURLImageValue(url1);
+
+  for (var i = 0; i < imageProperties.length; ++i) {
+    if (imageProperties[i] == 'content') // content accepts a list of value
+      testImage1.styleMap.set(imageProperties[i], [imageValue1]);
+    else
+      testImage1.styleMap.set(imageProperties[i], imageValue1);
+  }
+
+  // add an Image object to know if the image has been loaded
+  var image1 = new Image();
+  image1.src = url1;
+
+  assert_equals(imageValue1.state, "unloaded");
+
+  image1.addEventListener("load", function() {
+    assert_equals(imageValue1.url, url1);
+    assert_equals(imageValue1.state, "loaded");
+    assert_equals(imageValue1.intrinsicWidth, 1);
+    assert_equals(imageValue1.intrinsicHeight, 1);
+    assert_equals(imageValue1.intrinsicRatio, 1);
+    test1.done();
+  });
+}
+
+{
+  var test2 = async_test("Set available properties as CSSURLImageValue using base64 image");
+  var url2 = base64Url();
+
+  var imageValue2 = new CSSURLImageValue(url2);
+
+  for (var i = 0; i < imageProperties.length; ++i) {
+    if (imageProperties[i] == 'content') // content accepts a list of value
+      testImage2.styleMap.set(imageProperties[i], [imageValue2]);
+    else
+      testImage2.styleMap.set(imageProperties[i], imageValue2);
+  }
+
+  // add an Image object to know if the image has been loaded
+  var image2 = new Image();
+  image2.src = url2;
+
+  assert_equals(imageValue2.state, "unloaded");
+
+  image2.addEventListener("load", function() {
+    assert_equals(imageValue2.url, url2);
+    assert_equals(imageValue2.state, "loaded");
+    assert_equals(imageValue2.intrinsicWidth, 1);
+    assert_equals(imageValue2.intrinsicHeight, 1);
+    assert_equals(imageValue2.intrinsicRatio, 1);
+    test2.done();
+  });
+}
+
+{
+  var test3 = async_test("Invalid Image will have get error state");
+  var url3 = document.location.href;
+  var imageValue3 = new CSSURLImageValue(url3);
+
+  testImage3.styleMap.set("background-image", imageValue3);
+
+  // add an Image object to know image's status
+  var image3 = new Image();
+  image3.src = url3;
+
+  assert_equals(imageValue3.state, "unloaded");
+
+  image3.onerror = function() {
+    assert_equals(imageValue3.url, url3);
+    assert_equals(imageValue3.state, "error");
+    assert_equals(imageValue3.intrinsicWidth, 0);
+    assert_equals(imageValue3.intrinsicHeight, 0);
+    assert_equals(imageValue3.intrinsicRatio, null);
+    test3.done();
+  };
+}
+
+test(function() {
+  var url4 = base64Url();
+
+  for (var i = 0; i < imageProperties.length; ++i) {
+    testImage4.style[imageProperties[i]] = 'url(' + url4 + ')';
+  }
+
+  for (var i = 0; i < imageProperties.length; ++i) {
+    assertCorrectURLImageValue(getComputedStyleMap(testImage4).get(imageProperties[i]), url4, 1, 1, 1);
+    assertCorrectURLImageValue(testImage4.styleMap.get(imageProperties[i]), url4, 1, 1, 1);
+  }
+}, "Getting CSSURLImageValue from StyleMap");
+
+</script>

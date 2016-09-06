@@ -1,0 +1,56 @@
+<!-- Copyright 2016 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+
+<!--
+  Simple OOBE dialog which should be used for OOBE UI elements.
+  It has correct size and padding. It can display top left icon, and has
+  three parts: header (which should have <h1>title</h1>), footer (content part),
+  and optional buttons container at the bottom.
+
+  Example:
+    <link rel="stylesheet" href="oobe_dialog_parameters.css">
+    <oobe-dialog has-buttons>
+      <iron-icon ... class="oobe-icon">
+      <div class="header">
+        <h1> class="title">Title</h1>
+        <div class="subtitle">Subtitle</div>
+      </div>
+      <div class="footer">
+        ...
+      </div>
+      <div class="bottom-buttons">
+        ...
+      </div>
+    </oobe-dialog>
+
+  Add class |header| to all which you want to go inside the header.  Similar
+  with clases |footer|, |bottom-buttons| and |oobe-icon|. |bottom-buttons| block
+  is shown only if |has-buttons| attribute is set.
+-->
+<dom-module name="oobe-dialog">
+  <template>
+    <link rel="stylesheet" href="oobe_dialog_host.css">
+    <link rel="stylesheet" href="oobe_dialog.css">
+    <div id="header-container">
+      <div class="oobe-icon-div">
+        <content select=".oobe-icon"></content>
+      </div>
+      <div class="oobe-header layout vertical">
+        <content select=".header"></content>
+      </div>
+    </div>
+    <div id="footer-container" class="flex layout vertical">
+      <content select=".footer"></content>
+    </div>
+    <template is="dom-if" if="[[hasButtons]]">
+      <div id="oobe-bottom" class="layout horizontal center">
+        <content select=".bottom-buttons"></content>
+      </div>
+    </template>
+  </template>
+</dom-module>
+

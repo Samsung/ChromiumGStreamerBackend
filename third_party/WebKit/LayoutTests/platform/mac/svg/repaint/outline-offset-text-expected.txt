@@ -1,0 +1,67 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGInlineText #text",
+          "rect": [103, 24, 160, 116],
+          "reason": "forced by layout"
+        },
+        {
+          "object": "LayoutSVGText text",
+          "rect": [103, 24, 160, 116],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGInlineText #text",
+          "rect": [63, 24, 160, 116],
+          "reason": "forced by layout"
+        },
+        {
+          "object": "LayoutSVGText text",
+          "rect": [63, 24, 160, 116],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGRoot svg",
+          "rect": [118, 39, 130, 86],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutSVGRoot svg",
+          "rect": [78, 39, 130, 86],
+          "reason": "bounds change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutSVGRoot svg",
+      "reason": "bounds change"
+    },
+    {
+      "object": "LayoutSVGText text",
+      "reason": "full"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGInlineText #text",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "InlineTextBox 'Foo'",
+      "reason": "forced by layout"
+    }
+  ]
+}
+

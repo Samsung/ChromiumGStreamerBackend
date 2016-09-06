@@ -1,0 +1,87 @@
+<html>
+<head>
+<script src="../http/tests/inspector/inspector-test.js"></script>
+<script src="../http/tests/inspector/workspace-test.js"></script>
+<script>
+function test()
+{
+    var uiSourceCodes = {};
+    var projects = {};
+    var workspace = new WebInspector.Workspace();
+
+    function createUISourceCode(projectId, path)
+    {
+        var project = projects[projectId];
+        if (!projects[projectId]) {
+            if (projectId.startsWith("1:"))
+                projectId = projectId.substring(2);
+            project = new WebInspector.ProjectStore(workspace, projectId, WebInspector.projectTypes.Network, "");
+            workspace.addProject(project);
+            projects[projectId] = project;
+        }
+        var uiSourceCode = project.createUISourceCode(path, WebInspector.resourceTypes.Script);
+        project.addUISourceCode(uiSourceCode);
+    }
+
+    var fileSystemMapping = new WebInspector.FileSystemMapping();
+    var fileSystemPath = "file:///var/www";
+    var projectId = WebInspector.FileSystemWorkspaceBinding.projectId(fileSystemPath);
+    fileSystemMapping.addFileSystem("file:///var/www");
+    fileSystemMapping.addFileMapping("file:///var/www", "http://localhost/", "/localhost/");
+    var fileSystemWorkspaceBinding = new WebInspector.FileSystemWorkspaceBinding(WebInspector.isolatedFileSystemManager, workspace);
+    var networkMapping = new WebInspector.NetworkMapping(WebInspector.targetManager, workspace, fileSystemWorkspaceBinding, fileSystemMapping);
+
+    function dumpHasMappingForURL(url)
+    {
+        var result = networkMapping.hasMappingForNetworkURL(url)
+        if (result)
+            InspectorTest.addResult("    url " + url + " is mapped.");
+        else
+            InspectorTest.addResult("    url " + url + " is not mapped.");
+    }
+
+    function dumpUISourceCodeForURL(url)
+    {
+        var uiSourceCode = networkMapping.uiSourceCodeForURLForAnyTarget(url);
+        InspectorTest.addResult("    url " + url + " is mapped to " + (uiSourceCode ? uiSourceCode.url() : null));
+    }
+
+    function dumpURLForPath(fileSystemPath, filePath)
+    {
+        var url = networkMapping._networkURLForFileSystemURL(fileSystemPath, fileSystemPath + "/" + filePath)
+        InspectorTest.addResult("    path " + fileSystemPath + " / " + filePath + " is mapped to " + (url ? url : null));
+    }
+    
+    createUISourceCode(projectId, "file:///var/www/localhost/index.html");
+
+    createUISourceCode("1:http://www.example.com", "index.html");
+    createUISourceCode("1:http://localhost", "index.html");
+    createUISourceCode("1:http://localhost", "foo/index.html");
+    createUISourceCode("1:https://localhost", "index.html");
+
+    dumpHasMappingForURL("http://www.example.com/index.html");
+    dumpHasMappingForURL("http://localhost/index.html");
+    dumpHasMappingForURL("http://localhost/foo/index.html");
+    dumpHasMappingForURL("https://localhost/index.html");
+    InspectorTest.addResult("");
+
+    dumpUISourceCodeForURL("http://www.example.com/index.html");
+    dumpUISourceCodeForURL("http://localhost/index.html");
+    dumpUISourceCodeForURL("http://localhost/foo/index.html");
+    dumpUISourceCodeForURL("https://localhost/index.html");
+    InspectorTest.addResult("");
+
+    dumpURLForPath("file:///home/example.com", "foo/index.html");
+    dumpURLForPath("file:///home/example.com", "index.html");
+    dumpURLForPath("file:///var/www", "localhost/index.html");
+    dumpURLForPath("file:///var/www", "localhost/foo/index.html");
+    dumpURLForPath("file:///home/foo", "index.html");
+
+    InspectorTest.completeTest();
+}
+</script>
+</head>
+<body onload="runTest()">
+<p>Tests workspace mappings</p>
+</body>
+</html>

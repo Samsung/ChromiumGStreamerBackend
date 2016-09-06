@@ -1,0 +1,63 @@
+<html>
+<head>
+<script src="../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../http/tests/inspector/elements-test.js"></script>
+<script>
+function test()
+{
+    var mainContext;
+
+    InspectorTest.runTestSuite([
+        function initialize(next)
+        {
+            InspectorTest.expandElementsTree(onExpanded);
+
+            function onExpanded()
+            {
+                mainContext = WebInspector.context.flavor(WebInspector.ExecutionContext);
+                dumpContextAndNext(next);
+            }
+        },
+
+        function selectIframeInnerNode(next)
+        {
+            InspectorTest.selectNodeWithId("head", dumpContextAndNext.bind(null, next));
+        },
+
+        function selectMainFrameNode(next)
+        {
+            InspectorTest.selectNodeWithId("element", dumpContextAndNext.bind(null, next));
+        },
+
+        function selectIframeNode(next)
+        {
+            InspectorTest.selectNodeWithId("iframe-per-se", dumpContextAndNext.bind(null, next));
+        },
+
+        function selectIframeImmediateChild(next)
+        {
+            var iframe = WebInspector.context.flavor(WebInspector.DOMNode);
+            var child = iframe.firstChild;
+            InspectorTest.selectNode(child).then(dumpContextAndNext.bind(null, next));
+        },
+    ]);
+
+    function dumpContextAndNext(next)
+    {
+        var context = WebInspector.context.flavor(WebInspector.ExecutionContext);
+        var node = WebInspector.context.flavor(WebInspector.DOMNode);
+        var contextName = context === mainContext ? "main" : "iframe";
+        var matchesNode = context.frameId === node.frameId();
+        InspectorTest.addResult("Execution Context: " + contextName);
+        InspectorTest.addResult("          matches: " + matchesNode);
+        next();
+    }
+}
+</script>
+</head>
+<body>
+    <p>Tests that the execution context is changed to match new selected node.</p>
+    <iframe id="iframe-per-se" src="resources/set-outer-html-body-iframe.html" onload="runTest()"></iframe>
+    <div id="element"></div>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<html>
+<head>
+  <script src="../../http/tests/inspector/inspector-test.js"></script>
+  <script src="profiler-test.js"></script>
+<script>
+
+function test()
+{
+    var profileAndExpectations = {
+        "title": "profile1",
+        "target": function() {
+          return WebInspector.targetManager.targets()[0];
+        },
+        "_profile": {
+            "nodes": [
+                {
+                    "id": 0,
+                    "callFrame":
+                    {
+                        "functionName": "(root)",
+                        "scriptId": "0",
+                        "url": "a.js",
+                        "lineNumber": 0
+                    },
+                    "hitCount": 350,
+                    "children": [1, 2, 5]
+                },
+                {
+                    "id": 1,
+                    "callFrame":
+                    {
+                        "functionName": "(idle)",
+                        "scriptId": "0",
+                        "url": "a.js",
+                        "lineNumber": 1
+                    },
+                    "hitCount": 1000,
+                    "children": []
+                },
+                {
+                    "id": 2,
+                    "callFrame":
+                    {
+                        "functionName": "A",
+                        "scriptId": "0",
+                        "url": "a.js",
+                        "lineNumber": 4642
+                    },
+                    "hitCount": 250,
+                    "children": [3]
+                },
+                {
+                    "id": 3,
+                    "callFrame":
+                    {
+                        "functionName": "C",
+                        "scriptId": "0",
+                        "url": "a.js",
+                        "lineNumber": 525
+                    },
+                    "hitCount": 100,
+                    "children": [4]
+                },
+                {
+                    "id": 4,
+                    "callFrame":
+                    {
+                        "functionName": "D",
+                        "scriptId": "0",
+                        "url": "a.js",
+                        "lineNumber": 425
+                    },
+                    "hitCount": 20,
+                    "children": []
+                },
+                {
+                    "id": 5,
+                    "callFrame":
+                    {
+                        "functionName": "B",
+                        "scriptId": "0",
+                        "url": "a.js",
+                        "lineNumber": 4662
+                    },
+                    "hitCount": 150,
+                    "children": [6]
+                },
+                {
+                    "id": 6,
+                    "callFrame":
+                    {
+                        "functionName": "C",
+                        "scriptId": "0",
+                        "url": "a.js",
+                        "lineNumber": 525
+                    },
+                    "hitCount": 100,
+                    "children": [7]
+                },
+                {
+                    "id": 7,
+                    "callFrame":
+                    {
+                        "functionName": "D",
+                        "scriptId": "0",
+                        "url": "a.js",
+                        "lineNumber": 425
+                    },
+                    "hitCount": 30,
+                    "children": []
+                }
+            ],
+            "startTime": 0,
+            "endTime": 1e6
+        }
+    };
+    var view = new WebInspector.CPUProfileView(profileAndExpectations);
+    view.viewSelectComboBox.setSelectedIndex(1);
+    view._changeView();
+    var tree = view.profileDataGridTree;
+    if (!tree)
+        InspectorTest.addResult("no tree");
+    var node = tree.children[0];
+    if (!node)
+        InspectorTest.addResult("no node");
+    while (node) {
+        InspectorTest.addResult(node.callUID + ": " + node.functionName + " " + node.self + " " + node.total + " " + node.element().textContent);
+        node = node.traverseNextNode(true, null, true);
+    }
+    InspectorTest.completeProfilerTest();
+}
+
+</script>
+</head>
+<body onload="runTest()">
+<p>
+Tests bottom-up view self and total time calculation in CPU profiler.
+</p>
+</body>
+</html>

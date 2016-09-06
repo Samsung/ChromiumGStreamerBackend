@@ -1,0 +1,9 @@
+include_rules = [
+  "+device/power_save_blocker",
+  "+media/audio",
+  "+media/base",
+  "+media/cast",
+  "+media/media_features.h",
+  "+third_party/libyuv",
+  "+third_party/webrtc",
+]

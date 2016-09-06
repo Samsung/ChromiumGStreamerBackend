@@ -1,0 +1,12 @@
+include_rules = [
+  "+skia/ext",
+  "+third_party/khronos",
+  "+third_party/skia",
+  "+ui/display/types",
+  "+ui/display/util",
+  "+ui/events",
+  "+ui/base/cursor",
+  "+ui/gfx",
+  "+ui/gl",
+  "+ui/platform_window",
+]

@@ -1,0 +1,67 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutMultiColumnFlowThread (anonymous)",
+          "rect": [8, 8, 630, 20],
+          "reason": "forced by layout"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [488, 8, 80, 20],
+          "reason": "layoutObject insertion"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutMultiColumnFlowThread (anonymous)",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "LayoutBR BR",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "LayoutBR BR",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "LayoutBR BR",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "layoutObject insertion"
+    },
+    {
+      "object": "InlineTextBox 'PASS'",
+      "reason": "layoutObject insertion"
+    }
+  ]
+}
+

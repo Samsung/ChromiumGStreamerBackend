@@ -1,0 +1,96 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")  # For generate_jni().
+}
+
+component("vr") {
+  output_name = "device_vr"
+
+  sources = [
+    "vr_client_dispatcher.h",
+    "vr_device.cc",
+    "vr_device.h",
+    "vr_device_manager.cc",
+    "vr_device_manager.h",
+    "vr_device_provider.h",
+    "vr_service_impl.cc",
+    "vr_service_impl.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx",
+  ]
+
+  defines = [ "DEVICE_VR_IMPLEMENTATION" ]
+
+  if (is_android) {
+    sources += [
+      "android/gvr/gvr_api_manager.cc",
+      "android/gvr/gvr_api_manager.h",
+      "android/gvr/gvr_device.cc",
+      "android/gvr/gvr_device.h",
+      "android/gvr/gvr_device_provider.cc",
+      "android/gvr/gvr_device_provider.h",
+    ]
+
+    deps += [
+      ":jni_headers",
+      "//third_party/gvr-android-sdk:libgvr",
+    ]
+    configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
+  }
+}
+
+static_library("fakes") {
+  testonly = true
+
+  sources = [
+    "test/fake_vr_device.cc",
+    "test/fake_vr_device.h",
+    "test/fake_vr_device_provider.cc",
+    "test/fake_vr_device_provider.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    ":vr",
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [
+    "vr_service.mojom",
+  ]
+
+  use_new_wrapper_types = false
+}
+
+if (is_android) {
+  java_sources_needing_jni =
+      [ "android/java/src/org/chromium/device/vr/GvrDeviceProvider.java" ]
+
+  generate_jni("jni_headers") {
+    sources = java_sources_needing_jni
+    jni_package = "vr"
+  }
+
+  android_library("java") {
+    java_files = java_sources_needing_jni
+    deps = [
+      "//base:base_java",
+      "//third_party/android_protobuf:protobuf_nano_javalib",
+      "//third_party/gvr-android-sdk:gvr_common_java",
+    ]
+  }
+}

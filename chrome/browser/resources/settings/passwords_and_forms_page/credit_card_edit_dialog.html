@@ -1,0 +1,78 @@
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-dropdown-menu/paper-dropdown-menu-light.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-input/paper-input.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-listbox/paper-listbox.html">
+<link rel="import" href="/settings_shared_css.html">
+
+<dom-module id="settings-credit-card-edit-dialog">
+  <style include="settings-shared">
+    paper-input {
+      width: var(--paper-input-max-width);
+    }
+
+    .months,
+    .month-dropdown {
+      width: 70px;
+    }
+
+    .years,
+    .year-dropdown {
+      width: 100px;
+    }
+
+    .month-dropdown {
+      -webkit-padding-end: 16px;
+    }
+
+    label {
+      color: var(--light-theme-secondary-color);
+      display: block;
+      padding-top: 8px;
+    }
+  </style>
+  <template>
+    <dialog is="cr-dialog" id="dialog">
+      <div class="title">[[title_]]</div>
+      <div class="body">
+        <paper-input id="nameInput" label="$i18n{creditCardName}"
+            value="{{creditCard.name}}" always-float-label></paper-input>
+          <paper-input id="numberInput" label="$i18n{creditCardNumber}"
+              value="{{creditCard.cardNumber}}" always-float-label>
+          </paper-input>
+        <label>$i18n{creditCardExpiration}</label>
+        <paper-dropdown-menu-light class="month-dropdown" no-label-float
+            vertical-align="auto" label="$i18n{creditCardExpirationMonth}">
+          <paper-listbox class="dropdown-content months"
+              selected="{{expirationMonth}}" attr-for-selected="name">
+            <template is="dom-repeat" items="[[monthList_]]">
+              <button class="dropdown-item" role="option" name="[[item]]">
+                [[item]]
+              </button>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu-light>
+        <paper-dropdown-menu-light class="year-dropdown" no-label-float
+            vertical-align="auto" label="$i18n{creditCardExpirationYear}">
+          <paper-listbox id="yearList" class="dropdown-content years"
+              selected="{{expirationYear}}" attr-for-selected="name">
+            <template is="dom-repeat" items="[[yearList_]]">
+              <button class="dropdown-item" role="option" name="[[item]]">
+                [[item]]
+              </button>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu-light>
+      </div>
+      <div class="button-container">
+        <paper-button id="cancelButton" class="cancel-button"
+            on-tap="onCancelButtonTap_">$i18n{cancel}</paper-button>
+        <paper-button id="saveButton" class="action-button"
+            on-tap="onSaveButtonTap_">$i18n{save}</paper-button>
+      </div>
+    </dialog>
+  </template>
+  <script src="/passwords_and_forms_page/credit_card_edit_dialog.js"></script>
+</dom-module>

@@ -1,0 +1,30 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGPath polygon id='target'",
+          "rect": [18, 18, 30, 20],
+          "reason": "full"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutSVGPath polygon id='target'",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGPath polygon id='source'",
+      "reason": "full"
+    }
+  ]
+}
+

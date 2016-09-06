@@ -1,0 +1,8 @@
+include_rules = [
+  "+ash/public/interfaces",
+  "+components/arc",
+  "+components/drive",
+  "+components/user_manager",
+  "+mash/shelf/public/interfaces",
+  "+media",
+]

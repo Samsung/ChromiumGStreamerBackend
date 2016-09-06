@@ -1,0 +1,46 @@
+CONSOLE MESSAGE: line 6: message0
+CONSOLE MESSAGE: line 6: message1
+CONSOLE MESSAGE: line 6: message2
+CONSOLE ERROR: line 4: Uncaught (in promise) throw1
+CONSOLE MESSAGE: line 6: message3
+CONSOLE MESSAGE: line 6: message4
+CONSOLE MESSAGE: line 6: message5
+CONSOLE MESSAGE: line 6: message6
+Starting worker
+Logging in worker: message0
+Got log message from page: message0
+Stopping worker
+Starting worker
+Logging in worker: message1
+Got log message from page: message1
+Sending Worker.enable
+Worker.created
+Sending Runtime.enable to worker
+Got console API call from worker: message1
+Logging in worker: message2
+Got log message from page: message2
+Got console API call from worker: message2
+Logging in worker: throw1
+Got log message from page: Uncaught (in promise) throw1
+Sending Worker.disable
+Logging in worker: message3
+Got log message from page: message3
+Stopping worker
+Sending Worker.enable
+Starting worker
+Worker.created
+Logging in worker: message4
+Got log message from page: message4
+Sending Runtime.enable to worker
+Got console API call from worker: message4
+Logging in worker: message5
+Got log message from page: message5
+Got console API call from worker: message5
+Stopping worker
+Starting worker
+Worker.created
+Logging in worker: message6
+Got log message from page: message6
+Stopping worker
+Sending Worker.disable
+

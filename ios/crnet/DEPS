@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/prefs",
+  "+ios/crnet",
+  "+ios/net",
+  "+ios/third_party/gcdwebserver",
+  "+ios/web/public/user_agent.h",
+  "+net"
+]

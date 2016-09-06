@@ -1,0 +1,9 @@
+-DownloadRequestLimiterTest.DownloadRequestLimiter_RendererInitiated
+-ExtensionContextMenuModelTest.TestPageAccessSubmenu
+-ExtensionProtocolTest.AllowFrameRequests
+-ExtensionProtocolTest.IncognitoRequest
+-InstantSearchPrerendererTest.PrerenderingAllowed
+-PopupToolbarModelTest.ShouldDisplayURL
+-TabsApiUnitTest.QueryWithHostPermission
+-TabsApiUnitTest.QueryWithoutTabsPermission
+-ToolbarModelTest.GoogleBaseURL

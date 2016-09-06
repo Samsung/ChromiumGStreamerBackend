@@ -1,0 +1,36 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [785, 2001],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [785, 2001],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "children": [
+        {
+          "name": "LayoutBlockFlow (positioned) DIV id='absolute'",
+          "position": [0, 400],
+          "bounds": [100, 1601],
+          "drawsContent": true,
+          "backfaceVisibility": "hidden",
+          "backgroundColor": "#FF0000",
+          "paintInvalidations": [
+            {
+              "object": "LayoutBlockFlow (positioned) DIV id='fixed'",
+              "rect": [0, 100, 100, 100],
+              "reason": "incremental"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='fixed'",
+      "reason": "incremental"
+    }
+  ]
+}
+

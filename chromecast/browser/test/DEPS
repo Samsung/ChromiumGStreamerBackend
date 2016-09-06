@@ -1,0 +1,4 @@
+include_rules = [
+  "+chromecast/app",
+  "+content/public/test",
+]

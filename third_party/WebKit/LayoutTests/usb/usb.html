@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/mojo-helpers.js"></script>
+<script src="resources/fake-devices.js"></script>
+<script src="resources/usb-helpers.js"></script>
+<script>
+'use strict';
+
+usb_test(usb => {
+  usb.mockDeviceManager.addMockDevice(usb.fakeDevices[0]);
+
+  return navigator.usb.getDevices().then(devices => {
+    assert_equals(devices.length, 1);
+    usb.assertDeviceInfoEquals(devices[0], usb.fakeDevices[0]);
+  });
+}, 'getDevices returns devices exposed by the DeviceManager service.');
+
+usb_test(usb => {
+  return navigator.usb.requestDevice({ filters: [] })
+    .then(device => {
+      assert_unreachable('requestDevice should reject without a user gesture');
+    })
+    .catch(error => {
+      assert_equals(error.code, DOMException.SECURITY_ERR);
+    });
+}, 'requestDevice rejects when called without a user gesture');
+
+usb_test(usb => {
+  return callWithKeyDown(() => navigator.usb.requestDevice({ filters: [] })
+    .then(device => {
+      assert_unreachable('requestDevice should reject when no device selected');
+    })
+    .catch(error => {
+      assert_equals(error.code, DOMException.NOT_FOUND_ERR);
+    })
+  );
+}, 'requestDevice rejects when no device is chosen');
+
+usb_test(usb => {
+  usb.mockChooserService.setChosenDevice(usb.fakeDevices[0]);
+  return callWithKeyDown(() => navigator.usb.requestDevice({ filters: [] })
+    .then(device => {
+      usb.assertDeviceInfoEquals(device, usb.fakeDevices[0]);
+    })
+  );
+}, 'requestDevice returns the device chosen by the user');
+
+usb_test(usb => {
+  let promise = new Promise((resolve, reject) => {
+    navigator.usb.addEventListener('connect', e => {
+      assert_true(e instanceof USBConnectionEvent);
+      resolve(e.device);
+    });
+  });
+
+  usb.mockDeviceManager.addMockDevice(usb.fakeDevices[0]);
+  return promise.then(device => {
+    usb.assertDeviceInfoEquals(device, usb.fakeDevices[0]);
+    return device.open().then(() => device.close());
+  });
+}, 'onconnect event is trigged by adding a device');
+
+usb_test(usb => {
+  let promise = new Promise((resolve, reject) => {
+    navigator.usb.addEventListener('disconnect', e => {
+      assert_true(e instanceof USBConnectionEvent);
+      resolve(e.device);
+    });
+  });
+
+  usb.mockDeviceManager.addMockDevice(usb.fakeDevices[0]);
+  usb.mockDeviceManager.removeMockDevice(usb.fakeDevices[0]);
+  return promise.then(device => {
+    usb.assertDeviceInfoEquals(device, usb.fakeDevices[0]);
+    return device.open().then(() => {
+      assert_unreachable('should not be able to open a disconnected device');
+    }, error => {
+      assert_equals(error.code, DOMException.NOT_FOUND_ERR);
+    });
+  });
+}, 'ondisconnect event is triggered by removing a device');
+</script>

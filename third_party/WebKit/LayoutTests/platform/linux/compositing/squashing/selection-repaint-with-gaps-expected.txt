@@ -1,0 +1,198 @@
+lorem ipsumlorem ipsumlorem ipsum
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "children": [
+        {
+          "name": "Squashing Containment Layer",
+          "shouldFlattenTransform": false,
+          "children": [
+            {
+              "name": "LayoutBlockFlow DIV class='overlap'",
+              "position": [8, 8],
+              "bounds": [300, 500]
+            },
+            {
+              "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='item')",
+              "position": [15, 35],
+              "bounds": [100, 210],
+              "drawsContent": true,
+              "paintInvalidations": [
+                {
+                  "object": "LayoutText #text",
+                  "rect": [0, 80, 38, 39],
+                  "reason": "selection"
+                },
+                {
+                  "object": "LayoutText #text",
+                  "rect": [35, 80, 3, 39],
+                  "reason": "incremental"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='item1' class='item'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBlockFlow DIV class='inline-block'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'lorem'",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'ipsum'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'lorem'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'ipsum'",
+      "reason": "incremental"
+    }
+  ]
+}
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "children": [
+        {
+          "name": "Squashing Containment Layer",
+          "shouldFlattenTransform": false,
+          "children": [
+            {
+              "name": "LayoutBlockFlow DIV class='overlap'",
+              "position": [8, 8],
+              "bounds": [300, 500]
+            },
+            {
+              "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='item')",
+              "position": [15, 35],
+              "bounds": [100, 210],
+              "drawsContent": true,
+              "paintInvalidations": [
+                {
+                  "object": "LayoutText #text",
+                  "rect": [0, 80, 39, 39],
+                  "reason": "selection"
+                },
+                {
+                  "object": "LayoutText #text",
+                  "rect": [0, 160, 38, 39],
+                  "reason": "selection"
+                },
+                {
+                  "object": "LayoutText #text",
+                  "rect": [35, 80, 4, 39],
+                  "reason": "incremental"
+                },
+                {
+                  "object": "LayoutText #text",
+                  "rect": [35, 160, 3, 39],
+                  "reason": "incremental"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='item1' class='item'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBlockFlow DIV class='inline-block'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'lorem'",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'ipsum'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'lorem'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'ipsum'",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='item2' class='item'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBlockFlow DIV class='inline-block'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'lorem'",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'ipsum'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'lorem'",
+      "reason": "incremental"
+    },
+    {
+      "object": "InlineTextBox 'ipsum'",
+      "reason": "incremental"
+    }
+  ]
+}
+

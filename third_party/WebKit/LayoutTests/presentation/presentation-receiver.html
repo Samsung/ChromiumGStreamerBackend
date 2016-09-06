@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+
+test(function() {
+    assert_true('receiver' in navigator.presentation);
+    assert_true('connectionList' in navigator.presentation.receiver);
+}, "Test that the Presentation Receiver API is present.")
+
+test(function() {
+  assert_equals(typeof(navigator.presentation.receiver), "object");
+  assert_equals(typeof(navigator.presentation.receiver.connectionList), "object");
+}, "Test the Presentation Receiver API property types.");
+
+</script>
+</body>
+</html>

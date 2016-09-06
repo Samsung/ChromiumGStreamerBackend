@@ -1,0 +1,40 @@
+{
+  "name": "Content Root Layer",
+  "bounds": [800, 600],
+  "children": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [58, 152, 500, 49],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [58, 256, 500, 45],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [58, 156, 500, 45],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow DIV",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutBlockFlow DIV",
+      "reason": "incremental"
+    }
+  ]
+}
+

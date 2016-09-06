@@ -1,0 +1,78 @@
+Tests file system project.
+
+
+Running: testFileSystems
+Adding first file system.
+Adding second file system.
+Adding file mappings.
+Adding files to file systems.
+
+UISourceCode: file:///var/www/localhost/foo.js
+UISourceCode is content script: false
+Highlighter type: text/javascript
+UISourceCode content: <foo content>
+
+UISourceCode: file:///var/www/bar.js
+UISourceCode is content script: false
+Highlighter type: text/javascript
+UISourceCode content: <bark content>
+
+UISourceCode: file:///foo/bar/baz.js
+UISourceCode is content script: false
+Highlighter type: text/javascript
+UISourceCode content: <bazzz content>
+
+Dumping uiSourceCode location link texts:
+ - foo.js:6
+ - bar.js:6
+ - baz.js:6
+UISourceCode uri to url mappings:
+    file:///var/www/localhost/foo.js -> http://localhost/foo.js
+    file:///foo/bar/baz.js -> http://www.example.com/baz.js
+UISourceCode url to uri mappings:
+    http://localhost/foo.js -> file:///var/www/localhost/foo.js
+    http://www.example.com/baz.js -> file:///foo/bar/baz.js
+After revision added:
+UISourceCode: file:///var/www/localhost/foo.js
+UISourceCode is content script: false
+Highlighter type: text/javascript
+UISourceCode content: <Modified UISourceCode content>
+
+Running: testDefaultExcludes
+
+-- Default excludes --
+Dumping uiSourceCodes origin URLs:
+  - file:///var/www/html/foo.js
+  - file:///var/www/bar.js
+  - file:///var/www/html2/foo.js
+
+Running: testExcludesSettings
+
+-- Excluded /html/ --
+Dumping uiSourceCodes origin URLs:
+  - file:///var/www2/bar.js
+  - file:///var/www2/html2/foo.js
+
+Running: testExcludesViaDelegate
+
+-- Excluded /html2/ --
+Dumping uiSourceCodes origin URLs:
+  - file:///var/www3/html/foo.js
+  - file:///var/www3/bar.js
+
+Running: testExcludesViaProject
+
+-- Excluded /html2/ via .devtools --
+Dumping uiSourceCodes origin URLs:
+  - file:///var/www3/html/foo.js
+  - file:///var/www3/bar.js
+
+Running: testFileAddedExternally
+-- Original tree --
+Dumping uiSourceCodes origin URLs:
+  - file:///var/www4/html/foo.js
+-- File added externally --
+Dumping uiSourceCodes origin URLs:
+  - file:///var/www4/html/foo.js
+  - file:///var/www4/html/bar.js
+
