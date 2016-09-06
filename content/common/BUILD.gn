@@ -201,6 +201,17 @@ source_set("common") {
     "media/cdm_info.cc",
     "media/cdm_messages.h",
     "media/cdm_messages_enums.h",
+    "media/media_config.h",
+    "media/media_messages.h",
+    "media/media_player_channel.cc",
+    "media/media_player_channel.h",
+    "media/media_player_channel_filter.cc",
+    "media/media_player_channel_filter.h",
+    "media/media_player_channel_host.cc",
+    "media/media_player_channel_host.h",
+    "media/media_player_messages_gstreamer.h",
+    "media/media_player_messages_enums_gstreamer.h",
+    "media/media_process_launch_causes.h",
     "media/media_metadata_sanitizer.cc",
     "media/media_metadata_sanitizer.h",
     "media/media_player_delegate_messages.h",
@@ -274,6 +285,8 @@ source_set("common") {
     "sandbox_linux/bpf_cros_arm_gpu_policy_linux.h",
     "sandbox_linux/bpf_gpu_policy_linux.cc",
     "sandbox_linux/bpf_gpu_policy_linux.h",
+    "sandbox_linux/bpf_media_policy_linux.cc",
+    "sandbox_linux/bpf_media_policy_linux.h",
     "sandbox_linux/bpf_ppapi_policy_linux.cc",
     "sandbox_linux/bpf_ppapi_policy_linux.h",
     "sandbox_linux/bpf_renderer_policy_linux.cc",
@@ -538,6 +551,20 @@ source_set("common") {
   if (use_gstreamer) {
     configs += [
       "//build/config/linux:gstreamer"
+    ]
+  } else {
+    sources -= [
+      "media/media_config.h",
+      "media/media_messages.h",
+      "media/media_player_channel.cc",
+      "media/media_player_channel.h",
+      "media/media_player_channel_filter.cc",
+      "media/media_player_channel_filter.h",
+      "media/media_player_channel_host.cc",
+      "media/media_player_channel_host.h",
+      "media/media_player_messages_gstreamer.h",
+      "media/media_player_messages_enums_gstreamer.h",
+      "media/media_process_launch_causes.h",
     ]
   }
 }

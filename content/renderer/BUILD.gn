@@ -894,6 +894,17 @@ target(link_target_type, "renderer") {
     deps += [ "//ui/ozone" ]
   }
 
+  if (use_gstreamer) {
+    sources += [
+      "media/gstreamer/webmediaplayer_gstreamer.cc",
+      "media/gstreamer/webmediaplayer_gstreamer.h",
+      "media/gstreamer/webmediasource_gstreamer.cc",
+      "media/gstreamer/webmediasource_gstreamer.h",
+      "media/gstreamer/websourcebuffer_gstreamer.cc",
+      "media/gstreamer/websourcebuffer_gstreamer.h",
+    ]
+  }
+
   if (enable_ipc_fuzzer) {
     configs += [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]
   }
