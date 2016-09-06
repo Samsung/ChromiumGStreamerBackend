@@ -215,6 +215,7 @@ ServiceManagerContext::ServiceManagerContext() {
     } kManifests[] = {
       { mojom::kBrowserServiceName, IDR_MOJO_CONTENT_BROWSER_MANIFEST },
       { mojom::kGpuServiceName, IDR_MOJO_CONTENT_GPU_MANIFEST },
+      { mojom::kMediaServiceName, IDR_MOJO_CONTENT_MEDIA_MANIFEST },
       { mojom::kPluginServiceName, IDR_MOJO_CONTENT_PLUGIN_MANIFEST },
       { mojom::kRendererServiceName, IDR_MOJO_CONTENT_RENDERER_MANIFEST },
       { mojom::kUtilityServiceName, IDR_MOJO_CONTENT_UTILITY_MANIFEST },

@@ -186,6 +186,11 @@ service_manifest("gpu_manifest") {
   source = "mojo/content_gpu_manifest.json"
 }
 
+service_manifest("media_manifest") {
+  name = "content_media"
+  source = "mojo/content_media_manifest.json"
+}
+
 service_manifest("plugin_manifest") {
   name = "content_plugin"
   source = "mojo/content_plugin_manifest.json"

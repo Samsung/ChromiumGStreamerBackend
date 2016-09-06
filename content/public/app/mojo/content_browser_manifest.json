@@ -47,6 +47,7 @@
         // In classic ash, the browser supplies ash interfaces to itself.
         "content_browser": [ "ash" ],
         "content_gpu": [ "browser" ],
+        "content_media": [ "browser" ],
         "content_plugin": [ "browser" ],
         "content_renderer": [ "browser" ],
         "content_utility": [ "browser" ],

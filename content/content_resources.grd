@@ -30,6 +30,7 @@
       <include name="IDR_MOJO_CATALOG_MANIFEST" file="../services/catalog/manifest.json" type="BINDATA" />
       <include name="IDR_MOJO_CONTENT_BROWSER_MANIFEST" file="${root_out_dir}/Packages/content_browser/manifest.json" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MOJO_CONTENT_GPU_MANIFEST" file="${root_out_dir}/Packages/content_gpu/manifest.json" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_MOJO_CONTENT_MEDIA_MANIFEST" file="${root_out_dir}/Packages/content_media/manifest.json" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MOJO_CONTENT_PLUGIN_MANIFEST" file="${root_out_dir}/Packages/content_plugin/manifest.json" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MOJO_CONTENT_RENDERER_MANIFEST" file="${root_out_dir}/Packages/content_renderer/manifest.json" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MOJO_CONTENT_UTILITY_MANIFEST" file="${root_out_dir}/Packages/content_utility/manifest.json" use_base_dir="false" type="BINDATA" />

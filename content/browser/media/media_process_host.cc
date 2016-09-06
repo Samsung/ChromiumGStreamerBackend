@@ -23,7 +23,7 @@
 #include "content/browser/loader/resource_message_filter.h"
 #include "content/browser/media/media_data_manager_impl.h"
 #include "content/browser/media/media_process_host_ui_shim.h"
-#include "content/browser/mojo/mojo_application_host.h"
+#include "content/browser/mojo/mojo_shell_context.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -32,6 +32,8 @@
 #include "content/common/in_process_child_thread_params.h"
 #include "content/common/resource_messages.h"
 #include "content/common/media/media_messages.h"
+#include "content/common/mojo/constants.h"
+#include "content/common/mojo/mojo_child_connection.h"
 #include "content/common/view_messages.h"
 #include "content/public/browser/appcache_service.h"
 #include "content/public/browser/browser_context.h"
@@ -43,9 +45,11 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/resource_context.h"
+#include "content/public/common/connection_filter.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/mojo_channel_switches.h"
+#include "content/public/common/mojo_shell_connection.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "ipc/ipc_channel_handle.h"
@@ -92,6 +96,31 @@ class MediaSandboxedProcessLauncherDelegate
 
 }  // anonymous namespace
 
+class MediaProcessHost::ConnectionFilterImpl : public ConnectionFilter {
+ public:
+  ConnectionFilterImpl(MediaProcessHost* host) : host_(host) {}
+
+ private:
+  // ConnectionFilter:
+  bool OnConnect(const shell::Identity& remote_identity,
+                 shell::InterfaceRegistry* registry,
+                 shell::Connector* connector) override {
+    if (remote_identity.name() != kMediaMojoApplicationName)
+      return false;
+
+    if (!host_)
+      return false;
+
+    // GetContentClient()->browser()->ExposeInterfacesToMediaProcess(registry,
+    //                                                               host_);
+    return true;
+  }
+
+  MediaProcessHost* host_;
+
+  DISALLOW_COPY_AND_ASSIGN(ConnectionFilterImpl);
+};
+
 // static
 bool MediaProcessHost::ValidateHost(MediaProcessHost* host) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -129,7 +158,6 @@ bool GpuMessageFilter::OnMessageReceived(const IPC::Message& message) {
 }
 
 void GpuMessageFilter::OnEstablishGpuChannel(
-    CauseForGpuLaunch cause_for_gpu_launch,
     IPC::Message* reply_ptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   std::unique_ptr<IPC::Message> reply(reply_ptr);
@@ -146,8 +174,7 @@ void GpuMessageFilter::OnEstablishGpuChannel(
 
   GpuProcessHost* host = GpuProcessHost::FromID(gpu_process_id_);
   if (!host) {
-    host = GpuProcessHost::Get(GpuProcessHost::GPU_PROCESS_KIND_SANDBOXED,
-                               cause_for_gpu_launch);
+    host = GpuProcessHost::Get(GpuProcessHost::GPU_PROCESS_KIND_SANDBOXED);
     if (!host) {
       reply->set_reply_error();
       Send(reply.release());
@@ -269,7 +296,6 @@ MediaProcessHost::MediaProcessHost(int host_id, MediaProcessKind kind)
       initialized_(false),
       gpu_client_id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       gpu_message_filter_(nullptr),
-      child_token_(mojo::edk::GenerateRandomToken()),
       weak_factory_ui_(this),
       weak_factory_io_(this) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -299,8 +325,8 @@ MediaProcessHost::MediaProcessHost(int host_id, MediaProcessKind kind)
       BrowserThread::UI, FROM_HERE,
       base::Bind(base::IgnoreResult(&MediaProcessHostUIShim::Create), host_id));
 
-  process_.reset(new BrowserChildProcessHostImpl(PROCESS_TYPE_MEDIA, this,
-                                                 child_token_));
+  process_.reset(new BrowserChildProcessHostImpl(
+      PROCESS_TYPE_MEDIA, this, kMediaMojoApplicationName));
 }
 
 MediaProcessHost::~MediaProcessHost() {
@@ -372,7 +398,6 @@ void GetContexts(
     scoped_refptr<net::URLRequestContextGetter> request_context,
     scoped_refptr<net::URLRequestContextGetter> media_request_context,
     ResourceType resource_type,
-    int origin_pid,
     ResourceContext** resource_context_out,
     net::URLRequestContext** request_context_out) {
   *resource_context_out = resource_context;
@@ -436,32 +461,28 @@ void MediaProcessHost::CreateResourceMessageFilter(
 }
 
 bool MediaProcessHost::Init() {
-  TRACE_EVENT_INSTANT0("media", "Init", TRACE_EVENT_SCOPE_THREAD);
+  TRACE_EVENT_INSTANT0("media", "LaunchMediaProcess", TRACE_EVENT_SCOPE_THREAD);
 
-  std::string channel_id = process_->GetHost()->CreateChannel();
-  if (channel_id.empty())
-    return false;
+  // May be null during test execution.
+  if (MojoShellConnection::GetForProcess()) {
+    MojoShellConnection::GetForProcess()->AddConnectionFilter(
+        base::MakeUnique<ConnectionFilterImpl>(this));
+  }
 
-  DCHECK(!mojo_application_host_);
-  mojo_application_host_.reset(new MojoApplicationHost(child_token_));
+  process_->GetHost()->CreateChannelMojo();
 
   if (in_process_) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     DCHECK(g_media_main_thread_factory);
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-    MediaDataManagerImpl* media_data_manager =
-        MediaDataManagerImpl::GetInstance();
-    DCHECK(media_data_manager);
-    media_data_manager->AppendMediaCommandLine(command_line);
-    in_process_media_thread_.reset(
-        g_media_main_thread_factory(InProcessChildThreadParams(
-            channel_id, base::MessageLoop::current()->task_runner(),
-            std::string(), mojo_application_host_->GetToken())));
-    in_process_media_thread_->Start();
+    in_process_media_thread_.reset(g_media_main_thread_factory(
+        InProcessChildThreadParams(
+            std::string(), base::ThreadTaskRunnerHandle::Get(),
+            process_->child_connection()->service_token())));
+    base::Thread::Options options;
+    in_process_media_thread_->StartWithOptions(options);
 
     OnProcessLaunched();  // Fake a callback that the process is ready.
-  } else if (!LaunchMediaProcess(channel_id)) {
+  } else if (!LaunchMediaProcess()) {
     return false;
   }
 
@@ -580,10 +601,6 @@ void MediaProcessHost::OnProcessCrashed(int exit_code) {
       process_->GetTerminationStatus(true /* known_dead */, NULL));
 }
 
-ServiceRegistry* MediaProcessHost::GetServiceRegistry() {
-  return mojo_application_host_->service_registry();
-}
-
 MediaProcessHost::MediaProcessKind MediaProcessHost::kind() {
   return kind_;
 }
@@ -597,7 +614,7 @@ void MediaProcessHost::ForceShutdown() {
   process_->ForceShutdown();
 }
 
-bool MediaProcessHost::LaunchMediaProcess(const std::string& channel_id) {
+bool MediaProcessHost::LaunchMediaProcess() {
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
 
@@ -617,10 +634,6 @@ bool MediaProcessHost::LaunchMediaProcess(const std::string& channel_id) {
 
   base::CommandLine* cmd_line = new base::CommandLine(exe_path);
   cmd_line->AppendSwitchASCII(switches::kProcessType, switches::kMediaProcess);
-  cmd_line->AppendSwitchASCII(switches::kProcessChannelID, channel_id);
-  cmd_line->AppendSwitchASCII(switches::kMojoApplicationChannelToken,
-                              mojo_application_host_->GetToken());
-  //BrowserChildProcessHostImpl::CopyFeatureAndFieldTrialFlags(cmd_line);
 
   if (kind_ == MEDIA_PROCESS_KIND_UNSANDBOXED)
     cmd_line->AppendSwitch(switches::kDisableMediaSandbox);

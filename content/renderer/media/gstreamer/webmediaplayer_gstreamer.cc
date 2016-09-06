@@ -40,11 +40,11 @@
 #include "media/base/decryptor.h"
 #include "media/base/limits.h"
 #include "media/base/key_systems.h"
+#include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
 #include "media/base/pipeline.h"
 #include "media/base/text_renderer.h"
 #include "media/base/video_frame.h"
-#include "media/blink/buffered_data_source.h"
 #include "media/blink/texttrack_impl.h"
 #include "media/blink/webaudiosourceprovider_impl.h"
 #include "media/blink/webcontentdecryptionmodule_impl.h"
@@ -103,15 +103,6 @@ namespace media {
 static const int kTimeUpdateInterval = 100;
 
 class BufferedDataSourceHostImpl;
-
-#define STATIC_ASSERT_MATCHING_ENUM(name)                              \
-  static_assert(static_cast<int>(WebMediaPlayer::CORSMode##name) ==    \
-                    static_cast<int>(BufferedResourceLoader::k##name), \
-                "mismatching enum values: " #name)
-STATIC_ASSERT_MATCHING_ENUM(Unspecified);
-STATIC_ASSERT_MATCHING_ENUM(Anonymous);
-STATIC_ASSERT_MATCHING_ENUM(UseCredentials);
-#undef STATIC_ASSERT_MATCHING_ENUM
 
 WebMediaPlayerMessageDispatcher::WebMediaPlayerMessageDispatcher(
     int player_id,
@@ -838,7 +829,7 @@ void WebMediaPlayerGStreamer::setRate(double rate) {
       rate = kMaxRate;
     if (playback_rate_ == 0 && !paused_ && delegate_)
       delegate_->DidPlay(delegate_id_, hasVideo(), !hasVideo(), isRemote(),
-                         duration_);
+                         media::DurationToMediaContentType(duration_));
   } else if (playback_rate_ != 0 && !paused_ && delegate_) {
     delegate_->DidPause(delegate_id_, ended_);
   }
@@ -868,15 +859,6 @@ void WebMediaPlayerGStreamer::setSinkId(
   std::unique_ptr<blink::WebSetSinkIdCallbacks> callback(web_callback);
   callback->onError(blink::WebSetSinkIdError::NotSupported);
 }
-
-#define STATIC_ASSERT_MATCHING_ENUM(webkit_name, chromium_name)          \
-  static_assert(static_cast<int>(WebMediaPlayer::webkit_name) ==         \
-                    static_cast<int>(BufferedDataSource::chromium_name), \
-                "mismatching enum values: " #webkit_name)
-STATIC_ASSERT_MATCHING_ENUM(PreloadNone, NONE);
-STATIC_ASSERT_MATCHING_ENUM(PreloadMetaData, METADATA);
-STATIC_ASSERT_MATCHING_ENUM(PreloadAuto, AUTO);
-#undef STATIC_ASSERT_MATCHING_ENUM
 
 void WebMediaPlayerGStreamer::setPreload(WebMediaPlayer::Preload preload) {
   DVLOG(1) << __FUNCTION__ << "(" << preload << ")";
@@ -921,7 +903,7 @@ double WebMediaPlayerGStreamer::duration() const {
   if (ready_state_ == WebMediaPlayer::ReadyStateHaveNothing)
     return std::numeric_limits<double>::quiet_NaN();
 
-  if (duration_ == media::kInfiniteDuration())
+  if (duration_ == media::kInfiniteDuration)
     return std::numeric_limits<double>::infinity();
 
   return duration_.InSecondsF();
@@ -1183,7 +1165,7 @@ void WebMediaPlayerGStreamer::UpdatePlayingState(bool is_playing) {
   if (delegate_) {
     if (is_playing)
       delegate_->DidPlay(delegate_id_, hasVideo(), !hasVideo(), isRemote(),
-                         duration_);
+                         media::DurationToMediaContentType(duration_));
     else
       delegate_->DidPause(delegate_id_, ended_);
   }
