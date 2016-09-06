@@ -52,7 +52,12 @@ UrlData::UrlData(const GURL& url,
       cacheable_(false),
       last_used_(),
       multibuffer_(this, url_index_->block_shift_),
-      frame_(url_index->frame()) {}
+      frame_(url_index->frame()) {
+
+#if defined(USE_GSTREAMER)
+  loader_ = url_index->loader_;
+#endif
+}
 
 UrlData::~UrlData() {}
 

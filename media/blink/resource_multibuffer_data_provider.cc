@@ -84,7 +84,15 @@ void ResourceMultiBufferDataProvider::Start() {
       WebString::fromUTF8(
           net::HttpByteRange::RightUnbounded(byte_pos()).GetHeaderValue()));
 
+#if defined(USE_GSTREAMER)
+  request.setHTTPReferrer("", blink::WebReferrerPolicyDefault);
+  if (url_data_->url().host() == "movies.apple.com" ||
+      url_data_->url().host() == "trailers.apple.com") {
+      request.setHTTPHeaderField("User-Agent", "Quicktime/7.6.6");
+  }
+#else
   url_data_->frame()->setReferrerForRequest(request, blink::WebURL());
+#endif
 
   // Disable compression, compression for audio/video doesn't make sense...
   request.setHTTPHeaderField(
@@ -110,7 +118,12 @@ void ResourceMultiBufferDataProvider::Start() {
       if (url_data_->cors_mode() == UrlData::CORS_USE_CREDENTIALS)
         options.allowCredentials = true;
     }
+
+#if defined(USE_GSTREAMER)
+    loader.reset(url_data_->loader_);
+#else
     loader.reset(url_data_->frame()->createAssociatedURLLoader(options));
+#endif
   }
 
   // Start the resource loading.

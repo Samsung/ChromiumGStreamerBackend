@@ -136,6 +136,10 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   // Accessor
   blink::WebFrame* frame() const { return frame_; }
 
+#if defined(USE_GSTREAMER)
+  blink::WebURLLoader* loader_;
+#endif
+
  protected:
   UrlData(const GURL& url,
           CORSMode cors_mode,
@@ -229,6 +233,10 @@ class MEDIA_BLINK_EXPORT UrlIndex {
 
   blink::WebFrame* frame() const { return frame_; }
   int block_shift() const { return block_shift_; }
+
+#if defined(USE_GSTREAMER)
+  blink::WebURLLoader* loader_;
+#endif
 
  private:
   friend class UrlData;

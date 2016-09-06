@@ -10,8 +10,9 @@
 
 #include "content/renderer/media/render_media_log.h"
 #include "media/base/data_source.h"
-#include "media/blink/buffered_data_source.h"
 #include "media/blink/buffered_data_source_host_impl.h"
+#include "media/blink/multibuffer_data_source.h"
+#include "media/blink/url_index.h"
 
 namespace content {
 class ResourceDispatcher;
@@ -53,18 +54,15 @@ namespace content {
 class GStreamerBufferedDataSource {
  public:
   GStreamerBufferedDataSource(GURL url,
-                              media::BufferedResourceLoader::CORSMode cors_mode,
                               ChromiumHttpSrc* src);
   ~GStreamerBufferedDataSource();
 
-  media::BufferedDataSourceHostImpl* buffered_data_source_host() {
-    return &buffered_data_source_host_;
-  }
-  media::BufferedDataSource* data_source() { return data_source_.get(); }
+  media::MultibufferDataSource* data_source() { return data_source_.get(); }
 
  private:
+  linked_ptr<media::UrlIndex> url_index_;
   media::BufferedDataSourceHostImpl buffered_data_source_host_;
-  std::unique_ptr<media::BufferedDataSource> data_source_;
+  std::unique_ptr<media::MultibufferDataSource> data_source_;
 };
 
 class GStreamerBufferedDataSourceFactory {
@@ -72,7 +70,6 @@ class GStreamerBufferedDataSourceFactory {
   GStreamerBufferedDataSourceFactory();
   ~GStreamerBufferedDataSourceFactory();
   void create(gchar* uri,
-              media::BufferedResourceLoader::CORSMode cors_mode,
               ChromiumHttpSrc* src);
   static GStreamerBufferedDataSourceFactory* Get();
   static void Init(scoped_refptr<media::MediaLog>,

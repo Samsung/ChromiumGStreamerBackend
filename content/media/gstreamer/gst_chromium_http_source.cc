@@ -623,119 +623,11 @@ static void onNotifyDownloading(GstBaseSrc* basesrc, bool is_downloading) {
   GST_DEBUG("Data source downloading: %d", is_downloading);
 }
 
-class DataSourceTaskRunnerWrapper : public scheduler::TaskQueue {
- public:
-  explicit DataSourceTaskRunnerWrapper(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : task_runner_(task_runner) {}
-
-  // TaskQueue implementation:
-  void UnregisterTaskQueue() override { NOTREACHED(); }
-
-  bool RunsTasksOnCurrentThread() const override {
-    return task_runner_->RunsTasksOnCurrentThread();
-  }
-
-  bool PostDelayedTask(const tracked_objects::Location& from_here,
-                       const base::Closure& task,
-                       base::TimeDelta delay) override {
-    return task_runner_->PostDelayedTask(from_here, task, delay);
-  }
-
-  bool PostNonNestableDelayedTask(const tracked_objects::Location& from_here,
-                                  const base::Closure& task,
-                                  base::TimeDelta delay) override {
-    return task_runner_->PostNonNestableDelayedTask(from_here, task, delay);
-  }
-
-  void SetQueueEnabled(bool enabled) override { NOTREACHED(); }
-
-  bool IsQueueEnabled() const override {
-    NOTREACHED();
-    return true;
-  }
-
-  bool IsEmpty() const override {
-    NOTREACHED();
-    return false;
-  };
-
-  bool HasPendingImmediateWork() const override {
-    NOTREACHED();
-    return false;
-  };
-
-  bool NeedsPumping() const override {
-    NOTREACHED();
-    return false;
-  };
-
-  const char* GetName() const override {
-    NOTREACHED();
-    return nullptr;
-  };
-
-  void SetQueuePriority(QueuePriority priority) override { NOTREACHED(); }
-
-  QueuePriority GetQueuePriority() const override {
-    NOTREACHED();
-    return QueuePriority::NORMAL_PRIORITY;
-  };
-
-  void SetPumpPolicy(PumpPolicy pump_policy) override { NOTREACHED(); }
-
-  PumpPolicy GetPumpPolicy() const override {
-    NOTREACHED();
-    return PumpPolicy::AUTO;
-  };
-
-  void PumpQueue(bool may_post_dowork) override { NOTREACHED(); }
-
-  void AddTaskObserver(
-      base::MessageLoop::TaskObserver* task_observer) override {
-    NOTREACHED();
-  }
-
-  void RemoveTaskObserver(
-      base::MessageLoop::TaskObserver* task_observer) override {
-    NOTREACHED();
-  }
-
-  void SetBlameContext(
-      base::trace_event::BlameContext* blame_context) override {
-    NOTREACHED();
-  }
-
-  void SetTimeDomain(scheduler::TimeDomain* domain) override { NOTREACHED(); }
-
-  scheduler::TimeDomain* GetTimeDomain() const override {
-    NOTREACHED();
-    return nullptr;
-  }
-
- private:
-  ~DataSourceTaskRunnerWrapper() override {}
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-};
-
 static void onResetDataSource(GstBaseSrc* basesrc) {
   ChromiumHttpSrc* src = CHROMIUM_HTTP_SRC(basesrc);
   ChromiumHttpSrcPrivate* priv = src->priv;
 
   GST_DEBUG("Preparing data source for uri: %s", priv->uri_);
-
-  scoped_refptr<scheduler::TaskQueue> taskRunnerWrapper = make_scoped_refptr(
-      new DataSourceTaskRunnerWrapper(
-          content::GStreamerBufferedDataSourceFactory::Get()
-              ->data_source_task_runner()));
-
-  std::unique_ptr<scheduler::WebTaskRunnerImpl> task_runner(
-      new scheduler::WebTaskRunnerImpl(taskRunnerWrapper));
-
-  content::WebURLLoaderImpl* url_loader = new content::WebURLLoaderImpl(
-      content::GStreamerBufferedDataSourceFactory::Get()->resource_dispatcher(),
-      std::move(task_runner));
 
   // TODO: allow to set extra headers on WebURLLoaderImpl
 
@@ -790,12 +682,14 @@ static void onResetDataSource(GstBaseSrc* basesrc) {
   GST_DEBUG("Create data source for uri: %s", priv->uri_);
 
   content::GStreamerBufferedDataSourceFactory::Get()->create(
-      priv->uri_, media::BufferedResourceLoader::CORSMode::kUnspecified, src);
+      priv->uri_, src);
   priv->gst_data_source_->data_source()->SetPreload(
-      media::BufferedDataSource::AUTO);
+      media::MultibufferDataSource::AUTO);
+
+  /*priv->gst_data_source_->data_source()->SetBufferingStrategy(
+      media::MultibufferDataSource::BufferingStrategy::BUFFERING_STRATEGY_AGGRESSIVE);*/
   priv->gst_data_source_->data_source()->Initialize(
-      base::Bind(&onSourceInitialized, basesrc), url_loader, "",
-      blink::WebReferrerPolicyDefault);
+      base::Bind(&onSourceInitialized, basesrc));
 
   priv->gst_data_source_->data_source()->MediaIsPlaying();
 }
@@ -1044,16 +938,27 @@ namespace content {
 
 GStreamerBufferedDataSource::GStreamerBufferedDataSource(
     GURL url,
-    media::BufferedResourceLoader::CORSMode cors_mode,
-    ChromiumHttpSrc* src)
-    : data_source_(new media::BufferedDataSource(
-          url,
-          cors_mode,
-          GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner(),
-          nullptr,
-          GStreamerBufferedDataSourceFactory::Get()->media_log().get(),
-          &buffered_data_source_host_,
-          base::Bind(&onNotifyDownloading, GST_BASE_SRC(src)))) {}
+    ChromiumHttpSrc* src) : url_index_(new media::UrlIndex(nullptr)) {
+
+    MediaChildThread* media_child_thread =
+        static_cast<MediaChildThread*>(ChildThreadImpl::current());
+
+    // ResourceMultiBufferDataProvider will take ownership of the loader.
+    url_index_->loader_ = new content::WebURLLoaderImpl(
+        media_child_thread->resource_dispatcher(),
+        media_child_thread->url_loader_factory());
+
+    data_source_ = base::MakeUnique<media::MultibufferDataSource>(
+        url,
+        media::UrlData::CORS_UNSPECIFIED,
+        GStreamerBufferedDataSourceFactory::Get()->data_source_task_runner(),
+        url_index_,
+        nullptr,
+        GStreamerBufferedDataSourceFactory::Get()->media_log().get(),
+        &buffered_data_source_host_,
+        base::Bind(&onNotifyDownloading, GST_BASE_SRC(src)));
+
+}
 
 GStreamerBufferedDataSourceFactory::GStreamerBufferedDataSourceFactory() {}
 
@@ -1062,11 +967,12 @@ base::LazyInstance<GStreamerBufferedDataSourceFactory>::Leaky
 
 void GStreamerBufferedDataSourceFactory::create(
     gchar* uri,
-    media::BufferedResourceLoader::CORSMode cors_mode,
     ChromiumHttpSrc* src) {
   ChromiumHttpSrcPrivate* priv = src->priv;
+
+
   priv->gst_data_source_.reset(
-      new GStreamerBufferedDataSource(GURL(uri), cors_mode, src));
+      new GStreamerBufferedDataSource(GURL(uri), src));
 }
 
 void GStreamerBufferedDataSourceFactory::Set(
