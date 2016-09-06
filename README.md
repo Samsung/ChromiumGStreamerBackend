@@ -30,9 +30,9 @@ Same as official chromium/src source code: [here](https://chromium.googlesource.
 [Link2](https://github.com/Samsung/ChromiumGStreamerBackend/blob/master/images/chromium_gstreamer_backend.odp)
 
 ### List of modified and added files ###
-05/10/2015: (just to give an idea of the delta from official chromium/src)  
-79 files modified, 996 insertions(+), 23 deletions(-)  
-64 files added, 10474 insertions(+)  
+06/09/2016: (just to give an idea of the delta from official chromium/src)  
+89 files changed, 905 insertions(+), 25 deletions(-)  
+70 files changed, 11039 insertions(+)  
 git diff --diff-filter=AM --stat sha-1 HEAD  
 
 ### Build ###
@@ -194,10 +194,9 @@ fetch --nohooks chromium # only the very first time
 
 # go to chromium/src and build everything.
 cd src
-gclient sync # see proxy section
-gclient runhooks # see proxy section
+gclient sync # see proxy section if needed
 build/install-build-deps.sh
-use GYP or GN below
+use GN build instructions below
 
 # build Chromium GStreamer Backend
 cd src
@@ -206,15 +205,7 @@ git fetch github_gstbackend
 git checkout -b gstbackend --track github_gstbackend/master
 git replace 72c29d9b693319e675117840df26dcfc9a537d1e 316e8135cfbe109896209dcf055b3bc229beab5c
 gclient sync # see proxy section
-gclient runhooks # see proxy section
-use GYP or GN below
-
-# 2 ways to generate ninja build files:
-GYP (old but stable so we recommend it for now) and GN (new from a few months)
-
-# Using GYP to generate ninja build files
-GYP_DEFINES="use_sysroot=0 proprietary_codecs=1 ffmpeg_branding=Chrome" build/gyp_chromium -D component=shared_library # if icecc then add linux_use_debug_fission=0 linux_use_bundled_binutils=0 clang=0
-ninja -C out/Release chrome chrome_sandbox -jN # if icecc -j60
+use GN build instructions below
 
 # Using GN to generate ninja build files
 gn clean out/mybuild/
@@ -222,9 +213,7 @@ gn args out/mybuild --list
 gn args out/mybuild
 It should open a file then put the following flags inside:
   is_debug = false
-  use_debug_fission = false
-  linux_use_bundled_binutils = false
-  is_clang = false
+  is_clang = true # false if want to use gcc
   use_sysroot = false
   proprietary_codecs = true
   ffmpeg_branding = "Chrome"
@@ -233,31 +222,28 @@ It should open a file then put the following flags inside:
   media_use_ffmpeg = false
   media_use_libvpx = false
   media_use_libwebm = false
+  use_debug_fission = false # if using icecc
+  linux_use_bundled_binutils = false # if using icecc
+  clang_use_chrome_plugins = false # if clang+icecc
+  make_clang_dir=/opt/icecream/ # if clang+icecc
 ninja -C out/mybuild chrome chrome_sandbox -jN # if icecc -j60
 
-# Debug build
-If any linker error or crash then try to add linux_use_bundled_gold=0 or linux_use_gold_flags=0 to GYP_DEFINES
-
-# Using clang instead of gcc
-GYP_DEFINES="clang=1 clang_use_chrome_plugins=0 use_sysroot=0" # if icecc then add make_clang_dir=/opt/icecream/ linux_use_debug_fission=0 linux_use_bundled_binutils=0
-When lunching chrome you might need to adjust LD_LIBRARY_PATH.
-
 # Run without any sandbox
-./out/Release/chrome --no-sandbox http://www.w3schools.com/html/mov_bbb.ogg
+./out/mybuild/chrome --no-sandbox http://www.w3schools.com/html/mov_bbb.ogg
 
 # Run while disabling setuid and media sandbox
-./out/Release/chrome --disable-media-sandbox --disable-setuid-sandbox http://www.w3schools.com/html/mov_bbb.ogg
+./out/mybuild/chrome --disable-media-sandbox --disable-setuid-sandbox http://www.w3schools.com/html/mov_bbb.ogg
 
 # Run with all sandbox
-CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./out/Release/chrome http://www.w3schools.com/html/mov_bbb.ogg
+CHROME_DEVEL_SANDBOX=out/mybuild/chrome_sandbox ./out/mybuild/chrome http://www.w3schools.com/html/mov_bbb.ogg
 
 # Run with EME enabled:
-./out/Release/chrome --no-sandbox --enable-prefixed-encrypted-media http://yt-dash-mse-test.commondatastorage.googleapis.com/unit-tests/2015.html
+./out/mybuild/chrome --no-sandbox http://yt-dash-mse-test.commondatastorage.googleapis.com/unit-tests/2016.html
 
 # Run with zero-copy decoding/rendering:
 gst-inspect-1.0 vaapi
-LIBVA_DRIVER_NAME=gallium vainfo # or LIBVA_DRIVER_NAME=i965 if you have an intel gpu, uses gallium otherwise
-./out/Release/chrome --no-sandbox --use-gl=egl  http://www.w3schools.com/html/html5_video.asp
+LIBVA_DRIVER_NAME=nouveau vainfo # or LIBVA_DRIVER_NAME=i965 if you have an intel gpu
+./out/mybuild/chrome --no-sandbox http://www.w3schools.com/html/html5_video.asp
 ```
 
 ### Proxy ###
@@ -282,9 +268,10 @@ NO_AUTH_BOTO_CONFIG=~/.boto gclient runhooks
 # from the point it strips a file.
 # Also there is no official chromium/src repo on github that we could fork.
 
-# solution: truncate history to a point where there is not file bigger than 100.00 MB in order
+# solution: truncate history to a point where there is not a file bigger than 100.00 MB in order
 # to push to github.
 # We use "git replace" to allow rebasing between our truncated branch and original branch.
+# git reset $(git commit-tree HEAD^{tree} -m "This commit contains all previous commits to reduce history")
 
 # fake our branch point because we truncated the history
 72c29d9b693319e675117840df26dcfc9a537d1e 316e8135cfbe109896209dcf055b3bc229beab5c
@@ -308,14 +295,14 @@ git replace -d SHA
 ### Tips ###
 ``` bash
 
-# disable ffmpeg and other decoders
-Insert media_use_ffmpeg=0 media_use_libvpx=0 media_use_libwebm=0 into GYP_DEFINES, see build steps.
-
 # disable nacl to reduce build time
-Insert disable_nacl=1 to GYP_DEFINES, see build steps.
+enable_nacl = false
+remove_webcore_debug_symbols = true
+symbol_level = 1
 
 # command lines options for ./out/Release/chrome
-A list of all command line switches is available here: http://peter.sh/experiments/chromium-command-line-switches/
+A list of all command line switches is available here:  
+http://peter.sh/experiments/chromium-command-line-switches/
 
 # disable gpu process and particular sandbox at runtime
 CHROME_SANDBOX_DEBUGGING=1 CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./out/Release/chrome --allow-sandbox-debugging --disable-render-sandbox --disable-hang-monitor  http://localhost/test/mov_bbb.ogg
@@ -330,7 +317,7 @@ CHROME_DEVEL_SANDBOX=out/Debug/chrome_sandbox ./out/Debug/chrome --media-startup
 CHROME_DEVEL_SANDBOX=out/Release/chrome_sandbox ./out/Release/chrome --disable-render-sandbox --disable-gpu --disable-hang-monitor --media-startup-dialog --allow-sandbox-debugging  about:blank
 
 # Enable / disable gpu workarounds
-./out/Release/chrome --no-sandbox --use-gl=egl --use_virtualized_gl_contexts=0
+./out/Release/chrome --no-sandbox --use_virtualized_gl_contexts=0
 All workarounds are listed in chromium/src/gpu/config/gpu_driver_bug_workaround_type.h
 
 # disable all processes, i.e. make all processes running as in-process mode in browser process.
@@ -360,6 +347,9 @@ Just run: git cl format, to indent latest commit.
 ninja -C out/Release content_unittest
 ./out/Release/content_unittests
 
+# build everything
+ninja -C all
+
 # build more group of unit tests at a time
 ninja -C out/Release media_blink_unittests content_unittests media_unittests base_unittests gl_unittests gpu_unittests
 
@@ -380,7 +370,7 @@ ninja -C out/Release media_blink_unittests
 python testing/xvfb.py ./out/Release/ ./out/Release/views_unittests --gtest_filter=*WidgetTest.Transparency* --single-process
 ```
 
-### Build and run browser tests ###
+### Build and run gpu tests ###
 ```bash
 # list
 ./content/test/gpu/run_gpu_test.py list
