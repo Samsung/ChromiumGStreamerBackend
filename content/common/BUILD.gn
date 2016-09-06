@@ -205,10 +205,21 @@ source_set("common") {
     "media/aec_dump_messages.h",
     "media/audio_messages.h",
     "media/cdm_info.cc",
+    "media/media_config.h",
     "media/media_devices.cc",
     "media/media_devices.h",
     "media/media_devices_param_traits.cc",
     "media/media_devices_param_traits.h",
+    "media/media_messages.h",
+    "media/media_player_channel.cc",
+    "media/media_player_channel.h",
+    "media/media_player_channel_filter.cc",
+    "media/media_player_channel_filter.h",
+    "media/media_player_channel_host.cc",
+    "media/media_player_channel_host.h",
+    "media/media_player_messages_gstreamer.h",
+    "media/media_player_messages_enums_gstreamer.h",
+    "media/media_process_launch_causes.h",
     "media/media_player_delegate_messages.h",
     "media/media_player_messages_android.h",
     "media/media_stream_messages.h",
@@ -269,6 +280,8 @@ source_set("common") {
     "sandbox_linux/bpf_cros_arm_gpu_policy_linux.h",
     "sandbox_linux/bpf_gpu_policy_linux.cc",
     "sandbox_linux/bpf_gpu_policy_linux.h",
+    "sandbox_linux/bpf_media_policy_linux.cc",
+    "sandbox_linux/bpf_media_policy_linux.h",
     "sandbox_linux/bpf_ppapi_policy_linux.cc",
     "sandbox_linux/bpf_ppapi_policy_linux.h",
     "sandbox_linux/bpf_renderer_policy_linux.cc",
@@ -543,6 +556,20 @@ source_set("common") {
   if (use_gstreamer) {
     configs += [
       "//build/config/linux:gstreamer"
+    ]
+  } else {
+    sources -= [
+      "media/media_config.h",
+      "media/media_messages.h",
+      "media/media_player_channel.cc",
+      "media/media_player_channel.h",
+      "media/media_player_channel_filter.cc",
+      "media/media_player_channel_filter.h",
+      "media/media_player_channel_host.cc",
+      "media/media_player_channel_host.h",
+      "media/media_player_messages_gstreamer.h",
+      "media/media_player_messages_enums_gstreamer.h",
+      "media/media_process_launch_causes.h",
     ]
   }
 }
