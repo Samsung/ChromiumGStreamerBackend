@@ -183,7 +183,7 @@ http://www.w3schools.com/html/html5_video.asp
 ### Build steps ###
 ``` bash
 # GStreamer
-gstreamer >= 1.8 is required.
+gstreamer >= 1.9 is required.
 
 # clone official chromium repositories
 git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git (then add it in front of your PATH)
