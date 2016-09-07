@@ -615,9 +615,13 @@ void MediaPlayerGStreamer::Load(GURL url,
   if (!gst_gl_context_)
     return;
 
+  GstStructure* config = gst_player_get_config(player_);
+  gst_player_config_set_position_update_interval(config,
+                                                 position_update_interval_ms);
+
   url_ = url;
   gst_player_set_uri(player_, url_.spec().c_str());
-  gst_player_set_position_update_interval(player_, position_update_interval_ms);
+  gst_player_set_config(player_, config);
   gst_player_pause(player_);
 }
 
