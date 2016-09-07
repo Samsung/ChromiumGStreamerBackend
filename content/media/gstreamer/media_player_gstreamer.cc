@@ -147,7 +147,7 @@ static GstGLContext* gstgldisplay_create_context_cb(
 }
 
 static gpointer gpu_process_proc_addr(GstGLAPI gl_api, const gchar* name) {
-  if (std::string(name).find("eglCreateImage") != std::string::npos)
+  if (std::string(name).find("eglCreateImageKHR") != std::string::npos)
     return (gpointer)content::CreateEGLImageKHR;
   else if (std::string(name).find("eglDestroyImage") != std::string::npos)
     return (gpointer)content::DestroyEGLImageKHR;

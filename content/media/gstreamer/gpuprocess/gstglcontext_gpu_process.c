@@ -111,8 +111,12 @@ gst_gl_context_gpu_process_new (GstGLDisplay * display,
   context_class->get_current_context = NULL;
   context_class->get_proc_address = GST_DEBUG_FUNCPTR (proc_addr);
 
-  egl_context->eglCreateImage = gst_gl_context_get_proc_address (context,
-    "eglCreateImage");
+  egl_context->egl_major = 1;
+  egl_context->egl_minor = 4;
+  egl_context->egl_exts = "EGL_EXT_image_dma_buf_import EGL_KHR_image_base";
+
+  egl_context->eglCreateImageKHR = gst_gl_context_get_proc_address (context,
+    "eglCreateImageKHR");
   egl_context->eglDestroyImage = gst_gl_context_get_proc_address (context,
     "eglDestroyImage");
 
