@@ -21,13 +21,53 @@ G_DEFINE_TYPE (GstGLWindowGPUProcess, gst_gl_window_gpu_process,
 
 struct _GstGLWindowGPUProcessPrivate
 {
-  int empty;
+  gint empty;
 };
+
+typedef struct _GstGLSyncMessage
+{
+  GstGLWindow *window;
+  GstGLWindowCB callback;
+  gpointer data;
+} GstGLSyncMessage;
+
+static void
+gst_gl_window_gpu_process_callback (gpointer data)
+{
+  GstGLSyncMessage* msg = (GstGLSyncMessage*) data;
+
+  GstGLContext *context = gst_gl_window_get_context (msg->window);
+  if (context) {
+    gst_gl_context_activate (context, TRUE);
+    gst_object_unref (context);
+  }
+  if (msg->callback)
+    msg->callback (msg->data);
+}
+
+static void
+gst_gl_window_gpu_process_send_message (GstGLWindow * window,
+    GstGLWindowCB callback, gpointer data)
+{
+  GstGLSyncMessage msg;
+
+  msg.window = window;
+  msg.callback = callback;
+  msg.data = data;
+
+  GST_GL_WINDOW_CLASS (parent_class)->send_message (window,
+      gst_gl_window_gpu_process_callback, &msg);
+}
 
 static void
 gst_gl_window_gpu_process_class_init (GstGLWindowGPUProcessClass * klass)
 {
+  GstGLWindowClass *window_class = (GstGLWindowClass *) klass;
+
   g_type_class_add_private (klass, sizeof (GstGLWindowGPUProcessPrivate));
+
+  window_class->send_message = GST_DEBUG_FUNCPTR (
+      gst_gl_window_gpu_process_send_message);
 }
 
 static void
