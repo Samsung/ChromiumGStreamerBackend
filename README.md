@@ -221,7 +221,6 @@ It should open a file then put the following flags inside:
   enable_nacl = false
   media_use_ffmpeg = false
   media_use_libvpx = false
-  media_use_libwebm = false
   use_debug_fission = false # if using icecc
   linux_use_bundled_binutils = false # if using icecc
   clang_use_chrome_plugins = false # if clang+icecc
