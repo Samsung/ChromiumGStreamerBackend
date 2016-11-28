@@ -1,0 +1,8 @@
+include_rules = [
+  "+chrome/grit",
+  "+components/data_use_measurement/core",
+  "+components/prefs",
+  "+components/version_info",
+  "+mojo/edk/embedder",
+  "+sandbox/win/src",
+]

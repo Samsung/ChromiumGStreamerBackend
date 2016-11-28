@@ -1,0 +1,59 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='container'",
+      "position": [8, 8],
+      "bounds": [400, 400],
+      "shouldFlattenTransform": false,
+      "drawsContent": true,
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [400, 400],
+      "shouldFlattenTransform": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [400, 2000],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV id='container'",
+          "rect": [0, 500, 400, 1500],
+          "reason": "background on scrolling contents layer"
+        }
+      ]
+    },
+    {
+      "name": "Overflow Controls Host Layer",
+      "bounds": [400, 400]
+    },
+    {
+      "name": "Horizontal Scrollbar Layer",
+      "position": [0, 400],
+      "bounds": [400, 0],
+      "drawsContent": true
+    },
+    {
+      "name": "Vertical Scrollbar Layer",
+      "position": [400, 0],
+      "bounds": [0, 400],
+      "drawsContent": true
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "Scrolling Contents Layer",
+      "reason": "background on scrolling contents layer"
+    }
+  ]
+}
+

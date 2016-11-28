@@ -1,0 +1,32 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "Ancestor Clipping Layer",
+      "position": [8, 8],
+      "bounds": [200, 10],
+      "shouldFlattenTransform": false
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='inner'",
+      "bounds": [200, 10],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#F5F5F5"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='hoverable'",
+      "position": [8, 0],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#90EE90"
+    }
+  ]
+}
+

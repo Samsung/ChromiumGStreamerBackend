@@ -1,0 +1,32 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
+      "position": [101, 100],
+      "transformOrigin": [0, 0],
+      "bounds": [14, 14],
+      "drawsContent": true,
+      "backgroundColor": "#FF0000",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='target' class='green'",
+          "rect": [-1, 0, 15, 14],
+          "reason": "style change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='target' class='green'",
+      "reason": "style change"
+    }
+  ]
+}
+

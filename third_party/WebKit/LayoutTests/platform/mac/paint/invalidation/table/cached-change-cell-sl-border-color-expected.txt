@@ -1,0 +1,50 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutTableCell TD id='foo'",
+          "rect": [8, 8, 60, 54],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='blockDiv'",
+          "rect": [90, 30, 20, 20],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [90, 30, 12, 18],
+          "reason": "layoutObject removal"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutText #text",
+      "reason": "layoutObject removal"
+    },
+    {
+      "object": "LayoutTableCell TD id='foo'",
+      "reason": "style change"
+    },
+    {
+      "object": "LayoutTableCell TD",
+      "reason": "style change"
+    },
+    {
+      "object": "LayoutTableCell TD id='foo'",
+      "reason": "style change"
+    },
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='blockDiv'",
+      "reason": "full"
+    }
+  ]
+}
+

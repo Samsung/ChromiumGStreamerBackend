@@ -1,0 +1,64 @@
+<html>
+<head>
+<script src="../../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../../http/tests/inspector/timeline-test.js"></script>
+<script>
+
+function performActions()
+{
+    var callback;
+    var promise = new Promise((fulfill) => callback = fulfill);
+    var image = new Image();
+    image.onload = bar;
+    image.src = "../resources/anImage.png";
+
+    function bar()
+    {
+        var image = new Image();
+        image.onload = function(event) { callback(); }  // do not pass event argument to the callback.
+        image.src = "../resources/anotherImage.png";
+    }
+    return promise;
+}
+
+function test()
+{
+    UI.viewManager.showView("timeline");
+    UI.panels.timeline._model._currentTarget = SDK.targetManager.mainTarget();
+    UI.panels.timeline._captureJSProfileSetting.set(false);
+    InspectorTest.invokeAsyncWithTimeline("performActions", finish);
+
+    function finish()
+    {
+        var recordTypes = TimelineModel.TimelineModel.RecordType;
+        var typesToDump = new Set([recordTypes.ResourceSendRequest, recordTypes.ResourceReceiveResponse, recordTypes.ResourceReceivedData, recordTypes.ResourceFinish,
+            recordTypes.EventDispatch, recordTypes.FunctionCall]);
+        function dumpEvent(traceEvent, level)
+        {
+            // Ignore stray paint & rendering events for better stability.
+            var categoryName = Timeline.TimelineUIUtils.eventStyle(traceEvent).category.name;
+            if (categoryName !== "loading" && categoryName !== "scripting")
+                return;
+            // Here and below: pretend coalesced record are just not there, as coalescation is time dependent and, hence, not stable.
+            // Filter out InjectedScript function call because they happen out of sync.
+            if (typesToDump.has(traceEvent.name) && (traceEvent.name !== "FunctionCall" || traceEvent.args["data"]["url"]))
+                InspectorTest.addResult("    ".repeat(level - 1) + traceEvent.name);
+        }
+        InspectorTest.walkTimelineEventTree(dumpEvent);
+        InspectorTest.completeTest();
+    }
+}
+
+if (!window.testRunner)
+    setTimeout(performActions, 3000);
+
+</script>
+</head>
+
+<body onload="runTest()">
+<p>
+Tests the Timeline API instrumentation of a SendRequest, ReceiveResponse etc.
+</p>
+
+</body>
+</html>

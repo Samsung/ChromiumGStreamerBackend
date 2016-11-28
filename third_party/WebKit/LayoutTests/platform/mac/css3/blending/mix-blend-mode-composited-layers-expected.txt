@@ -1,0 +1,31 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true
+    },
+    {
+      "name": "LayoutBlockFlow HTML",
+      "bounds": [800, 69],
+      "isolate": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow DIV",
+      "position": [8, 18],
+      "bounds": [10, 10],
+      "blendMode": "multiply",
+      "drawsContent": true,
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV",
+      "bounds": [10, 10],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#FFFF00"
+    }
+  ]
+}
+

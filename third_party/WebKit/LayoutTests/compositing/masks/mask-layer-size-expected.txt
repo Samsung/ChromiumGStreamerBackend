@@ -1,0 +1,19 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='masked'",
+      "position": [10, 10],
+      "bounds": [400, 200],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#000000"
+    }
+  ]
+}
+

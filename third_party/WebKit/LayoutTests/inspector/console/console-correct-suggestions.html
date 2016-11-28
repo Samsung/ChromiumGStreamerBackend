@@ -1,0 +1,74 @@
+<html>
+<head>
+<script src="../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../http/tests/inspector/console-test.js"></script>
+<script>
+function templateString()
+{
+    console.log("The template string should not run and you should not see this log");
+    return {
+        shouldNotFindThis:56
+    };
+}
+
+function test()
+{
+    var consoleEditor;
+    function testCompletions(text, expected, force)
+    {
+        consoleEditor.setText(text);
+        consoleEditor.setSelection(Common.TextRange.createFromLocation(Infinity, Infinity));
+        consoleEditor._autocompleteController.autocomplete(force);
+        return InspectorTest.addSnifferPromise(consoleEditor._autocompleteController, "_onSuggestionsShownForTest").then(checkExpected);
+
+        function checkExpected(suggestions)
+        {
+            var completions = new Set(suggestions.map(suggestion => suggestion.title));
+            var message = "Checking '" + text + "'";
+            if (force)
+                message += " forcefully";
+            InspectorTest.addResult(message);
+            for (var i = 0; i < expected.length; i++)
+                InspectorTest.addResult((completions.has(expected[i]) ? "Found" : "Not Found") + ": " + expected[i]);
+            InspectorTest.addResult("");
+        }
+    }
+    function sequential(tests)
+    {
+        var promise = Promise.resolve();
+        for (var i = 0; i < tests.length; i++)
+            promise = promise.then(tests[i]);
+        return promise;
+    }
+
+    sequential([
+        InspectorTest.waitUntilConsoleEditorLoaded().then(e => consoleEditor = e),
+        () => testCompletions("window.do", ["document"]),
+        () => testCompletions("win", ["window"]),
+        () => testCompletions('window["doc', ['"document"]']),
+        () => testCompletions('window["document"].bo', ["body"]),
+        () => testCompletions('window["document"]["body"].textC', ["textContent"]),
+        () => testCompletions('document.body.inner', ["innerText", "innerHTML"]),
+        () => testCompletions('document["body"][window.do', ["document"]),
+        () => testCompletions('document["body"][window["document"].body.childNodes[0].text', ["textContent"]),
+        () => testCompletions("templateString`asdf`should", ["shouldNotFindThis"]),
+        () => testCompletions("window.document.BODY", ["body"]),
+        () => testCompletions("window.dOcUmE", ["document"]),
+        () => testCompletions("window.node", ["NodeList", "AudioNode", "GainNode"]),
+        () => testCompletions("32", ["Float32Array", "Int32Array"]),
+        () => testCompletions("window.32", ["Float32Array", "Int32Array"]),
+        () => testCompletions("", ["window"], false),
+        () => testCompletions("", ["window"], true),
+        () => testCompletions('"string g', ["getComputedStyle"], false),
+        () => testCompletions("`template string docu", ["document"], false),
+        () => testCompletions("`${do", ["document"], false),
+        () => testCompletions("// do", ["document"], false)
+    ]).then(InspectorTest.completeTest);
+
+}
+</script>
+</head>
+<body onload="runTest()">
+<p>Tests that console correctly finds suggestions in complicated cases.</p>
+</body>
+</html>

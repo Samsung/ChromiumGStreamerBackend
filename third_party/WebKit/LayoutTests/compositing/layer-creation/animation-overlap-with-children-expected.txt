@@ -1,0 +1,45 @@
+Should be compositedShould not be composited
+Should be composited
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='to-animate' class='container animating'",
+      "position": [8, 8],
+      "bounds": [262, 212],
+      "drawsContent": true
+    },
+    {
+      "name": "Squashing Containment Layer",
+      "shouldFlattenTransform": false
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited banner'",
+      "position": [6, 6],
+      "bounds": [250, 50],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#C0C0C0"
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='test1 box')",
+      "position": [11, 21],
+      "bounds": [100, 100],
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box'",
+      "position": [18, 230],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#0000FF"
+    }
+  ]
+}
+

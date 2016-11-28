@@ -1,0 +1,29 @@
+{
+  "objectPaintInvalidations": [
+    {
+      "object": "VerticalScrollbar",
+      "reason": "scroll"
+    },
+    {
+      "object": "LayoutView #document",
+      "reason": "scroll"
+    },
+    {
+      "object": "LayoutView #document",
+      "reason": "style change"
+    },
+    {
+      "object": "LayoutBlockFlow BODY class='noScroll'",
+      "reason": "style change"
+    },
+    {
+      "object": "LayoutBlockFlow DIV id='container'",
+      "reason": "border box change"
+    },
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='overlay'",
+      "reason": "layoutObject insertion"
+    }
+  ]
+}
+

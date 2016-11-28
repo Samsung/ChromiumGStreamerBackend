@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>Tests cue text position and alignment from settings.</title>
+<script src="track-helpers.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<video>
+    <track src="captions-webvtt/tc016-align-positioning.vtt">
+    <track src="captions-webvtt/tc016-align-positioning-bad.vtt">
+</video>
+<script>
+async_test(function(t) {
+    var video = document.querySelector("video");
+
+    var trackElements = document.querySelectorAll("track");
+    assert_equals(trackElements.length, video.textTracks.length);
+    for (var i = 0; i < trackElements.length; i++)
+        trackElements[i].onload = t.step_func(trackLoaded);
+
+    enableAllTextTracks(video.textTracks);
+
+    var numberOfTracksLoaded = 0;
+    function trackLoaded() {
+        numberOfTracksLoaded++;
+        if (numberOfTracksLoaded != 2)
+            return;
+
+        testTrack(0);
+        testTrackError(1);
+        t.done();
+    }
+
+    function testTrack(index) {
+        var expected = [
+            { position : 10, align : "start"  },
+            { position : 20, align : "middle" },
+            { position : 80, align : "end"    }
+        ];
+
+        assert_cues_match(video.textTracks[index].cues, expected);
+    }
+
+    function testTrackError(index) {
+        var expected = [
+            { position : 10,     align : "middle" },
+            { position : "auto", align : "middle" },
+            { position : "auto", align : "middle" }
+        ];
+
+        assert_cues_match(video.textTracks[index].cues, expected);
+    }
+});
+</script>

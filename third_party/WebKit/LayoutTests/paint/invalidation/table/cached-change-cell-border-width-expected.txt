@@ -1,0 +1,64 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutTable TABLE",
+          "rect": [8, 58, 114, 4],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutTableCell TD id='foo'",
+          "rect": [8, 8, 60, 54],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutTableCell TD",
+          "rect": [64, 8, 58, 54],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutTableCell TD",
+          "rect": [62, 8, 55, 52],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutTable TABLE",
+          "rect": [116, 8, 6, 54],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutTableCell TD id='foo'",
+      "reason": "style change"
+    },
+    {
+      "object": "LayoutTableCell TD",
+      "reason": "style change"
+    },
+    {
+      "object": "LayoutTable TABLE",
+      "reason": "incremental"
+    },
+    {
+      "object": "LayoutTableRow TR",
+      "reason": "location change"
+    },
+    {
+      "object": "LayoutTableCell TD id='foo'",
+      "reason": "style change"
+    },
+    {
+      "object": "LayoutTableCell TD",
+      "reason": "bounds change"
+    }
+  ]
+}
+

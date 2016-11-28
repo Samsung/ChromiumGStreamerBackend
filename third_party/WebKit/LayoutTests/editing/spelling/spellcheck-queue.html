@@ -1,0 +1,56 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script src="spellcheck_test.js"></script>
+
+<script>
+function pasteToAllChildren(text, container) {
+  const document = container.ownerDocument;
+  const selection = document.getSelection();
+  selection.setClipboardData(text);
+  container.childNodes.forEach(child => {
+    if (child.nodeName === 'DIV') {
+      selection.selectAllChildren(child);
+    } else {
+      child.value = '';
+      child.focus();
+    }
+    document.execCommand('paste');
+  });
+}
+
+spellcheck_test(
+  [
+    '<div id="container">',
+      '<input>',
+      '<textarea></textarea>',
+      '<div contenteditable></div>',
+      '<input>',
+      '<textarea></textarea>',
+      '<div contenteditable></div>',
+      '<input>',
+      '<textarea></textarea>',
+      '<div contenteditable></div>',
+    '</div>'
+  ].join(''),
+  document => {
+    const container = document.getElementById('container');
+    pasteToAllChildren('foo bar', container);
+    pasteToAllChildren('zz apple orange', container);
+  },
+  [
+    '<div id="container">',
+      '<input value="#zz# apple orange">',
+      '<textarea>#zz# apple orange</textarea>',
+      '<div contenteditable>#zz# apple orange</div>',
+      '<input value="#zz# apple orange">',
+      '<textarea>#zz# apple orange</textarea>',
+      '<div contenteditable>#zz# apple orange</div>',
+      '<input value="#zz# apple orange">',
+      '<textarea>#zz# apple orange</textarea>',
+      '<div contenteditable>#zz# apple orange</div>',
+    '</div>'
+  ].join(''),
+  'Spellchecker handles multiple requests.');
+</script>

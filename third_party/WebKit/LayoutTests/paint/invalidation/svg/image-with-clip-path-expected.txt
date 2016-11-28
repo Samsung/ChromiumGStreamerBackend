@@ -1,0 +1,94 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGRect rect id='r'",
+          "rect": [0, 0, 100, 100],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGRect rect id='r'",
+          "rect": [0, 0, 100, 100],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGContainer g id='g'",
+          "rect": [20, 20, 60, 60],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGContainer g id='g'",
+          "rect": [20, 20, 60, 60],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGImage image",
+          "rect": [20, 20, 60, 60],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGImage image",
+          "rect": [20, 20, 60, 60],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGContainer g id='g'",
+          "rect": [175, 25, 50, 50],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGImage image",
+          "rect": [175, 25, 50, 50],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGRect rect id='r'",
+          "rect": [175, 25, 50, 50],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGContainer g id='g'",
+          "rect": [0, 0, 10, 10],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGImage image",
+          "rect": [0, 0, 10, 10],
+          "reason": "full"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutSVGContainer g id='g'",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGRect rect id='r'",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGImage image",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGContainer g id='g'",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGRect rect id='r'",
+      "reason": "full"
+    },
+    {
+      "object": "LayoutSVGImage image",
+      "reason": "full"
+    }
+  ]
+}
+

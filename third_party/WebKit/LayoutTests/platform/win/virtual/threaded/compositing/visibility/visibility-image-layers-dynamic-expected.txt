@@ -1,0 +1,109 @@
+
+
+
+Initial
+
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [785, 623],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited container'",
+      "position": [18, 10],
+      "bounds": [749, 144]
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited hidden container'",
+      "position": [14, 314],
+      "bounds": [757, 152],
+      "contentsVisible": false
+    },
+    {
+      "name": "LayoutImage IMG class='visible composited box'",
+      "position": [24, 24],
+      "bounds": [100, 100]
+    }
+  ]
+}
+After step 1
+
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [785, 1059],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited container'",
+      "position": [18, 10],
+      "bounds": [749, 144]
+    },
+    {
+      "name": "LayoutImage IMG class='hidden composited box'",
+      "position": [20, 20],
+      "bounds": [100, 100]
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited hidden container'",
+      "position": [14, 314],
+      "bounds": [757, 152],
+      "contentsVisible": false
+    },
+    {
+      "name": "LayoutImage IMG class='visible composited box'",
+      "position": [24, 24],
+      "bounds": [100, 100]
+    }
+  ]
+}
+After step 2
+
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [785, 1574],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited container'",
+      "position": [18, 10],
+      "bounds": [749, 144]
+    },
+    {
+      "name": "LayoutImage IMG class='hidden composited box'",
+      "position": [20, 20],
+      "bounds": [100, 100]
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited hidden container'",
+      "position": [14, 160],
+      "bounds": [757, 152],
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutImage IMG class='composited box'",
+      "position": [24, 24],
+      "bounds": [100, 100]
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited hidden container'",
+      "position": [14, 314],
+      "bounds": [757, 152],
+      "contentsVisible": false
+    },
+    {
+      "name": "LayoutImage IMG class='visible composited box'",
+      "position": [24, 24],
+      "bounds": [100, 100]
+    }
+  ]
+}
+

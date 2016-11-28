@@ -1,0 +1,61 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutText #text",
+          "rect": [11, 33, 79, 18],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [11, 11, 61, 18],
+          "reason": "bounds change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow HTML",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBlockFlow BODY",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutTable TABLE",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutTableCell TD id='firstCell'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "bounds change"
+    },
+    {
+      "object": "InlineTextBox 'First cell'",
+      "reason": "bounds change"
+    },
+    {
+      "object": "LayoutTableCell TD id='secondCell'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "bounds change"
+    },
+    {
+      "object": "InlineTextBox 'Second cell'",
+      "reason": "bounds change"
+    }
+  ]
+}
+

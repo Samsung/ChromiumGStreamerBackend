@@ -1,0 +1,10 @@
+{
+    "dependencies": ["bindings", "workspace", "components"],
+    "scripts": [
+        "FileSystemWorkspaceBinding.js",
+        "DefaultMapping.js",
+        "Automapping.js",
+        "Persistence.js",
+        "PersistenceUtils.js"
+    ]
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>Tests track deletion during setup.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-file.js"></script>
+<script>
+// This should not be necessary, but due to crbug.com/372245 style
+// gets dirtied during layout in LayoutTextTrackContainer which
+// causes assertions to fail when Document::scrollingElement is
+// queried during compositing update (a valid request).
+internals.settings.setCompositorWorkerEnabled(false);
+</script>
+<video>
+    <track src="captions-webvtt/metadata.vtt">
+</video>
+<script>
+async_test(function(t) {
+    var video = document.querySelector("video");
+    var track = document.querySelector("track");
+    setTimeout(function() {
+        video.parentNode.removeChild(video);
+    }, 61);
+
+    track.onload = t.step_func(function() {
+        var track2 = document.createElement("track");
+        video.appendChild(track2);
+        setTimeout(function() { t.done(); }, 100);
+    });
+
+    assert_equals(track.readyState, HTMLTrackElement.NONE);
+    assert_equals(track.track.mode, "disabled");
+    track.track.mode = "hidden";
+
+    video.src = findMediaFile("video", "../content/test");
+});
+</script>

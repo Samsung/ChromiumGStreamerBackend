@@ -1,0 +1,16 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [785, 2016],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV",
+      "position": [100, 200],
+      "bounds": [200, 200]
+    }
+  ]
+}
+

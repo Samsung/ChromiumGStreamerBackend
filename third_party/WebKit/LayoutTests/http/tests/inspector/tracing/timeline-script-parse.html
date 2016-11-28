@@ -1,0 +1,40 @@
+<html>
+<head>
+<script src="../inspector-test.js"></script>
+<script src="../timeline-test.js"></script>
+<script src="../network-test.js"></script>
+<script>
+
+function performActions()
+{
+    var callback;
+    var promise = new Promise((fulfill) => callback = fulfill);
+    var script = document.createElement("script");
+    script.src = "resources/timeline-script-parse.php";
+    script.async = true;
+    script.onload = callback;
+    document.body.appendChild(script);
+    return promise;
+}
+
+function test()
+{
+    InspectorTest.invokeAsyncWithTimeline("performActions", finish);
+
+    function finish()
+    {
+        InspectorTest.printTimelineRecordsWithDetails("v8.parseOnBackground");
+        InspectorTest.completeTest();
+    }
+}
+
+</script>
+</head>
+
+<body onload="runTest()">
+<p>
+Tests the Timeline events for v8.parseOnBackground
+</p>
+
+</body>
+</html>

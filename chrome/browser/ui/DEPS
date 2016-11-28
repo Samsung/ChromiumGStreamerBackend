@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/bubble",
+  "+components/favicon/core",
+  "+components/flags_ui",
+  "+components/toolbar",
+  "+components/url_formatter",
+  "+components/version_ui",
+  "-chrome/browser/ui/views",
+  "+mash/public/interfaces",
+]

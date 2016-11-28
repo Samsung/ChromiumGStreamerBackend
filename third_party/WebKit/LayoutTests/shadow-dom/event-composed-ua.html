@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<form>
+  <input id="input" type="text">
+  <input id="input2">
+</form>
+
+<script>
+const input = document.querySelector('#input');
+const input2 = document.querySelector('#input2');
+
+function click(x, y) {
+  window.eventSender.mouseMoveTo(x, y);
+  window.eventSender.mouseDown();
+  window.eventSender.mouseUp();
+}
+
+function doubleClick(x, y) {
+  window.eventSender.mouseMoveTo(x, y);
+  window.eventSender.mouseDown();
+  window.eventSender.mouseUp();
+  window.eventSender.mouseDown();
+  window.eventSender.mouseUp();
+}
+
+const composedEventTypes = [
+  // UI Events
+  'blur', 'focus', 'focusin', 'focusout',
+  'click', 'dblclick',
+  'mousedown', 'mouseenter', 'mouseleave', 'mousemove', 'mouseout', 'mouseover', 'mouseup',
+  'wheel',
+  'beforeinput', 'input',
+  'keydown', 'keyup',
+  'compositionstart', 'compositionupdate', 'compositionend',
+  // Legacy UI Events
+  'DOMActivate', 'DOMFocusIn', 'DOMFocusOut', 'keypress',
+  // See LayoutTests/fast/events/touch/basic-single-touch-events.html for Touch Events.
+];
+
+for (const eventType of composedEventTypes) {
+  async_test((test) => {
+    input.addEventListener(eventType, test.step_func_done((e) => {
+      assert_true(e.composed);
+    }));
+  }, `A ${eventType} event should be a composed event`);
+}
+
+click(input.offsetLeft, input.offsetTop);
+doubleClick(input.offsetLeft, input.offsetTop);
+
+// For mouseenter/mouseleave
+click(input2.offsetLeft, input2.offsetTop);
+
+// For focus/blur
+input.blur();
+input.focus();
+input.blur();
+
+// For keypress
+input.focus();
+window.eventSender.keyDown(' ');
+
+// For wheel
+window.eventSender.mouseMoveTo(input.offsetLeft + 5, input.offsetTop + 5);
+window.eventSender.mouseScrollBy(-1, -2);
+
+// For composition
+input.focus();
+window.textInputController.setMarkedText('1', 0, 1);
+window.textInputController.insertText('1');
+</script>

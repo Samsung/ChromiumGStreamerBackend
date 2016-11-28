@@ -1,0 +1,11 @@
+jialiul@chromium.org
+mattm@chromium.org
+nparker@chromium.org
+shess@chromium.org
+
+per-file *_messages*.h=set noparent
+per-file *_messages*.h=file://ipc/SECURITY_OWNERS
+
+# For security review of IPC-to-protobuf bridge.
+per-file *protobuf_message*.h=set noparent
+per-file *protobuf_message*.h=file://ipc/SECURITY_OWNERS

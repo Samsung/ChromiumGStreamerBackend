@@ -1,0 +1,23 @@
+{
+  "owners": [
+    "yyanagisawa"
+  ],
+  "comments": [
+    "Goma canary builder for iOS."
+  ],
+  "xcode version": "8.0",
+  "gn_args": [
+    "goma_dir=\"$(goma_dir)\"",
+    "ios_enable_code_signing=false",
+    "is_component_build=false",
+    "target_cpu=\"arm\"",
+    "target_os=\"ios\"",
+    "use_goma=true"
+  ],
+  "use_goma_canary": true,
+  "compiler": "ninja",
+  "configuration": "Release",
+  "sdk": "iphoneos10.0",
+  "tests": [
+  ]
+}

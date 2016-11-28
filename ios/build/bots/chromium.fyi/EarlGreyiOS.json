@@ -1,0 +1,34 @@
+{
+  "owners": [
+    "huangml"
+  ],
+  "comments": [
+    "Tests for 64-bit iOS 10.0 simulators.",
+    "Tests run on iPhone 5s (64-bit)."
+  ],
+  "xcode version": "8.0",
+  "gn_args": [
+    "goma_dir=\"$(goma_dir)\"",
+    "is_component_build=false",
+    "target_cpu=\"x64\"",
+    "target_os=\"ios\"",
+    "use_goma=true"
+  ],
+  "compiler": "ninja",
+  "configuration": "Debug",
+  "sdk": "iphonesimulator10.0",
+  "tests": [
+    {
+      "app": "ios_web_shell_egtests",
+      "device type": "iPhone 6s",
+      "os": "10.0",
+      "xctest": true
+    },
+    {
+      "app": "ios_web_shell_egtests",
+      "device type": "iPad Air 2",
+      "os": "10.0",
+      "xctest": true
+    }
+  ]
+}

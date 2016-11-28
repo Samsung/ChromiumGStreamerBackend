@@ -1,0 +1,34 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true
+    },
+    {
+      "name": "LayoutBlockFlow HTML",
+      "bounds": [800, 600],
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
+      "position": [8, 8],
+      "bounds": [160, 90],
+      "isolate": true,
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#008000"
+    },
+    {
+      "name": "LayoutImage IMG class='accelerated blended'",
+      "bounds": [160, 90],
+      "blendMode": "multiply"
+    },
+    {
+      "name": "LayoutBlockFlow HTML (foreground) Layer",
+      "bounds": [800, 600],
+      "drawsContent": true
+    }
+  ]
+}
+

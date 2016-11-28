@@ -1,0 +1,6 @@
+include_rules = [
+  "+jni",
+
+  # TODO(sanfin): Remove cyclic dependency between content and android.
+  "!chromecast/browser/android",
+]

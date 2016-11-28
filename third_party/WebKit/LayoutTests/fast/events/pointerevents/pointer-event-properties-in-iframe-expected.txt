@@ -1,0 +1,148 @@
+
+This test verifies clientX/Y of pointer events inside iframe.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+===== scrollX=25, scrollY=100, zoomFactor=1
+ *** Mouse events inside iframe ***
+pointermove of mouse is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+mousemove is recieved:
+clientX = 150
+clientY = 100
+pointerdown of mouse is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+mousedown is recieved:
+clientX = 150
+clientY = 100
+pointerup of mouse is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+mouseup is recieved:
+clientX = 150
+clientY = 100
+ *** Touch events inside iframe ***
+pointerdown of touch is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+touchstart is recieved:
+clientX = 150
+clientY = 100
+pointermove of touch is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+touchmove is recieved:
+clientX = 150
+clientY = 100
+pointerup of touch is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+touchend is recieved:
+clientX = 150
+clientY = 100
+
+===== scrollX=40, scrollY=140, zoomFactor=1
+ *** Mouse events inside iframe ***
+pointermove of mouse is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+mousemove is recieved:
+clientX = 150
+clientY = 100
+pointerdown of mouse is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+mousedown is recieved:
+clientX = 150
+clientY = 100
+pointerup of mouse is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+mouseup is recieved:
+clientX = 150
+clientY = 100
+ *** Touch events inside iframe ***
+pointerdown of touch is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+touchstart is recieved:
+clientX = 150
+clientY = 100
+pointermove of touch is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+touchmove is recieved:
+clientX = 150
+clientY = 100
+pointerup of touch is recieved:
+clientX = 150
+clientY = 100
+view.name = innerFrame
+touchend is recieved:
+clientX = 150
+clientY = 100
+
+===== scrollX=40, scrollY=140, zoomFactor=2
+ *** Mouse events inside iframe ***
+pointermove of mouse is recieved:
+clientX = 50
+clientY = 0
+view.name = innerFrame
+mousemove is recieved:
+clientX = 50
+clientY = 0
+pointerdown of mouse is recieved:
+clientX = 50
+clientY = 0
+view.name = innerFrame
+mousedown is recieved:
+clientX = 50
+clientY = 0
+pointerup of mouse is recieved:
+clientX = 50
+clientY = 0
+view.name = innerFrame
+mouseup is recieved:
+clientX = 50
+clientY = 0
+ *** Touch events inside iframe ***
+pointerdown of touch is recieved:
+clientX = 50
+clientY = 0
+view.name = innerFrame
+touchstart is recieved:
+clientX = 50
+clientY = 0
+pointermove of touch is recieved:
+clientX = 50
+clientY = 0
+view.name = innerFrame
+touchmove is recieved:
+clientX = 50
+clientY = 0
+pointerup of touch is recieved:
+clientX = 50
+clientY = 0
+view.name = innerFrame
+touchend is recieved:
+clientX = 50
+clientY = 0
+
+

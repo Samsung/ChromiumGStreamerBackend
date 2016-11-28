@@ -1,0 +1,11 @@
+CONSOLE WARNING: line 63: Case-insensitive matching for usemap attribute is deprecated and will be removed in M58, around April 2017. See https://www.chromestatus.com/features/5760965337415680 for more details. Comparing usemap=#mapname and name=mapName
+ 
+This tests image map behavior when there are multiple maps with the same name.
+1: PASS: Hit the first map in the document.
+2: PASS: Hit the second map after the first was renamed.
+3: PASS: Hit the first map after it was renamed back.
+4: PASS: Hit the second map after the first was removed.
+5: PASS: Hit the first map after it was added back.
+6: PASS: Hit the first map after the second was removed.
+7: PASS: Hit the first map after the second was re-added.
+

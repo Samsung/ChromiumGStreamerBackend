@@ -1,0 +1,51 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV class='item2'",
+          "rect": [124, 52, 52, 150],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='item2'",
+          "rect": [100, 52, 52, 150],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='item1'",
+          "rect": [24, 52, 52, 150],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='item1'",
+          "rect": [0, 52, 52, 150],
+          "reason": "bounds change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow DIV class='item1'",
+      "reason": "bounds change"
+    },
+    {
+      "object": "LayoutBlockFlow DIV",
+      "reason": "location change"
+    },
+    {
+      "object": "LayoutBlockFlow DIV class='item2'",
+      "reason": "bounds change"
+    },
+    {
+      "object": "LayoutBlockFlow DIV",
+      "reason": "location change"
+    }
+  ]
+}
+

@@ -1,0 +1,31 @@
+layer at (0,0) size 800x600
+  LayoutView at (0,0) size 800x600
+layer at (0,0) size 800x522
+  LayoutBlockFlow {HTML} at (0,0) size 800x522
+    LayoutBlockFlow {BODY} at (8,18) size 784x486
+      LayoutBlockFlow {P} at (0,0) size 784x486
+        LayoutInline {SPAN} at (0,0) size 777x452 [color=#FFFFFF] [bgcolor=#000080]
+          LayoutText {#text} at (0,17) size 752x128
+            text run at (0,17) width 539: "This text should be 18px sans-serif, in small-caps, italicized, "
+            text run at (538,17) width 189: "and very light. There"
+            text run at (0,71) width 388: "should be a 36px gap betwen each line. The "
+            text run at (387,71) width 365: "text should have a blue background, the"
+            text run at (0,125) width 145: "gap should not. "
+          LayoutInline {SPAN} at (0,0) size 777x344 [color=#0000FF]
+            LayoutText {#text} at (144,125) size 777x344
+              text run at (144,125) width 595: "dummy text dummy text dummy text dummy text dummy text dummy "
+              text run at (738,125) width 39: "text"
+              text run at (0,179) width 594: "dummy text dummy text dummy text dummy text dummy text dummy "
+              text run at (593,179) width 146: "text dummy text"
+              text run at (0,233) width 488: "dummy text dummy text dummy text dummy text dummy "
+              text run at (487,233) width 252: "text dummy text dummy text"
+              text run at (0,287) width 382: "dummy text dummy text dummy text dummy "
+              text run at (381,287) width 358: "text dummy text dummy text dummy text"
+              text run at (0,341) width 276: "dummy text dummy text dummy "
+              text run at (275,341) width 464: "text dummy text dummy text dummy text dummy text"
+              text run at (0,395) width 170: "dummy text dummy "
+              text run at (169,395) width 570: "text dummy text dummy text dummy text dummy text dummy text"
+              text run at (0,449) width 63: "dummy "
+              text run at (62,449) width 570: "text dummy text dummy text dummy text dummy text dummy text"
+          LayoutText {#text} at (0,0) size 0x0
+        LayoutText {#text} at (0,0) size 0x0

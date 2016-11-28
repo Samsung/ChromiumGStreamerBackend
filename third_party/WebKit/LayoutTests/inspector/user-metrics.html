@@ -1,0 +1,49 @@
+<html>
+<head>
+<script src="../http/tests/inspector/inspector-test.js"></script>
+<script src="../http/tests/inspector/timeline-test.js"></script>
+<script src="profiler/profiler-test.js"></script>
+<script src="audits/audits-test.js"></script>
+<script>
+
+function test()
+{
+    InspectorFrontendHost.recordEnumeratedHistogram = function(name, code)
+    {
+        if (name === "DevTools.ActionTaken")
+            InspectorTest.addResult("Action taken: " + nameOf(Host.UserMetrics.Action, code));
+        else if (name === "DevTools.PanelShown")
+            InspectorTest.addResult("Panel shown: " + nameOf(Host.UserMetrics._PanelCodes, code));
+    }
+
+    function nameOf(object, code)
+    {
+        for (var name in object) {
+            if (object[name] === code)
+                return name;
+        }
+        return null;
+    }
+
+    InspectorTest.addResult("recordActionTaken:");
+    InspectorTest.dump(Host.UserMetrics.Action);
+    Host.userMetrics.actionTaken(Host.UserMetrics.Action.WindowDocked);
+    Host.userMetrics.actionTaken(Host.UserMetrics.Action.WindowUndocked);
+
+    InspectorTest.addResult("\nrecordPanelShown:");
+    InspectorTest.dump(Host.UserMetrics._PanelCodes);
+    UI.viewManager.showView("profiles");
+    UI.viewManager.showView("timeline");
+    UI.viewManager.showView("audits");
+
+    InspectorTest.completeTest();
+}
+
+</script>
+</head>
+
+<body onload="runTest()">
+<p>Tests list of user metrics codes and invocations.</p>
+
+</body>
+</html>

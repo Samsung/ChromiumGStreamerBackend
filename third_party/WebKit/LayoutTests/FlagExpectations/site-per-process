@@ -1,0 +1,152 @@
+# These tests currently fail when they run with --site-per-process.
+# See https://crbug.com/477150.
+
+# https://crbug.com/661725 - Propagating user gesture via postMessage doesn't work for OOPIFs
+crbug.com/661725 http/tests/security/frameNavigation/xss-ALLOWED-top-navigation-after-postMessage.html [ Timeout ]
+
+# https://crbug.com/611838 - regression when geolocation tests use JS mock.
+crbug.com/611838 http/tests/security/powerfulFeatureRestrictions/geolocation-on-secure-origin-in-insecure-origin.html [ Timeout ]
+
+# https://crbug.com/582245 - no exception, b/c BindingSecurity::shouldAllowAccessTo exits early when |!target|.
+crbug.com/582245 http/tests/security/xss-DENIED-getSVGDocument-iframe.html [ Failure ]
+crbug.com/582245 http/tests/security/xss-DENIED-getSVGDocument-object.html [ Failure ]
+crbug.com/582245 http/tests/security/xssAuditor/block-does-not-leak-location.html [ Failure ]
+crbug.com/582245 http/tests/security/xssAuditor/block-does-not-leak-referrer.html [ Failure ]
+crbug.com/582245 http/tests/security/xssAuditor/full-block-script-tag-cross-domain.html [ Failure ]
+
+# https://crbug.com/582176 - InspectorTest.changeExecutionContext doesn't like OOPIFs.
+crbug.com/582176 http/tests/inspector/console-cd-completions.html [ Failure ]
+crbug.com/582176 http/tests/inspector/console-cd.html [ Failure ]
+
+# https://crbug.com/608015 - node.contentDocument is undefined.
+crbug.com/608015 http/tests/inspector-protocol/access-inspected-object.html [ Failure Timeout ]
+
+# https://crbug.com/608023 - does injecting injections work with OOPIFs?
+crbug.com/608023 http/tests/inspector/injected-script-for-origin.html [ Failure ]
+
+# https://crbug.com/602493 - Layout tests harness doesn't support history dump across OOPIFs
+crbug.com/602493 http/tests/security/mixedContent/insecure-iframe-in-main-frame.html [ Crash ]
+
+# https://crbug.com/582522 - extra mixedContent checks reported with --site-per-process
+# https://crbug.com/602497 - Inconsistent console messages about mixed content,
+#                            when running with or without --site-per-process
+crbug.com/602497 http/tests/security/mixedContent/insecure-iframe-in-iframe.html [ Failure ]
+crbug.com/602497 http/tests/security/mixedContent/insecure-iframe-in-main-frame-allowed.html [ Failure ]
+
+# https://crbug.com/585188 - testRunner.addOriginAccessWhitelistEntry is not replicated to OOPIFs.
+crbug.com/585188 http/tests/xmlhttprequest/origin-whitelisting-all.html [ Failure ]
+crbug.com/585188 virtual/mojo-loading/http/tests/xmlhttprequest/origin-whitelisting-all.html [ Failure ]
+crbug.com/585188 http/tests/xmlhttprequest/origin-whitelisting-ip-addresses.html [ Failure ]
+crbug.com/585188 virtual/mojo-loading/http/tests/xmlhttprequest/origin-whitelisting-ip-addresses.html [ Failure ]
+
+# https://crbug.com/601584 - No OOPIF support for UserGestureIndicator triggers
+#                            cross-origin-iframe.html layout test failure
+crbug.com/601584 http/tests/bluetooth/https/requestDevice/cross-origin-iframe.html [ Failure ]
+
+# https://crbug.com/606594 - UaF of delegate_ in WebFrameTestClient::willSendRequest
+crbug.com/606594 http/tests/local/serviceworker/fetch-request-body-file.html [ Failure Crash ]
+
+# https://crbug.com/607991 - MockWebClipboardImpl not replicated across OOPIFs.
+crbug.com/607991 http/tests/misc/copy-resolves-urls.html [ Failure ]
+
+# https://crbug.com/608780 - window.performance doesn't work with OOPIFs
+crbug.com/608780 http/tests/w3c/webperf/submission/Intel/resource-timing/test_resource_timing_cross_origin_redirect.html [ Timeout ]
+crbug.com/608780 http/tests/w3c/webperf/submission/Intel/resource-timing/test_resource_timing_cross_origin_redirect_with_timing_allow_origin.html [ Timeout ]
+crbug.com/608780 http/tests/w3c/webperf/submission/Intel/resource-timing/test_resource_timing_cross_origin_resource_request.html [ Timeout ]
+crbug.com/608780 http/tests/w3c/webperf/submission/Intel/resource-timing/test_resource_timing_timing_allow_cross_origin_resource_request.html [ Timeout ]
+
+# https://crbug.com/611232 - CSP checks from remote parent frame do not properly report violations
+crbug.com/611232 http/tests/security/contentSecurityPolicy/frame-src-child-frame-navigates-to-blocked-origin.html [ Timeout ]
+crbug.com/611232 http/tests/security/contentSecurityPolicy/1.1/plugintypes-affects-cross-site-child-disallowed.html [ Failure ]
+
+# https://crbug.com/615156 - Need to make IntersectionObserver work with OOPIFs.
+crbug.com/615156 http/tests/intersection-observer/iframe-cross-origin.html [ Timeout ]
+
+# https://crbug.com/616626 - allow_universal_access_from_file_urls doesn't work with --site-per-process.
+# https://crbug.com/665058 - EventSender drag-and-drop simulation doesn't support OOPIFs.
+crbug.com/665058 http/tests/local/drag-over-remote-content.html [ Crash ]
+
+# https://crbug.com/619662 - Expected console output differences.
+crbug.com/619662 http/tests/navigation/cross-origin-fragment-navigation-is-async.html [ Failure ]
+
+# https://crbug.com/616905 - history.back() has different behavior with --site-per-process.
+crbug.com/616905 http/tests/history/cross-origin-redirect-on-back.html [ Timeout ]
+
+# https://crbug.com/623268 - Can't inspect OOPIFs from main page's DevTools window.
+crbug.com/623268 http/tests/inspector-protocol/request-mixed-content-status-blockable.html [ Timeout ]
+crbug.com/623268 http/tests/inspector-protocol/request-mixed-content-status-none.html [ Timeout ]
+crbug.com/623268 http/tests/inspector-protocol/request-mixed-content-status-optionally-blockable.html [ Timeout ]
+crbug.com/623268 http/tests/inspector/change-iframe-src.html [ Timeout ]
+crbug.com/623268 http/tests/inspector/console-cross-origin-iframe-logging.html [ Timeout ]
+crbug.com/623268 http/tests/inspector/inspect-iframe-from-different-domain.html [ Timeout ]
+
+# https://crbug.com/623210 - DevTools extensions load in separate process in layout tests.
+crbug.com/623210 http/tests/inspector/extensions-headers.html [ Timeout ]
+crbug.com/623210 http/tests/inspector/extensions-iframe-eval.html [ Timeout ]
+crbug.com/623210 http/tests/inspector/extensions-ignore-cache.html [ Timeout ]
+crbug.com/623210 http/tests/inspector/extensions-network-redirect.html [ Timeout ]
+crbug.com/623210 http/tests/inspector/extensions-useragent.html [ Timeout ]
+
+# https://crbug.com/623265 - cross-site navigation in main page breaks test.
+crbug.com/623265 http/tests/inspector/indexeddb/resources-panel.html [ Timeout ]
+
+# https://crbug.com/645641 - test_runner.cc(1863) Check failed:
+# layout_test_runtime_flags_.have_top_loading_frame()
+crbug.com/645641 imported/wpt/html/syntax/parsing/html5lib_tests19.html [ Crash Failure ]
+
+# TODO(lukasza, alexmos): Triage these failures.
+Bug(none) fast/frames/cached-frame-counter.html [ Timeout ]
+Bug(none) fast/frames/frame-limit.html [ Timeout ]
+Bug(none) fast/loader/reload-zero-byte-plugin.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_adoption01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_adoption02.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_comments01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_doctype01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_domjs-unsafe.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_entities01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_entities02.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_html5test-com.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_inbody01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_isindex.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_main-element.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_pending-spec-changes-plain-text-unsafe.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_pending-spec-changes.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_plain-text-unsafe.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_scriptdata01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_scripted_adoption01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_scripted_ark.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_scripted_webkit01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tables01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_template.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests1.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests10.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests11.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests12.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests14.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests15.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests16.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests17.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests18.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests2.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests20.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests21.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests22.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests23.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests24.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests25.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests26.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests3.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests5.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests6.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests7.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests8.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tests9.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_tricky01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_webkit01.html [ Failure ]
+Bug(none) imported/wpt/html/syntax/parsing/html5lib_webkit02.html [ Failure ]
+Bug(none) inspector/sources/debugger-frameworks/frameworks-dom-xhr-event-breakpoints.html [ Timeout ]
+Bug(none) jquery/manipulation.html [ Timeout ]
+Bug(none) storage/indexeddb/blob-valid-after-deletion.html [ Failure ]
+Bug(none) storage/indexeddb/blob-valid-before-commit.html [ Failure ]
+Bug(none) storage/indexeddb/empty-crash.html [ Timeout ]
+Bug(none) virtual/stable/http/tests/navigation/cross-origin-fragment-navigation-is-async.html [ Failure ]

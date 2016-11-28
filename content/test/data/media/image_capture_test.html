@@ -1,0 +1,74 @@
+B<!DOCTYPE html>
+<html>
+<head>
+<!-- Image Capture Browser Test -->
+</head>
+<body>
+<script type="text/javascript" src="webrtc_test_utilities.js"></script>
+<script>
+const WIDTH = 320;
+/** @const */ var CONSTRAINTS = { width: { max : WIDTH } };
+
+// Runs an ImageCapture.getPhotoCapabilities().
+function testCreateAndGetCapabilities() {
+  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+      .then(stream => {
+        assertEquals('video', stream.getVideoTracks()[0].kind);
+        return new ImageCapture(stream.getVideoTracks()[0]);
+      })
+      .then(capturer => {
+        return capturer.getPhotoCapabilities();
+      })
+      .then(capabilities => {
+        // There's nothing to check here since |capabilities| vary per device.
+        reportTestSuccess();
+      })
+      .catch(err => {
+        return failTest(err.toString());
+      });
+}
+
+// Runs an ImageCapture.takePhoto().
+function testCreateAndTakePhoto() {
+  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+      .then(stream => {
+        assertEquals('video', stream.getVideoTracks()[0].kind);
+        return new ImageCapture(stream.getVideoTracks()[0]);
+      })
+      .then(capturer => {
+        return capturer.takePhoto();
+      })
+      .then(blob => {
+        assertTrue(blob.type != undefined);
+        assertNotEquals(0, blob.size);
+
+        reportTestSuccess();
+      })
+      .catch(err => {
+        return failTest(err.toString());
+      });
+}
+
+// Runs an ImageCapture.grabFrame().
+function testCreateAndGrabFrame() {
+  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+      .then(stream => {
+        assertEquals('video', stream.getVideoTracks()[0].kind);
+        return new ImageCapture(stream.getVideoTracks()[0]);
+      })
+      .then(capturer => {
+        return capturer.grabFrame();
+      })
+      .then(imageBitmap => {
+        assertEquals(WIDTH, imageBitmap.width);
+
+        reportTestSuccess();
+      })
+      .catch(err => {
+        return failTest(err.toString());
+      });
+}
+
+</script>
+</body>
+</html>

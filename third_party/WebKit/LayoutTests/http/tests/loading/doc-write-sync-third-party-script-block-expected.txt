@@ -1,0 +1,20 @@
+main frame - didStartProvisionalLoadForFrame
+main frame - didCommitLoadForFrame
+CONSOLE WARNING: line 12: A Parser-blocking, cross-origin script, http://localhost:8000/loading/resources/js-loaded.js?cross-origin, is invoked via document.write. This may be blocked by the browser if the device has poor network connectivity. See https://www.chromestatus.com/feature/5718547946799104 for more details.
+CONSOLE WARNING: line 12: A Parser-blocking, cross-origin script, http://localhost:8000/loading/resources/js-loaded.js?cross-origin, is invoked via document.write. This may be blocked by the browser if the device has poor network connectivity. See https://www.chromestatus.com/feature/5718547946799104 for more details.
+CONSOLE WARNING: line 54: A Parser-blocking, cross-origin script, http://localhost:8000/loading/resources/js-loaded.js?cross-origin, is invoked via document.write. This may be blocked by the browser if the device has poor network connectivity. See https://www.chromestatus.com/feature/5718547946799104 for more details.
+CONSOLE WARNING: line 54: A Parser-blocking, cross-origin script, http://localhost:8000/loading/resources/js-loaded.js?cross-origin, is invoked via document.write. This may be blocked by the browser if the device has poor network connectivity. See https://www.chromestatus.com/feature/5718547946799104 for more details.
+CONSOLE MESSAGE: line 64: http://localhost:8000/loading/resources/js-loaded.js?cross-origin Intervention header has value <https://www.chromestatus.com/feature/5718547946799104>; level="warning"
+CONSOLE WARNING: line 74: A Parser-blocking, cross-origin script, http://localhost:8000/loading/resources/js-loaded.js?cross-origin2, is invoked via document.write. This may be blocked by the browser if the device has poor network connectivity. See https://www.chromestatus.com/feature/5718547946799104 for more details.
+CONSOLE WARNING: line 74: A Parser-blocking, cross-origin script, http://localhost:8000/loading/resources/js-loaded.js?cross-origin2, is invoked via document.write. This may be blocked by the browser if the device has poor network connectivity. See https://www.chromestatus.com/feature/5718547946799104 for more details.
+CONSOLE MESSAGE: line 86: http://localhost:8000/loading/resources/js-loaded.js?cross-origin2 has priority 0
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+This is a testharness.js-based test.
+PASS Blocking of scripts doesn't come into effect since feature is disabled 
+PASS Same domain doc.written scripts are not blocked 
+PASS cross-origin script not blocked since it is cached 
+PASS cross origin doc.written scripts are blocked 
+Harness: the test ran to completion.
+

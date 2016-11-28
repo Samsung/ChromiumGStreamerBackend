@@ -1,0 +1,44 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "Squashing Containment Layer",
+      "shouldFlattenTransform": false
+    },
+    {
+      "name": "LayoutBlockFlow DIV",
+      "position": [8, 8],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "3dRenderingContext": 1,
+      "drawsContent": true,
+      "backgroundColor": "#D3D3D3"
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='target')",
+      "position": [28, 28],
+      "bounds": [100, 100],
+      "3dRenderingContext": 1,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='target'",
+          "rect": [0, 0, 100, 100],
+          "reason": "style change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='target'",
+      "reason": "style change"
+    }
+  ]
+}
+

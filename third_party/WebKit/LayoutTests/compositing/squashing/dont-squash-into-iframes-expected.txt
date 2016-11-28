@@ -1,0 +1,26 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutIFrame (positioned) IFRAME",
+      "bounds": [104, 104],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#ADD8E6"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV",
+      "position": [50, 50],
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#D3D3D3"
+    }
+  ]
+}
+

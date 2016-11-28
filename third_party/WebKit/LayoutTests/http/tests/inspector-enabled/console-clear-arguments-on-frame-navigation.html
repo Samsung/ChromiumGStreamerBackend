@@ -1,0 +1,45 @@
+<html>
+<head>
+<script src="../inspector/inspector-test.js"></script>
+<script src="../inspector/console-test.js"></script>
+<script>
+
+if (window.testRunner) {
+    testRunner.waitUntilDone();
+    testRunner.dumpAsText();
+}
+
+var loadCount = 0;
+function frameLoaded(event) {
+    ++loadCount;
+    if (loadCount === 1) {
+        document.getElementById('theFrame').src = "about:blank";
+        return;
+    }
+
+    if (window.testRunner)
+        testRunner.showWebInspector();
+    runTest();
+}
+
+function test()
+{
+    for (var message of InspectorTest.mainTarget.consoleModel.messages()) {
+        var args = (message.parameters || []).map((arg) => arg.type);
+        InspectorTest.addResult("Message: \"" + message.messageText + "\", arguments: [" + args.join(", ") + "]");
+    }
+    InspectorTest.completeTest();
+}
+</script>
+
+</head>
+<body>
+<p>
+Tests that Web Inspector will discard console message arguments and convert first argument into a string when iframe where the message was
+logged is navigated to a different page.
+</p>
+<iframe id="theFrame" onload="frameLoaded(event)" src="resources/console-clear-arguments-iframe.html"></iframe>
+<div id="output"></div>
+</body>
+</html>
+

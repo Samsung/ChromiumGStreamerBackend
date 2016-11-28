@@ -1,0 +1,315 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "chrome/browser/ui/cocoa/profiles/avatar_button_controller.h"
+
+#include "base/mac/foundation_util.h"
+#include "base/strings/sys_string_conversions.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#import "chrome/browser/ui/cocoa/browser_window_controller.h"
+#include "chrome/browser/ui/cocoa/l10n_util.h"
+#import "chrome/browser/ui/cocoa/profiles/avatar_button.h"
+#include "chrome/grit/generated_resources.h"
+#import "chrome/browser/themes/theme_properties.h"
+#include "chrome/grit/theme_resources.h"
+#include "components/signin/core/common/profile_management_switches.h"
+#include "skia/ext/skia_utils_mac.h"
+#import "ui/base/cocoa/appkit_utils.h"
+#include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/base/material_design/material_design_controller.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/image/image_skia_util_mac.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icons_public.h"
+
+namespace {
+
+const SkColor kButtonHoverColor = SkColorSetARGB(20, 0, 0, 0);
+const SkColor kButtonPressedColor = SkColorSetARGB(31, 0, 0, 0);
+const SkColor kAvatarIconColor = SkColorSetRGB(0x5a, 0x5a, 0x5a);
+
+const CGFloat kButtonHeight = 24;
+
+// NSButtons have a default padding of 5px. Buttons should have a padding of
+// 6px.
+const CGFloat kButtonExtraPadding = 6 - 5;
+
+// Extra padding for the signed out avatar button.
+const CGFloat kSignedOutWidthPadding = 2;
+
+// Kern value for the avatar button title.
+const CGFloat kTitleKern = 0.25;
+
+}  // namespace
+
+// Button cell with a custom border given by a set of nine-patch image grids.
+@interface CustomThemeButtonCell : NSButtonCell {
+ @private
+   BOOL isThemedWindow_;
+   BOOL hasError_;
+}
+- (void)setIsThemedWindow:(BOOL)isThemedWindow;
+- (void)setHasError:(BOOL)hasError withTitle:(NSString*)title;
+
+@end
+
+@implementation CustomThemeButtonCell
+- (id)initWithThemedWindow:(BOOL)isThemedWindow {
+  if ((self = [super init])) {
+    isThemedWindow_ = isThemedWindow;
+    hasError_ = false;
+  }
+  return self;
+}
+
+- (NSSize)cellSize {
+  NSSize buttonSize = [super cellSize];
+
+  // An image and no error means we are drawing the generic button, which
+  // is square. Otherwise, we are displaying the profile's name and an
+  // optional authentication error icon.
+  if ([self image] && !hasError_)
+    buttonSize.width = kButtonHeight + kSignedOutWidthPadding;
+  else
+    buttonSize.width += 2 * kButtonExtraPadding;
+  buttonSize.height = kButtonHeight;
+  return buttonSize;
+}
+
+- (void)drawInteriorWithFrame:(NSRect)frame inView:(NSView*)controlView {
+  NSRect frameAfterPadding = NSInsetRect(frame, kButtonExtraPadding, 0);
+  [super drawInteriorWithFrame:frameAfterPadding inView:controlView];
+}
+
+- (void)drawImage:(NSImage*)image
+        withFrame:(NSRect)frame
+           inView:(NSView*)controlView {
+  // The image used in the generic button case as well as the error icon both
+  // need to be shifted down slightly to be centered correctly.
+  // TODO(noms): When the assets are fixed, remove this latter offset.
+  if (!hasError_ || switches::IsMaterialDesignUserMenu())
+    frame = NSOffsetRect(frame, 0, 1);
+  [super drawImage:image withFrame:frame inView:controlView];
+}
+
+- (void)drawBezelWithFrame:(NSRect)frame
+                    inView:(NSView*)controlView {
+  AvatarButton* button = base::mac::ObjCCastStrict<AvatarButton>(controlView);
+  HoverState hoverState = [button hoverState];
+
+  NSColor* backgroundColor = nil;
+  if (hoverState == kHoverStateMouseDown || [button isActive]) {
+    backgroundColor = skia::SkColorToSRGBNSColor(kButtonPressedColor);
+  } else if (hoverState == kHoverStateMouseOver) {
+    backgroundColor = skia::SkColorToSRGBNSColor(kButtonHoverColor);
+  }
+
+  if (backgroundColor) {
+    [backgroundColor set];
+    NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:frame
+                                                         xRadius:2.0f
+                                                         yRadius:2.0f];
+    [path fill];
+  }
+}
+
+- (void)drawFocusRingMaskWithFrame:(NSRect)frame inView:(NSView*)view {
+  // Match the bezel's shape.
+  [[NSBezierPath bezierPathWithRoundedRect:NSInsetRect(frame, 2, 2)
+                                   xRadius:2
+                                   yRadius:2] fill];
+}
+
+- (void)setIsThemedWindow:(BOOL)isThemedWindow {
+  isThemedWindow_ = isThemedWindow;
+}
+
+- (void)setHasError:(BOOL)hasError withTitle:(NSString*)title {
+  hasError_ = hasError;
+  int messageId = hasError ?
+      IDS_PROFILES_ACCOUNT_BUTTON_AUTH_ERROR_ACCESSIBLE_NAME :
+      IDS_PROFILES_NEW_AVATAR_BUTTON_ACCESSIBLE_NAME;
+
+  [self accessibilitySetOverrideValue:l10n_util::GetNSStringF(
+      messageId, base::SysNSStringToUTF16(title))
+                         forAttribute:NSAccessibilityTitleAttribute];
+}
+
+@end
+
+@interface AvatarButtonController (Private)
+- (void)updateAvatarButtonAndLayoutParent:(BOOL)layoutParent;
+- (void)setErrorStatus:(BOOL)hasError;
+- (void)dealloc;
+- (void)themeDidChangeNotification:(NSNotification*)aNotification;
+@end
+
+@implementation AvatarButtonController
+
+- (id)initWithBrowser:(Browser*)browser {
+  if ((self = [super initWithBrowser:browser])) {
+    ThemeService* themeService =
+        ThemeServiceFactory::GetForProfile(browser->profile());
+    isThemedWindow_ = !themeService->UsingSystemTheme();
+
+    AvatarButton* avatarButton =
+        [[AvatarButton alloc] initWithFrame:NSZeroRect];
+    button_.reset(avatarButton);
+
+    base::scoped_nsobject<NSButtonCell> cell(
+        [[CustomThemeButtonCell alloc] initWithThemedWindow:isThemedWindow_]);
+
+    [avatarButton setCell:cell.get()];
+
+    [avatarButton setWantsLayer:YES];
+    [self setView:avatarButton];
+
+    [avatarButton setBezelStyle:NSShadowlessSquareBezelStyle];
+    [avatarButton setButtonType:NSMomentaryChangeButton];
+    if (switches::IsMaterialDesignUserMenu())
+      [[avatarButton cell] setHighlightsBy:NSNoCellMask];
+    [avatarButton setBordered:YES];
+
+    if (cocoa_l10n_util::ShouldDoExperimentalRTLLayout())
+      [avatarButton setAutoresizingMask:NSViewMaxXMargin | NSViewMinYMargin];
+    else
+      [avatarButton setAutoresizingMask:NSViewMinXMargin | NSViewMinYMargin];
+    [avatarButton setTarget:self];
+    [avatarButton setAction:@selector(buttonClicked:)];
+    [avatarButton setRightAction:@selector(buttonRightClicked:)];
+
+    // Check if the account already has an authentication or sync error and
+    // initialize the avatar button UI.
+    hasError_ = profileObserver_->HasAvatarError();
+    [self updateAvatarButtonAndLayoutParent:NO];
+
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self
+               selector:@selector(themeDidChangeNotification:)
+                   name:kBrowserThemeDidChangeNotification
+                 object:nil];
+  }
+  return self;
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [super dealloc];
+}
+
+- (void)themeDidChangeNotification:(NSNotification*)aNotification {
+  ThemeService* themeService =
+      ThemeServiceFactory::GetForProfile(browser_->profile());
+  BOOL updatedIsThemedWindow = !themeService->UsingSystemTheme();
+  isThemedWindow_ = updatedIsThemedWindow;
+  [[button_ cell] setIsThemedWindow:isThemedWindow_];
+  [self updateAvatarButtonAndLayoutParent:YES];
+}
+
+- (void)updateAvatarButtonAndLayoutParent:(BOOL)layoutParent {
+  // The button text has a black foreground and a white drop shadow for regular
+  // windows, and a light text with a dark drop shadow for guest windows
+  // which are themed with a dark background.
+  NSColor* foregroundColor;
+  const ui::ThemeProvider* theme =
+      &ThemeService::GetThemeProviderForProfile(browser_->profile());
+  foregroundColor = theme ? theme->GetNSColor(ThemeProperties::COLOR_TAB_TEXT)
+                          : [NSColor blackColor];
+
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  // If there is a single local profile, then use the generic avatar button
+  // instead of the profile name. Never use the generic button if the active
+  // profile is Guest.
+  bool useGenericButton =
+      !browser_->profile()->IsGuestSession() &&
+      storage.GetNumberOfProfiles() == 1 &&
+      !storage.GetAllProfilesAttributes().front()->IsAuthenticated();
+
+  NSString* buttonTitle = base::SysUTF16ToNSString(useGenericButton ?
+      base::string16() :
+      profiles::GetAvatarButtonTextForProfile(browser_->profile()));
+  [[button_ cell] setHasError:hasError_ withTitle:buttonTitle];
+
+  AvatarButton* button =
+      base::mac::ObjCCastStrict<AvatarButton>(button_);
+
+  if (useGenericButton) {
+    NSImage* avatarIcon = NSImageFromImageSkia(gfx::CreateVectorIcon(
+        gfx::VectorIconId::USER_ACCOUNT_AVATAR, 18, kAvatarIconColor));
+    [button setDefaultImage:avatarIcon];
+    [button setHoverImage:nil];
+    [button setPressedImage:nil];
+    [button setImagePosition:NSImageOnly];
+  } else if (hasError_) {
+    NSImage* errorIcon = NSImageFromImageSkia(gfx::CreateVectorIcon(
+        gfx::VectorIconId::SYNC_PROBLEM, 16, gfx::kGoogleRed700));
+    [button setDefaultImage:errorIcon];
+    [button setHoverImage:nil];
+    [button setPressedImage:nil];
+    [button setImage:errorIcon];
+    [button setImagePosition:NSImageLeft];
+  } else {
+    [button setDefaultImage:nil];
+    [button setHoverImage:nil];
+    [button setPressedImage:nil];
+    [button setImagePosition:NSNoImage];
+  }
+
+  base::scoped_nsobject<NSMutableParagraphStyle> paragraphStyle(
+      [[NSMutableParagraphStyle alloc] init]);
+  [paragraphStyle setAlignment:NSLeftTextAlignment];
+
+  base::scoped_nsobject<NSAttributedString> attributedTitle(
+      [[NSAttributedString alloc]
+          initWithString:buttonTitle
+              attributes:@{
+                NSForegroundColorAttributeName : foregroundColor,
+                NSParagraphStyleAttributeName : paragraphStyle,
+                NSKernAttributeName : [NSNumber numberWithFloat:kTitleKern]
+              }]);
+  [button_ setAttributedTitle:attributedTitle];
+  [button_ sizeToFit];
+
+  if (layoutParent) {
+    // Because the width of the button might have changed, the parent browser
+    // frame needs to recalculate the button bounds and redraw it.
+    [[BrowserWindowController
+        browserWindowControllerForWindow:browser_->window()->GetNativeWindow()]
+        layoutSubviews];
+  }
+}
+
+- (void)setErrorStatus:(BOOL)hasError {
+  hasError_ = hasError;
+  [self updateAvatarButtonAndLayoutParent:YES];
+}
+
+- (void)showAvatarBubbleAnchoredAt:(NSView*)anchor
+                          withMode:(BrowserWindow::AvatarBubbleMode)mode
+                   withServiceType:(signin::GAIAServiceType)serviceType
+                   fromAccessPoint:(signin_metrics::AccessPoint)accessPoint {
+  AvatarButton* button = base::mac::ObjCCastStrict<AvatarButton>(button_);
+  [button setIsActive:YES];
+  [super showAvatarBubbleAnchoredAt:anchor
+                           withMode:mode
+                    withServiceType:serviceType
+                    fromAccessPoint:accessPoint];
+}
+
+- (void)bubbleWillClose:(NSNotification*)notif {
+  AvatarButton* button = base::mac::ObjCCastStrict<AvatarButton>(button_);
+  [button setIsActive:NO];
+  [super bubbleWillClose:notif];
+}
+
+@end

@@ -1,0 +1,36 @@
+<html>
+<head>
+<script src="../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../http/tests/inspector/timeline-test.js"></script>
+<script src="../tracing-test.js"></script>
+
+<script>
+function doActions()
+{
+    return generateFrames(3);
+}
+
+function test()
+{
+    UI.panels.timeline._captureLayersAndPicturesSetting.set(true);
+    InspectorTest.invokeAsyncWithTimeline("doActions", InspectorTest.safeWrap(dumpLastFrame));
+    function dumpLastFrame()
+    {
+        var frames = InspectorTest.timelineFrameModel().frames();
+        var lastFrame = InspectorTest.timelineFrameModel().frames().peekLast();
+        if (lastFrame) {
+            InspectorTest.addResult("layerTree: " + typeof lastFrame.layerTree);
+            InspectorTest.addResult("mainFrameId: " + typeof lastFrame._mainFrameId);
+            var paints = lastFrame.layerTree.paints();
+            InspectorTest.addResult("paints: " + (paints && paints.length ? "present" : "absent"));
+        } else {
+            InspectorTest.addResult("FAIL: there was no frame");
+        }
+        InspectorTest.completeTest();
+    }
+}
+</script>
+
+<body onload="runTestAfterDisplay()">
+</body>
+</html>

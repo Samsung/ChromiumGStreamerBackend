@@ -1,0 +1,42 @@
+{
+    "use_snake_file_names": true,
+    "use_title_case_methods": true,
+
+    "protocol": {
+        "package": "content/browser/devtools/protocol",
+        "output": "protocol",
+        "namespace": ["content", "protocol"],
+        "export_macro": "CONTENT_EXPORT",
+        "export_header": "content/common/content_export.h",
+        "options": [
+            {
+                "domain": "IO",
+                "async": ["read"]
+            },
+            {
+                "domain": "Memory",
+                "include": ["setPressureNotificationsSuppressed", "simulatePressureNotification"]
+            },
+            {
+                "domain": "SystemInfo",
+                "async": ["getInfo"]
+            },
+            {
+                "domain": "Tethering",
+                "async": ["bind", "unbind"]
+            },
+            {
+                "domain": "Tracing",
+                "async": ["start", "end", "getCategories", "requestMemoryDump"]
+            }
+        ]
+    },
+
+    "lib": {
+        "package": "content/browser/devtools/protocol",
+        "output": "protocol",
+        "string_header": "content/browser/devtools/protocol_string.h",
+        "export_macro": "CONTENT_EXPORT",
+        "export_header": "content/common/content_export.h"
+    }
+}

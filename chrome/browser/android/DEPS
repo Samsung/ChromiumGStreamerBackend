@@ -1,0 +1,22 @@
+include_rules = [
+  "+blimp/client/public",
+  "+blimp/client/support/resources",
+  "-components/devtools_bridge",
+  "+cc/layers/layer.h",
+  "+cc/output/context_provider.h",
+  "+components/ntp_snippets",
+  "+components/spellcheck/browser",
+  "+components/sync/android",
+  "+components/sync/test/fake_server/android",
+  "+components/toolbar",
+  "+components/web_contents_delegate_android",
+  "+sandbox/linux/seccomp-bpf/sandbox_bpf.h",
+  "+third_party/gvr-android-sdk",
+]
+
+specific_include_rules = {
+  # Special-case where monochrome composes chrome+webview
+  "monochrome_entry_point\.cc": [
+    "+android_webview",
+  ]
+}

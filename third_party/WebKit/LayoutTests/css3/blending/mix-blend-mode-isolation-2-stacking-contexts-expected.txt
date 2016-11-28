@@ -1,0 +1,68 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true
+    },
+    {
+      "name": "LayoutBlockFlow HTML",
+      "bounds": [800, 600],
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
+      "position": [8, 8],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#FF0000"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
+      "bounds": [160, 90],
+      "isolate": true,
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#008000"
+    },
+    {
+      "name": "LayoutImage IMG class='accelerated blended'",
+      "bounds": [160, 90],
+      "blendMode": "multiply"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context' (foreground) Layer",
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='accelerated stacking-context'",
+      "position": [8, 8],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#FF0000"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
+      "bounds": [160, 90],
+      "isolate": true,
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#008000"
+    },
+    {
+      "name": "LayoutImage IMG class='accelerated blended'",
+      "bounds": [160, 90],
+      "blendMode": "multiply"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='accelerated stacking-context' (foreground) Layer",
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow HTML (foreground) Layer",
+      "bounds": [800, 600],
+      "drawsContent": true
+    }
+  ]
+}
+

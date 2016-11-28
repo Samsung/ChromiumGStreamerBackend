@@ -1,0 +1,32 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [785, 2001],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='absolute'",
+      "position": [0, 400],
+      "bounds": [120, 1601],
+      "drawsContent": true,
+      "backfaceVisibility": "hidden",
+      "backgroundColor": "#FF0000",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='fixed'",
+          "rect": [0, 110, 120, 110],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='fixed'",
+      "reason": "incremental"
+    }
+  ]
+}
+

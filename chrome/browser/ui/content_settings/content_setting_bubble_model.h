@@ -1,0 +1,392 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_BUBBLE_MODEL_H_
+#define CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_BUBBLE_MODEL_H_
+
+#include <stdint.h>
+
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+
+#include "base/compiler_specific.h"
+#include "base/macros.h"
+#include "chrome/browser/content_settings/tab_specific_content_settings.h"
+#include "chrome/common/custom_handlers/protocol_handler.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
+#include "content/public/common/media_stream_request.h"
+#include "ui/gfx/image/image.h"
+#include "url/gurl.h"
+
+class ContentSettingBubbleModelDelegate;
+class Profile;
+class ProtocolHandlerRegistry;
+
+namespace content {
+class WebContents;
+}
+
+namespace rappor {
+class RapporService;
+}
+
+// The hierarchy of bubble models:
+//
+// ContentSettingsBubbleModel                  - base class
+//   ContentSettingMediaStreamBubbleModel        - media (camera and mic)
+//   ContentSettingSimpleBubbleModel             - single content setting
+//     ContentSettingMixedScriptBubbleModel        - mixed script
+//     ContentSettingRPHBubbleModel                - protocol handlers
+//     ContentSettingMidiSysExBubbleModel          - midi sysex
+//     ContentSettingDomainListBubbleModel         - domain list (geolocation)
+//     ContentSettingSingleRadioGroup              - radio group
+//       ContentSettingCookiesBubbleModel            - cookies
+//       ContentSettingPluginBubbleModel             - plugins
+//       ContentSettingPopupBubbleModel              - popups
+//   ContentSettingSubresourceFilterBubbleModel  - filtered subresources
+
+// Forward declaration necessary for downcasts.
+class ContentSettingMediaStreamBubbleModel;
+class ContentSettingSimpleBubbleModel;
+class ContentSettingSubresourceFilterBubbleModel;
+
+// This model provides data for ContentSettingBubble, and also controls
+// the action triggered when the allow / block radio buttons are triggered.
+class ContentSettingBubbleModel : public content::NotificationObserver {
+ public:
+  typedef ContentSettingBubbleModelDelegate Delegate;
+
+  struct ListItem {
+    ListItem(const gfx::Image& image,
+             const std::string& title,
+             bool has_link,
+             int32_t item_id)
+        : image(image), title(title), has_link(has_link), item_id(item_id) {}
+
+    gfx::Image image;
+    std::string title;
+    bool has_link;
+    int32_t item_id;
+  };
+  typedef std::vector<ListItem> ListItems;
+
+  typedef std::vector<std::string> RadioItems;
+  struct RadioGroup {
+    RadioGroup();
+    ~RadioGroup();
+
+    GURL url;
+    std::string title;
+    RadioItems radio_items;
+    int default_item;
+  };
+
+  struct DomainList {
+    DomainList();
+    DomainList(const DomainList& other);
+    ~DomainList();
+
+    std::string title;
+    std::set<std::string> hosts;
+  };
+
+  struct MediaMenu {
+    MediaMenu();
+    MediaMenu(const MediaMenu& other);
+    ~MediaMenu();
+
+    std::string label;
+    content::MediaStreamDevice default_device;
+    content::MediaStreamDevice selected_device;
+    bool disabled;
+  };
+  typedef std::map<content::MediaStreamType, MediaMenu> MediaMenuMap;
+
+  struct BubbleContent {
+    BubbleContent();
+    ~BubbleContent();
+
+    base::string16 title;
+    base::string16 message;
+    ListItems list_items;
+    RadioGroup radio_group;
+    bool radio_group_enabled;
+    std::vector<DomainList> domain_lists;
+    std::string custom_link;
+    bool custom_link_enabled;
+    std::string manage_text;
+    bool show_manage_text_as_button;
+    MediaMenuMap media_menus;
+    std::string learn_more_link;
+
+   private:
+    DISALLOW_COPY_AND_ASSIGN(BubbleContent);
+  };
+
+  // Creates a bubble model for a particular |content_type|. Note that not all
+  // bubbles fit this description.
+  // TODO(msramek): Move this to ContentSettingSimpleBubbleModel or remove
+  // entirely.
+  static ContentSettingBubbleModel* CreateContentSettingBubbleModel(
+      Delegate* delegate,
+      content::WebContents* web_contents,
+      Profile* profile,
+      ContentSettingsType content_type);
+
+  ~ContentSettingBubbleModel() override;
+
+  const BubbleContent& bubble_content() const { return bubble_content_; }
+
+  // content::NotificationObserver:
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
+
+  virtual void OnRadioClicked(int radio_index) {}
+  virtual void OnListItemClicked(int index) {}
+  virtual void OnCustomLinkClicked() {}
+  virtual void OnManageLinkClicked() {}
+  virtual void OnLearnMoreLinkClicked() {}
+  virtual void OnMediaMenuClicked(content::MediaStreamType type,
+                                  const std::string& selected_device_id) {}
+
+  // Called by the view code when the bubble is closed by the user using the
+  // Done button.
+  virtual void OnDoneClicked() {}
+
+  // TODO(msramek): The casting methods below are only necessary because
+  // ContentSettingBubbleController in the Cocoa UI needs to know the type of
+  // the bubble it wraps. Find a solution that does not require reflection nor
+  // recreating the entire hierarchy for Cocoa UI.
+  // Cast this bubble into ContentSettingSimpleBubbleModel if possible.
+  virtual ContentSettingSimpleBubbleModel* AsSimpleBubbleModel();
+
+  // Cast this bubble into ContentSettingMediaStreamBubbleModel if possible.
+  virtual ContentSettingMediaStreamBubbleModel* AsMediaStreamBubbleModel();
+
+  // Cast this bubble into ContentSettingSubresourceFilterBubbleModel
+  // if possible.
+  virtual ContentSettingSubresourceFilterBubbleModel*
+  AsSubresourceFilterBubbleModel();
+
+  // Sets the Rappor service used for testing.
+  void SetRapporServiceForTesting(rappor::RapporService* rappor_service) {
+    rappor_service_ = rappor_service;
+  }
+
+ protected:
+  ContentSettingBubbleModel(
+      Delegate* delegate,
+      content::WebContents* web_contents,
+      Profile* profile);
+
+  content::WebContents* web_contents() const { return web_contents_; }
+  Profile* profile() const { return profile_; }
+  Delegate* delegate() const { return delegate_; }
+
+  void set_title(const base::string16& title) { bubble_content_.title = title; }
+  void set_message(const base::string16& message) {
+    bubble_content_.message = message;
+  }
+  void add_list_item(const ListItem& item) {
+    bubble_content_.list_items.push_back(item);
+  }
+  void set_radio_group(const RadioGroup& radio_group) {
+    bubble_content_.radio_group = radio_group;
+  }
+  void set_radio_group_enabled(bool enabled) {
+    bubble_content_.radio_group_enabled = enabled;
+  }
+  void add_domain_list(const DomainList& domain_list) {
+    bubble_content_.domain_lists.push_back(domain_list);
+  }
+  void set_custom_link(const std::string& link) {
+    bubble_content_.custom_link = link;
+  }
+  void set_custom_link_enabled(bool enabled) {
+    bubble_content_.custom_link_enabled = enabled;
+  }
+  void set_manage_text(const std::string& link) {
+    bubble_content_.manage_text = link;
+  }
+  void set_show_manage_text_as_button(bool show_manage_text_as_button) {
+    bubble_content_.show_manage_text_as_button = show_manage_text_as_button;
+  }
+  void set_learn_more_link(const std::string& link) {
+    bubble_content_.learn_more_link = link;
+  }
+  void add_media_menu(content::MediaStreamType type, const MediaMenu& menu) {
+    bubble_content_.media_menus[type] = menu;
+  }
+  void set_selected_device(const content::MediaStreamDevice& device) {
+    bubble_content_.media_menus[device.type].selected_device = device;
+  }
+  bool setting_is_managed() {
+    return setting_is_managed_;
+  }
+  void set_setting_is_managed(bool managed) {
+    setting_is_managed_ = managed;
+  }
+  rappor::RapporService* rappor_service() const { return rappor_service_; }
+
+ private:
+  virtual void SetTitle() = 0;
+  virtual void SetManageText() = 0;
+
+  content::WebContents* web_contents_;
+  Profile* profile_;
+  Delegate* delegate_;
+  BubbleContent bubble_content_;
+  // A registrar for listening for WEB_CONTENTS_DESTROYED notifications.
+  content::NotificationRegistrar registrar_;
+  // A flag that indicates if the content setting managed i.e. can't be
+  // controlled by the user.
+  bool setting_is_managed_;
+  // The service used to record Rappor metrics. Can be set for testing.
+  rappor::RapporService* rappor_service_;
+
+  DISALLOW_COPY_AND_ASSIGN(ContentSettingBubbleModel);
+};
+
+// A generic bubble used for a single content setting.
+class ContentSettingSimpleBubbleModel : public ContentSettingBubbleModel {
+ public:
+  ContentSettingSimpleBubbleModel(Delegate* delegate,
+                                  content::WebContents* web_contents,
+                                  Profile* profile,
+                                  ContentSettingsType content_type);
+
+  ContentSettingsType content_type() { return content_type_; }
+
+  // ContentSettingBubbleModel implementation.
+  ContentSettingSimpleBubbleModel* AsSimpleBubbleModel() override;
+
+ private:
+  // ContentSettingBubbleModel implementation.
+  void SetTitle() override;
+  void SetManageText() override;
+  void OnManageLinkClicked() override;
+  void SetCustomLink();
+  void OnCustomLinkClicked() override;
+
+  ContentSettingsType content_type_;
+
+  DISALLOW_COPY_AND_ASSIGN(ContentSettingSimpleBubbleModel);
+};
+
+// RPH stands for Register Protocol Handler.
+class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
+ public:
+  ContentSettingRPHBubbleModel(Delegate* delegate,
+                               content::WebContents* web_contents,
+                               Profile* profile,
+                               ProtocolHandlerRegistry* registry);
+  ~ContentSettingRPHBubbleModel() override;
+
+  void OnRadioClicked(int radio_index) override;
+  void OnDoneClicked() override;
+
+ private:
+  void RegisterProtocolHandler();
+  void UnregisterProtocolHandler();
+  void IgnoreProtocolHandler();
+  void ClearOrSetPreviousHandler();
+
+  int selected_item_;
+  // Initially false, set to true if the user explicitly interacts with the
+  // bubble.
+  bool interacted_;
+  ProtocolHandlerRegistry* registry_;
+  ProtocolHandler pending_handler_;
+  ProtocolHandler previous_handler_;
+
+  DISALLOW_COPY_AND_ASSIGN(ContentSettingRPHBubbleModel);
+};
+
+// The model for the deceptive content bubble.
+class ContentSettingSubresourceFilterBubbleModel
+    : public ContentSettingBubbleModel {
+ public:
+  ContentSettingSubresourceFilterBubbleModel(Delegate* delegate,
+                                             content::WebContents* web_contents,
+                                             Profile* profile);
+
+  ~ContentSettingSubresourceFilterBubbleModel() override;
+
+  void OnManageLinkClicked() override;
+  ContentSettingSubresourceFilterBubbleModel* AsSubresourceFilterBubbleModel()
+      override;
+
+ private:
+  void SetMessage();
+
+  // ContentSettingBubbleModel:
+  void SetTitle() override;
+  void SetManageText() override;
+
+  DISALLOW_COPY_AND_ASSIGN(ContentSettingSubresourceFilterBubbleModel);
+};
+
+// The model of the content settings bubble for media settings.
+class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
+ public:
+  ContentSettingMediaStreamBubbleModel(Delegate* delegate,
+                                       content::WebContents* web_contents,
+                                       Profile* profile);
+
+  ~ContentSettingMediaStreamBubbleModel() override;
+
+  // ContentSettingBubbleModel:
+  ContentSettingMediaStreamBubbleModel* AsMediaStreamBubbleModel() override;
+  void OnManageLinkClicked() override;
+
+ private:
+  // Helper functions to check if this bubble was invoked for microphone,
+  // camera, or both devices.
+  bool MicrophoneAccessed() const;
+  bool CameraAccessed() const;
+
+  // ContentSettingBubbleModel:
+  void SetTitle() override;
+  void SetManageText() override;
+
+  // Sets the data for the radio buttons of the bubble.
+  void SetRadioGroup();
+
+  // Sets the data for the media menus of the bubble.
+  void SetMediaMenus();
+
+  // Sets the string that suggests reloading after the settings were changed.
+  void SetCustomLink();
+
+  // Updates the camera and microphone setting with the passed |setting|.
+  void UpdateSettings(ContentSetting setting);
+
+  // Updates the camera and microphone default device with the passed |type|
+  // and device.
+  void UpdateDefaultDeviceForType(content::MediaStreamType type,
+                                  const std::string& device);
+
+  // ContentSettingBubbleModel implementation.
+  void OnRadioClicked(int radio_index) override;
+  void OnMediaMenuClicked(content::MediaStreamType type,
+                          const std::string& selected_device) override;
+
+  // The index of the selected radio item.
+  int selected_item_;
+  // The content settings that are associated with the individual radio
+  // buttons.
+  ContentSetting radio_item_setting_[2];
+  // The state of the microphone and camera access.
+  TabSpecificContentSettings::MicrophoneCameraState state_;
+
+  DISALLOW_COPY_AND_ASSIGN(ContentSettingMediaStreamBubbleModel);
+};
+
+#endif  // CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_BUBBLE_MODEL_H_

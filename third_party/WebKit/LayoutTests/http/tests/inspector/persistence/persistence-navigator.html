@@ -1,0 +1,74 @@
+<html>
+<head>
+<script src="../inspector-test.js"></script>
+<script src="../debugger-test.js"></script>
+<script src="../workspace-test.js"></script>
+<script src="../isolated-filesystem-test.js"></script>
+<script src="./persistence-test.js"></script>
+<script src="./resources/foo.js"></script>
+<script>
+
+function test()
+{
+    Runtime.experiments.enableForTest("persistence2");
+    var sourcesNavigator = new Sources.SourcesNavigatorView();
+    sourcesNavigator.show(UI.inspectorView.element);
+    var fs = new InspectorTest.TestFileSystem("file:///var/www");
+    var fsEntry = InspectorTest.addFooJSFile(fs);
+
+    InspectorTest.runTestSuite([
+        function addFileSystem(next)
+        {
+            fs.reportCreated(next);
+        },
+
+        function waitForUISourceCodes(next)
+        {
+            var promises = [
+                InspectorTest.waitForUISourceCode("foo.js", Workspace.projectTypes.Network),
+                InspectorTest.waitForUISourceCode("foo.js", Workspace.projectTypes.FileSystem)
+            ];
+            Promise.all(promises).then(onUISourceCodesAdded);
+
+            function onUISourceCodesAdded()
+            {
+                InspectorTest.dumpNavigatorView(sourcesNavigator);
+                next();
+            }
+        },
+
+        function addFileMapping(next)
+        {
+            InspectorTest.waitForBinding("foo.js").then(onBindingCreated);
+            Workspace.fileSystemMapping.addFileMapping(fs.fileSystemPath, "http://127.0.0.1:8000", "/");
+
+            function onBindingCreated(binding)
+            {
+                InspectorTest.dumpNavigatorView(sourcesNavigator);
+                next();
+            }
+        },
+
+        function removeFileMapping(next)
+        {
+            Persistence.persistence.addEventListener(Persistence.Persistence.Events.BindingRemoved, onBindingRemoved);
+            Workspace.fileSystemMapping.removeFileMapping(fs.fileSystemPath, "http://127.0.0.1:8000", "/");
+
+            function onBindingRemoved(event)
+            {
+                var binding = event.data;
+                if (binding.network.name() !== "foo.js")
+                    return
+                Persistence.persistence.removeEventListener(Persistence.Persistence.Events.BindingRemoved, onBindingRemoved);
+                InspectorTest.dumpNavigatorView(sourcesNavigator);
+                next();
+            }
+        },
+    ]);
+};
+</script>
+</head>
+<body onload="runTest()">
+<p>Verify that navigator view removes mapped UISourceCodes.</p>
+</body>
+</html>

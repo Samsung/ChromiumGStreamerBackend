@@ -1,0 +1,17 @@
+# crbug.com/417518: Get tests working with --site-per-process
+-BrowserTest.OtherRedirectsDontForkProcess
+-ChromeRenderProcessHostTest.ProcessOverflow
+-ChromeRenderProcessHostTest.ProcessPerTab
+-ChromeRenderProcessHostTestWithCommandLine.ProcessOverflowCommandLine
+-PrerenderBrowserTest.PrerenderLocationReplaceGWSHistograms
+-ProcessManagementTest.ExtensionProcessBalancing
+-ProcessManagementTest.ProcessOverflow
+-RedirectTest.ClientEmptyReferer
+-ReferrerPolicyTest.HttpsRedirect
+-WebNavigationApiTest.ServerRedirectSingleProcess
+
+# crbug.com/448592: Get extension browsertests to pass with --site-per-process
+-IsolatedAppTest.CookieIsolation
+-IsolatedAppTest.CrossProcessClientRedirect
+-IsolatedAppTest.IsolatedAppProcessModel
+-IsolatedAppTest.SubresourceCookieIsolation

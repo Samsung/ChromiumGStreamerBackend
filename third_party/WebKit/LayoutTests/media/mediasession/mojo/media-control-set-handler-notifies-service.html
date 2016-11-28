@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<title>Test that setting MediaSession event handler should notify the service</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/mojo-helpers.js"></script>
+<script src="resources/mediasessionservice-mock.js"></script>
+<script src="resources/utils.js"></script>
+<script>
+
+var expectations;
+
+var nextExpectation = 0;
+
+// Delay the initialization since the initialization of MediaSessionAction is delayed.
+function getExpectations() {
+  if (!expectations) {
+    expectations = [
+      [ MediaSessionAction.PLAY, true ],
+      [ MediaSessionAction.PAUSE, true ],
+      [ MediaSessionAction.PLAY_PAUSE, true ],
+      [ MediaSessionAction.PREVIOUS_TRACK, true ],
+      [ MediaSessionAction.NEXT_TRACK, true ],
+      [ MediaSessionAction.SEEK_BACKWARD, true ],
+      [ MediaSessionAction.SEEK_FORWARD, true ],
+      [ MediaSessionAction.PLAY, false ],
+      [ MediaSessionAction.PLAY, true ],
+      [ MediaSessionAction.PAUSE, false ],
+      [ MediaSessionAction.PAUSE, true ],
+      [ MediaSessionAction.PLAY_PAUSE, false ],
+      [ MediaSessionAction.PLAY_PAUSE, true ],
+      [ MediaSessionAction.PREVIOUS_TRACK, false ],
+      [ MediaSessionAction.PREVIOUS_TRACK, true ],
+      [ MediaSessionAction.NEXT_TRACK, false ],
+      [ MediaSessionAction.NEXT_TRACK, true ],
+      [ MediaSessionAction.SEEK_BACKWARD, false ],
+      [ MediaSessionAction.SEEK_BACKWARD, true ],
+      [ MediaSessionAction.SEEK_FORWARD, false ],
+      [ MediaSessionAction.SEEK_FORWARD, true ],
+      [ MediaSessionAction.PLAY, false ],
+      [ MediaSessionAction.PAUSE, false ],
+      [ MediaSessionAction.PLAY_PAUSE, false ],
+      [ MediaSessionAction.PREVIOUS_TRACK, false ],
+      [ MediaSessionAction.NEXT_TRACK, false ],
+      [ MediaSessionAction.SEEK_BACKWARD, false ],
+      [ MediaSessionAction.SEEK_FORWARD, false ],
+    ];
+  }
+  return expectations;
+}
+
+async_test(function(t) {
+  mediaSessionServiceMock.then(m => {
+    m.setEnableDisableActionCallback(t.step_func(function(action, isEnabled) {
+      var expectedAction = getExpectations()[nextExpectation][0];
+      var expectedIsEnabled = getExpectations()[nextExpectation][1];
+      assert_equals(expectedAction, action);
+      assert_equals(expectedIsEnabled, isEnabled);
+      if (++nextExpectation >= getExpectations().length)
+        t.done();
+    }));
+
+    // Setting handlers
+    window.navigator.mediaSession.onresize = _ => {};  // Unknown event.
+    window.navigator.mediaSession.onplay = _ => {};
+    window.navigator.mediaSession.onpause = _ => {};
+    window.navigator.mediaSession.onplaypause = _ => {};
+    window.navigator.mediaSession.onprevioustrack = _ => {};
+    window.navigator.mediaSession.onnexttrack = _ => {};
+    window.navigator.mediaSession.onseekbackward = _ => {};
+    window.navigator.mediaSession.onseekforward = _ => {};
+
+    // Resetting handlers
+    window.navigator.mediaSession.onresize = _ => {};  // Unknown event.
+    window.navigator.mediaSession.onplay = _ => {};
+    window.navigator.mediaSession.onpause = _ => {};
+    window.navigator.mediaSession.onplaypause = _ => {};
+    window.navigator.mediaSession.onprevioustrack = _ => {};
+    window.navigator.mediaSession.onnexttrack = _ => {};
+    window.navigator.mediaSession.onseekbackward = _ => {};
+    window.navigator.mediaSession.onseekforward = _ => {};
+
+    // Unsetting handlers
+    window.navigator.mediaSession.onresize = null;  // Unknown event.
+    window.navigator.mediaSession.onplay = null;
+    window.navigator.mediaSession.onpause = null;
+    window.navigator.mediaSession.onplaypause = null;
+    window.navigator.mediaSession.onprevioustrack = null;
+    window.navigator.mediaSession.onnexttrack = null;
+    window.navigator.mediaSession.onseekbackward = null;
+    window.navigator.mediaSession.onseekforward = null;
+  });
+}, "test that setting event handler notifies the mojo service");
+
+</script>

@@ -1,0 +1,27 @@
+Text here
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "Squashing Containment Layer",
+      "shouldFlattenTransform": false
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='compositing'",
+      "position": [29, 29],
+      "bounds": [100, 100]
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='indicator')",
+      "position": [-9971, 8],
+      "bounds": [10121, 142],
+      "drawsContent": true
+    }
+  ]
+}
+

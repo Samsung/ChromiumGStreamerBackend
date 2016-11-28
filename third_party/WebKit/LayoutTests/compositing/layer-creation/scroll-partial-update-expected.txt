@@ -1,0 +1,27 @@
+scroll me
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "Squashing Containment Layer",
+      "shouldFlattenTransform": false
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='composited'",
+      "position": [8, 8],
+      "bounds": [20, 20]
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='overlay')",
+      "position": [10, 8],
+      "bounds": [400, 204],
+      "drawsContent": true
+    }
+  ]
+}
+

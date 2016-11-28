@@ -1,0 +1,16 @@
+Tests the Timeline UI API for network requests.
+
+Script resource loaded
+URL: timeline-network-resource.js
+Duration: string
+Request Method: GET
+Priority: Low
+Mime Type: string
+Initiator: timeline-network-resource-details.html:15
+URL: anImage.png
+Duration: string
+Request Method: GET
+Priority: Low
+Mime Type: string
+Preview: 
+

@@ -1,0 +1,184 @@
+# This file should only include tests that we never intend to fix.
+# There should only be 6 categories of tests here:
+#   1. Test harness tests.
+#   2. Tests enabled by chromium embedders (e.g. Opera).
+#   3. Tests that apply to some platforms but not others.
+#   4. Tests that are too slow in Debug and so we only want to skip them in Debug.
+#   5. Tests that crash due to resource limitations on some platforms or in Debug.
+#   6. Tests that fail due to Debug rendering variations from Release behavior.
+
+# FIXME: Remove the WontFix keyword and have that be implied. That way, people won't abuse
+# WontFix outside of this file.
+
+# Perf tests are really slow in debug builds and there are few benefits in running them.
+[ Debug ] http/tests/perf [ WontFix ]
+
+# This test verifies that a mismatch reftest will fail if both results are the
+# same.  Because the whole point is that this test should fail when run, it's
+# not SKIP, just WONTFIX.
+fast/harness/sample-fail-mismatch-reftest.html [ WontFix ]
+
+# Platform specific virtual test suites.
+[ Win Mac Android ] virtual/linux-subpixel [ WontFix ]
+
+# Chrome Win/Linux doesn't support emacs key-bindings.
+[ Win Linux ] editing/pasteboard/emacs-cntl-y-001.html [ WontFix ]
+[ Win Linux ] editing/pasteboard/emacs-ctrl-a-k-y.html [ WontFix ]
+[ Win Linux ] editing/pasteboard/emacs-ctrl-k-with-move.html [ WontFix ]
+[ Win Linux ] editing/pasteboard/emacs-ctrl-k-y-001.html [ WontFix ]
+[ Win Linux ] editing/input/emacs-ctrl-o.html [ WontFix ]
+
+# Chrome Mac doesn't support Ctrl+Up/Down key-bindings.
+[ Mac ] editing/input/ctrl-up-down.html [ WontFix ]
+
+# Chrome uses different keyboard accelerators from those used by Safari, so
+# this test will always fail.
+[ Linux Win ] fast/events/option-tab.html [ WontFix ]
+
+# This test only applies to overlay scrollbar platforms.
+[ Win Linux ] fast/dom/partial-layout-overlay-scrollbars.html [ WontFix ]
+
+# Mac's popup behavior is different.
+[ Mac ] fast/forms/select/menulist-onchange-fired-with-key-up-down.html [ WontFix ]
+[ Mac ] fast/forms/select/popup-with-display-none-optgroup.html [ WontFix ]
+[ Mac ] fast/forms/select-popup [ WontFix ]
+
+# Android has a different popup menu implementation.
+[ Android ] fast/forms/select-popup [ WontFix ]
+
+# These tests are specific to Windows and Linux.
+[ Mac ] fast/forms/calendar-picker/date-open-picker-with-f4-key.html [ WontFix ]
+[ Mac ] fast/forms/calendar-picker/datetimelocal-open-picker-with-f4-key.html [ WontFix ]
+[ Mac ] fast/forms/calendar-picker/month-open-picker-with-f4-key.html [ WontFix ]
+[ Mac ] fast/forms/calendar-picker/week-open-picker-with-f4-key.html [ WontFix ]
+
+# Mac does not have menu key.
+[ Mac ] editing/spelling/spelling-on-context-menu-key.html [ WontFix ]
+[ Mac ] fast/events/context-menu-key-shift-f10-modifiers.html [ WontFix ]
+[ Mac ] fast/events/context-menu-key-shift-f10-prevent-default.html [ WontFix ]
+[ Mac ] fast/events/menu-key-context-menu-document.html [ WontFix ]
+[ Mac ] fast/events/menu-key-context-menu.html [ WontFix ]
+[ Mac ] fast/events/menu-key-context-menu-position.html [ WontFix ]
+[ Mac ] fast/events/menu-key-context-menu-reveal-focus.html [ WontFix ]
+
+# Link Highlighting is only supported on Windows and Linux
+[ Mac ] compositing/gestures [ WontFix ]
+
+# These tests are specific to Linux.
+[ Mac Win ] editing/input/linux_ltr_composition_underline.html [ WontFix ]
+[ Mac Win ] editing/input/linux_rtl_composition_underline.html [ WontFix ]
+[ Mac Win ] editing/selection/linux_selection_color.html [ WontFix ]
+[ Mac Win ] fast/text/chromium-linux-fontconfig-renderstyle.html [ WontFix ]
+[ Mac Win ] fast/text/international/arabic-vertical-offset.html [ WontFix ]
+[ Mac Win ] fast/text/international/complex-joining-using-gpos.html [ WontFix ]
+[ Mac Win ] fast/text/international/draw-complex-text-from-to.html [ WontFix ]
+[ Mac Win ] svg/text/text-with-geometric-precision.svg [ WontFix ]
+
+# Mac has different fallback behavior so that this test won't work there
+[ Mac ] fast/text/font-cachekey.html [ WontFix ]
+
+# AAT/mortx shaping not supported on platforms other than Mac
+[ Linux Win Android ] fast/text/aat-morx.html [ WontFix ]
+
+# Tests in media/stable are only supposed to be run as virtual test (see virtual/stable/media).
+media/stable [ WontFix ]
+
+# These tests are only supposed be run as virtual test. See /virtual/media-gpu-accelerated/http/tests/media/media-source/.
+[ Android ] http/tests/media/media-source/mediasource-config-change-mp4-av-audio-bitrate.html [ WontFix ]
+[ Android ] http/tests/media/media-source/mediasource-config-change-mp4-av-framesize.html [ WontFix ]
+[ Android ] http/tests/media/media-source/mediasource-config-change-mp4-av-video-bitrate.html [ WontFix ]
+[ Android ] http/tests/media/media-source/mediasource-config-change-mp4-v-bitrate.html [ WontFix ]
+[ Android ] http/tests/media/media-source/mediasource-config-change-mp4-v-framerate.html [ WontFix ]
+[ Android ] http/tests/media/media-source/mediasource-config-change-mp4-v-framesize.html [ WontFix ]
+
+# Only run fake-Android tests on Linux
+[ Mac Win ] virtual/android [ WontFix ]
+
+# We only run it through the virtual gpu test suite.
+fast/canvas/canvas-lost-gpu-context.html [ WontFix ]
+
+# Missing Chrome Mac support, will start working when we move to harfbuzz on mac.
+[ Mac ] fast/text/international/zerowidthjoiner.html [ WontFix ]
+
+# Subpixel font scaling requires antialiasing on mac (which isn't enabled tests).
+[ Mac ] fast/text/sub-pixel/text-scaling-ltr.html [ WontFix ]
+[ Mac ] fast/text/sub-pixel/text-scaling-pixel.html [ WontFix ]
+[ Mac ] fast/text/sub-pixel/text-scaling-rtl.html [ WontFix ]
+[ Mac ] fast/text/sub-pixel/text-scaling-vertical.html [ WontFix ]
+[ Mac ] fast/text/sub-pixel/text-scaling-webfont.html [ WontFix ]
+[ Mac ] fast/text/mixed-direction-bidi-wrap.html [ WontFix ]
+
+# These two printing tests fail with the threaded compositor but they
+# aren't critical to run in this mode.
+virtual/threaded/printing/setPrinting.html [ WontFix ]
+virtual/threaded/printing/width-overflow.html [ WontFix ]
+
+# These tests are flaky/fail when threaded and add little value (they're just
+# reading back Blink's current animation value).
+virtual/threaded/animations/transition-and-animation-1.html [ WontFix ]
+virtual/threaded/animations/transition-and-animation-2.html [ WontFix ]
+virtual/threaded/transitions/transition-end-event-multiple-04.html [ WontFix ]
+
+# See crbug.com/522326
+imported/wpt/html/obsolete/requirements-for-implementations/the-marquee-element-0/marquee-events.html [ WontFix ]
+# We don't allow to access external hosts in layout tests.
+imported/wpt/html/the-xhtml-syntax/parsing-xhtml-documents/xhtml-mathml-dtd-entity-support.htm [ WontFix ]
+
+# Some CSS2.1 tests pass but cause 1px diff due to old font-size guidelines,
+# or render colors differently for text and images on Mac.
+imported/csswg-test/css21/linebox/inline-formatting-context-002.xht [ WontFix ]
+[ Linux Win ] imported/csswg-test/css21/linebox/inline-formatting-context-003.xht [ WontFix ]
+[ Linux Win ] imported/csswg-test/css21/linebox/inline-formatting-context-004.xht [ WontFix ]
+[ Linux Win ] imported/csswg-test/css21/linebox/inline-formatting-context-005.xht [ WontFix ]
+[ Linux Win ] imported/csswg-test/css21/linebox/inline-formatting-context-006.xht [ WontFix ]
+[ Linux Win ] imported/csswg-test/css21/linebox/inline-formatting-context-007.xht [ WontFix ]
+imported/csswg-test/css21/linebox/inline-formatting-context-023.xht [ WontFix ]
+[ Mac ] imported/csswg-test/css21/linebox/line-box-height-002.xht [ WontFix ]
+imported/csswg-test/css21/linebox/line-height-126.xht [ WontFix ]
+[ Mac ] imported/csswg-test/css21/linebox/line-height-129.xht [ WontFix ]
+[ Mac ] imported/csswg-test/css21/linebox/vertical-align-117a.xht [ WontFix ]
+[ Mac ] imported/csswg-test/css21/linebox/vertical-align-118a.xht [ WontFix ]
+[ Mac Win ] imported/csswg-test/css21/linebox/vertical-align-baseline-003.xht [ WontFix ]
+[ Mac ] imported/csswg-test/css21/linebox/vertical-align-baseline-004a.xht [ WontFix ]
+[ Mac ] imported/csswg-test/css21/linebox/vertical-align-baseline-005a.xht [ WontFix ]
+[ Linux ] imported/csswg-test/css21/linebox/vertical-align-sub-001.xht [ WontFix ]
+[ Linux ] imported/csswg-test/css21/linebox/vertical-align-super-001.xht [ WontFix ]
+
+# Ref tests that pass but causes 1px diff on images at direction boundaries.
+[ Win ] imported/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-002c.html [ WontFix ]
+[ Mac ] imported/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006a.html [ WontFix ]
+[ Mac ] imported/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006b.html [ WontFix ]
+[ Mac Win ] imported/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-006c.html [ WontFix ]
+[ Mac ] imported/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009a.html [ WontFix ]
+[ Mac ] imported/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009b.html [ WontFix ]
+[ Mac ] imported/wpt/html/dom/elements/requirements-relating-to-bidirectional-algorithm-formatting-characters/dir-isolation-009c.html [ WontFix ]
+
+# We could fix this test for us and upstream it if the test shell user agent
+# would let us differentiate test_shell and WebKit DumpTreeNode.
+crbug.com/7482 [ Win Mac ] http/tests/misc/timer-vs-loading.html [ WontFix ]
+
+# On Linux bold emoji are already supported.
+crbug.com/551843 [ Linux ] fast/text/fallback-traits-fixup.html [ WontFix ]
+crbug.com/551843 [ Linux Win ] fast/text/emoji-font-weight-mac.html [ WontFix ]
+
+# prefer_compositing_to_lcd_text causes things to get composited regardless of their opaqueness, causing the test to fail
+crbug.com/381840 virtual/prefer_compositing_to_lcd_text/compositing/overflow/overflow-scroll-background-opaque-to-transparent.html [ WontFix ]
+crbug.com/381840 virtual/prefer_compositing_to_lcd_text/compositing/overflow/overflow-scroll-background-transparent-to-opaque.html [ WontFix ]
+
+# Stack overflow crashes on Win
+crbug.com/601669 [ Win ] svg/as-image/svg-nested.html [ WontFix ]
+
+# GPU rasterization antialiases differently. 
+crbug.com/665014 virtual/gpu-rasterization/images/cross-fade-svg-size-diff.html [ WontFix ]
+crbug.com/665014 virtual/gpu-rasterization/images/cross-fade-svg-size.html [ WontFix ]
+
+# Debug rendering difference only on Win Debug
+crbug.com/484370 [ Win Debug ] svg/custom/gradient-userSpaceOnUse-with-percentage.svg [ WontFix ]
+crbug.com/552433 [ Win7 Debug ] svg/W3C-SVG-1.1/coords-units-02-b.svg [ WontFix ]
+crbug.com/606302 [ Win7 Debug ] compositing/perpendicular-layer-sorting.html [ WontFix ]
+
+# Only Windows supports Symbol CMAP encoded fonts.
+crbug.com/627953 [ Android Linux Mac ] fast/text/symbol-cmap.html [ WontFix ]
+
+# wasm tests. Currently under virtual/enable_wasm
+crbug.com/642912 http/tests/wasm/ [ WontFix ]

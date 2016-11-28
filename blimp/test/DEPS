@@ -1,0 +1,11 @@
+include_rules = [
+  "+base",
+  "+cc",
+  "-chrome",
+  "+content/public",
+  "+mojo/edk/embedder",
+  "+net",
+  "+third_party/grpc",
+  "+ui/android",
+  "+ui/gfx",
+]

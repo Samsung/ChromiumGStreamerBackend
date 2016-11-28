@@ -1,0 +1,38 @@
+<html>
+<script>
+    if (window.testRunner)
+        testRunner.dumpAsText();
+</script>
+<body id='body'>
+    
+    
+    <!-- This test makes sure that these types of elements DO NOT have children. 
+         The test will pass if attributesOfChildren() returns nil -->
+
+    <input id="file" type="file">
+    <div id="button" role="button"><b><i>inside</i></b></div>
+
+    <div id="result"></div>
+
+     
+    <script>
+        if (window.accessibilityController) {
+            var result = document.getElementById("result");
+
+            var element1 = accessibilityController.accessibleElementById("file");
+
+            var element2 = accessibilityController.accessibleElementById("button");
+
+            var element1Children = element1.attributesOfChildren();
+            var element2Children = element2.attributesOfChildren();
+
+            if (element1Children != "" || element2Children != "") {
+               result.innerText += "FAIL\n" + element1Children + "\n" + element2Children;
+            }
+            else {
+               result.innerText += "PASS";
+           }           
+        }
+    </script>
+</body>
+</html>

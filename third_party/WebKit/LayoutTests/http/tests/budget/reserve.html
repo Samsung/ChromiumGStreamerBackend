@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Budget API: Make basic reserve calls.</title>
+    <script src="../resources/testharness.js"></script>
+    <script src="../resources/testharnessreport.js"></script>
+    <script src="/js-test-resources/mojo-helpers.js"></script>
+    <script src="budget-service-mock.js"></script>
+  </head>
+  <body>
+    <script>
+      if (!window.mojo)
+        debug('This test can not run without mojo');
+
+      promise_test(function() {
+        return budgetServiceMock.then(mock => {
+          assert_own_property(Navigator.prototype, 'budget');
+          mock.setReserveSuccess(true);
+          return navigator.budget.reserve("silent-push");
+        }).then(success => {
+          assert_equals(success, true);
+        });
+      }, 'BudgetService.Reserve should return correct results.');
+
+      promise_test(function() {
+        return budgetServiceMock.then(mock => {
+          assert_own_property(Navigator.prototype, 'budget');
+          return navigator.budget.reserve("frobinator");
+        }).then(success => {
+          assert_unreached('reserve should have failed with an invalid argument.');
+        }, function(error) {
+          assert_equals(error.name, 'TypeError');
+          assert_equals(error.message, "Failed to execute 'reserve' on 'BudgetService': The provided value 'frobinator' is not a valid enum value of type OperationType.");
+        });
+      }, 'BudgetService.Reserve should return Type Error if an invalid argument is provided.');
+    </script>
+  </body>
+</html>

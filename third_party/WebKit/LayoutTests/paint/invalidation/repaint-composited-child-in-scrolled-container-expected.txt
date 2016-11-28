@@ -1,0 +1,49 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='outer'",
+          "rect": [8, 293, 285, 15],
+          "reason": "scroll"
+        }
+      ]
+    },
+    {
+      "name": "Ancestor Clipping Layer",
+      "position": [8, 8],
+      "bounds": [285, 285],
+      "shouldFlattenTransform": false
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='container'",
+      "position": [-315, 0],
+      "bounds": [600, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#FF0000",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV id='inner'",
+          "rect": [0, 0, 600, 600],
+          "reason": "style change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "HorizontalScrollbar",
+      "reason": "scroll"
+    },
+    {
+      "object": "LayoutBlockFlow DIV id='inner'",
+      "reason": "style change"
+    }
+  ]
+}
+

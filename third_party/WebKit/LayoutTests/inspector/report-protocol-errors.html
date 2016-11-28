@@ -1,0 +1,60 @@
+<html>
+<head>
+<script src="../http/tests/inspector/inspector-test.js"></script>
+<script>
+
+function test()
+{
+    var messages = [
+        'some wrong string',
+        '{}',
+        '{"id":"not a number"}',
+        '{"id":1,"method":1}',
+        '{"id":2,"method":"resourceContent"}',
+        '{"id":3,"method":"DOM.test"}',
+        '{"id":4,"method":"DOM.requestChildNodes"}',
+        '{"id":5,"method":"DOM.requestChildNodes","params":[]}',
+        '{"id":6,"method":"DOM.requestChildNodes","params":{}}',
+        '{"id":7,"method":"DOM.requestChildNodes","params":{"nodeId":"not a number"}}',
+        '{"id":8,"method":"DOM.test"}',
+        '{"id":9,"method":"DOM.test" }',
+        '{"id":10,"method": "DOM.test" }',
+        '{"id":11,"method" : "DOM.test" }',
+        '{"id":12, "method" : "DOM.test" }',
+        '{"id": 13, "method" : "DOM.test" }',
+        '{"id" : 14, "method" : "DOM.test" }',
+        '{ "id" : 15, "method" : "DOM.test" }',
+        '{  "id"\n :\r 16,\t "method" : "DOM.test" }',
+    ];
+
+    var numberOfReports = 0;
+
+    InspectorBackendClass.reportProtocolError = function(error, message)
+    {
+        if (numberOfReports < messages.length) {
+            InspectorTest.addObject(message);
+            InspectorTest.addResult("-------------------------------------------------------");
+        }
+
+        if (++numberOfReports === messages.length)
+            InspectorTest.completeTest();
+    }
+
+    function fire() {
+        for (var i = 0; i < messages.length; ++i)
+            InspectorFrontendHost.sendMessageToBackend(messages[i]);
+    }
+
+    InspectorTest.DebuggerAgent.disable(fire);
+}
+
+</script>
+</head>
+
+<body onload="runTest()">
+<p>
+Tests that InspectorBackendDispatcher is catching incorrect messages.
+</p>
+
+</body>
+</html>

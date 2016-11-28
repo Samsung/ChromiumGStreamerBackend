@@ -1,0 +1,17 @@
+*.Makefile
+*.mk
+*.rules
+*.sln
+*.tmp
+*.vcproj*
+*.vcxproj*
+*.xcodeproj*
+node_modules
+config.gypi
+npm-debug.log
+/.dev_profile
+/.test_cache
+/release
+/scripts/local_node/runtimes
+/front_end/InspectorBackendCommands.js
+/front_end/SupportedCSSProperties.js

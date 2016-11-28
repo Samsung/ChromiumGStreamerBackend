@@ -1,0 +1,42 @@
+/* Copyright 2016 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/************* Language Screen **************/
+#languageScreen .language-selection-entry {
+  border-top: 1px solid lightgrey;
+  height: 44px;
+  padding: 0 20px;
+}
+
+#languageScreen .language-selection-entry:last-of-type {
+  border-bottom: 1px solid lightgrey;
+}
+
+#languageScreen .language-selection-title {
+  color: rgba(0, 0, 0, 0.87);
+  font: 13px Roboto, sans-serif;
+}
+
+#languageScreen .bottom-buttons {
+  padding: 0 24px;
+}
+
+/************* Accessibility Screen **************/
+#accessibilityScreen oobe-a11y-option {
+  border-top: 1px solid lightgrey;
+  min-height: 56px;
+}
+
+#accessibilityScreen oobe-a11y-option:last-of-type {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+}
+
+#accessibilityScreen .bottom-buttons {
+  padding: 0 24px;
+}
+
+/************* Accessibility Screen **************/
+#networkSelectionScreen .bottom-buttons {
+  padding: 0 6px; /* = 8px - 2px back button border */
+}

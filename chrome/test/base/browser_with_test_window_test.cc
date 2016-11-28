@@ -1,0 +1,211 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/test/base/browser_with_test_window_test.h"
+
+#include "ash/common/material_design/material_design_controller.h"
+#include "base/location.h"
+#include "base/run_loop.h"
+#include "base/single_thread_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
+#include "chrome/browser/profiles/profile_destroyer.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/browser_side_navigation_policy.h"
+#include "content/public/test/browser_side_navigation_test_utils.h"
+#include "content/public/test/test_renderer_host.h"
+#include "ui/base/page_transition_types.h"
+
+#if defined(OS_CHROMEOS)
+#include "ash/test/ash_test_helper.h"
+#include "chrome/test/base/ash_test_environment_chrome.h"
+#elif defined(TOOLKIT_VIEWS)
+#include "ui/views/test/scoped_views_test_helper.h"
+#endif
+
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
+#include "components/constrained_window/constrained_window_views.h"
+#endif
+
+using content::NavigationController;
+using content::RenderFrameHost;
+using content::RenderFrameHostTester;
+using content::WebContents;
+
+BrowserWithTestWindowTest::BrowserWithTestWindowTest()
+    : BrowserWithTestWindowTest(Browser::TYPE_TABBED, false) {}
+
+BrowserWithTestWindowTest::BrowserWithTestWindowTest(Browser::Type browser_type,
+                                                     bool hosted_app)
+    : browser_type_(browser_type), hosted_app_(hosted_app) {}
+
+BrowserWithTestWindowTest::~BrowserWithTestWindowTest() {
+}
+
+void BrowserWithTestWindowTest::SetUp() {
+  testing::Test::SetUp();
+#if defined(OS_CHROMEOS)
+  // TODO(jamescook): Windows Ash support. This will require refactoring
+  // AshTestHelper and AuraTestHelper so they can be used at the same time,
+  // perhaps by AshTestHelper owning an AuraTestHelper.
+  ash_test_environment_ = base::MakeUnique<AshTestEnvironmentChrome>();
+  ash_test_helper_.reset(
+      new ash::test::AshTestHelper(ash_test_environment_.get()));
+  ash_test_helper_->SetUp(true,
+                          ash::MaterialDesignController::Mode::UNINITIALIZED);
+#elif defined(TOOLKIT_VIEWS)
+  views_test_helper_.reset(new views::ScopedViewsTestHelper());
+#endif
+#if defined(TOOLKIT_VIEWS)
+  SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
+#endif
+
+  if (content::IsBrowserSideNavigationEnabled())
+    content::BrowserSideNavigationSetUp();
+
+  // Subclasses can provide their own Profile.
+  profile_ = CreateProfile();
+  // Subclasses can provide their own test BrowserWindow. If they return NULL
+  // then Browser will create the a production BrowserWindow and the subclass
+  // is responsible for cleaning it up (usually by NativeWidget destruction).
+  window_.reset(CreateBrowserWindow());
+
+  browser_.reset(
+      CreateBrowser(profile(), browser_type_, hosted_app_, window_.get()));
+}
+
+void BrowserWithTestWindowTest::TearDown() {
+  // Some tests end up posting tasks to the DB thread that must be completed
+  // before the profile can be destroyed and the test safely shut down.
+  base::RunLoop().RunUntilIdle();
+
+  // Reset the profile here because some profile keyed services (like the
+  // audio service) depend on test stubs that the helpers below will remove.
+  DestroyBrowserAndProfile();
+
+  if (content::IsBrowserSideNavigationEnabled())
+    content::BrowserSideNavigationTearDown();
+
+#if defined(TOOLKIT_VIEWS)
+  constrained_window::SetConstrainedWindowViewsClient(nullptr);
+#endif
+
+#if defined(OS_CHROMEOS)
+  ash_test_helper_->TearDown();
+#elif defined(TOOLKIT_VIEWS)
+  views_test_helper_.reset();
+#endif
+
+  testing::Test::TearDown();
+
+  // A Task is leaked if we don't destroy everything, then run the message
+  // loop.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::MessageLoop::QuitWhenIdleClosure());
+  base::RunLoop().Run();
+}
+
+gfx::NativeWindow BrowserWithTestWindowTest::GetContext() {
+#if defined(OS_CHROMEOS)
+  return ash_test_helper_->CurrentContext();
+#elif defined(TOOLKIT_VIEWS)
+  return views_test_helper_->GetContext();
+#else
+  return nullptr;
+#endif
+}
+
+void BrowserWithTestWindowTest::AddTab(Browser* browser, const GURL& url) {
+  chrome::NavigateParams params(browser, url, ui::PAGE_TRANSITION_TYPED);
+  params.tabstrip_index = 0;
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  chrome::Navigate(&params);
+  CommitPendingLoad(&params.target_contents->GetController());
+}
+
+void BrowserWithTestWindowTest::CommitPendingLoad(
+  NavigationController* controller) {
+  if (!controller->GetPendingEntry())
+    return;  // Nothing to commit.
+
+  RenderFrameHostTester::CommitPendingLoad(controller);
+}
+
+void BrowserWithTestWindowTest::NavigateAndCommit(
+    NavigationController* controller,
+    const GURL& url) {
+  controller->LoadURL(
+      url, content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+  CommitPendingLoad(controller);
+}
+
+void BrowserWithTestWindowTest::NavigateAndCommitActiveTab(const GURL& url) {
+  NavigateAndCommit(&browser()->tab_strip_model()->GetActiveWebContents()->
+                        GetController(),
+                    url);
+}
+
+void BrowserWithTestWindowTest::NavigateAndCommitActiveTabWithTitle(
+    Browser* navigating_browser,
+    const GURL& url,
+    const base::string16& title) {
+  WebContents* contents =
+      navigating_browser->tab_strip_model()->GetActiveWebContents();
+  NavigationController* controller = &contents->GetController();
+  NavigateAndCommit(controller, url);
+  contents->UpdateTitleForEntry(controller->GetActiveEntry(), title);
+}
+
+void BrowserWithTestWindowTest::DestroyBrowserAndProfile() {
+  if (browser_.get()) {
+    // Make sure we close all tabs, otherwise Browser isn't happy in its
+    // destructor.
+    browser()->tab_strip_model()->CloseAllTabs();
+    browser_.reset(NULL);
+  }
+  window_.reset(NULL);
+  // Destroy the profile here - otherwise, if the profile is freed in the
+  // destructor, and a test subclass owns a resource that the profile depends
+  // on (such as g_browser_process()->local_state()) there's no way for the
+  // subclass to free it after the profile.
+  if (profile_)
+    DestroyProfile(profile_);
+  profile_ = NULL;
+}
+
+TestingProfile* BrowserWithTestWindowTest::CreateProfile() {
+  return new TestingProfile();
+}
+
+void BrowserWithTestWindowTest::DestroyProfile(TestingProfile* profile) {
+  delete profile;
+}
+
+BrowserWindow* BrowserWithTestWindowTest::CreateBrowserWindow() {
+  return new TestBrowserWindow();
+}
+
+Browser* BrowserWithTestWindowTest::CreateBrowser(
+    Profile* profile,
+    Browser::Type browser_type,
+    bool hosted_app,
+    BrowserWindow* browser_window) {
+  Browser::CreateParams params(profile);
+  if (hosted_app) {
+    params = Browser::CreateParams::CreateForApp(
+        "Test", true /* trusted_source */, gfx::Rect(), profile);
+  } else {
+    params.type = browser_type;
+  }
+  params.window = browser_window;
+  return new Browser(params);
+}

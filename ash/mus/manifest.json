@@ -1,0 +1,26 @@
+{
+  "name": "ash",
+  "display_name": "Ash Window Manager and Shell",
+  "interface_provider_specs": {
+    "service_manager:connector": {
+      "provides": {
+        "ash": [
+          "ash::mojom::LocaleNotificationController",
+          "ash::mojom::ShelfController",
+          "ash::mojom::ShutdownController",
+          "ash::mojom::SystemTray",
+          "ash::mojom::VpnList",
+          "ash::mojom::WallpaperController"
+        ],
+        "mus:window_manager": [ "ui::mojom::AcceleratorRegistrar" ]
+      },
+      "requires": {
+        "*": [ "accessibility", "app" ],
+        "content_browser": [ "ash" ],
+        "mash_session": [ "mash_session:session" ],
+        "ui": [ "ui:window_manager" ],
+        "touch_hud": [ "mash:launchable" ]
+      }
+    }
+  }
+}

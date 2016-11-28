@@ -1,0 +1,42 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "Squashing Containment Layer",
+      "shouldFlattenTransform": false
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
+      "position": [100, 100],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='box middle')",
+      "position": [180, 180],
+      "bounds": [262, 200],
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutImage (positioned) IMG id='repaintdiv' class='repaintdiv'",
+          "rect": [80, 80, 182, 29],
+          "reason": "style change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutImage (positioned) IMG id='repaintdiv' class='repaintdiv'",
+      "reason": "style change"
+    }
+  ]
+}
+

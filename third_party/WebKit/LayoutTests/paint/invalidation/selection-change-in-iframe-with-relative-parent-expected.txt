@@ -1,0 +1,127 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutText #text",
+          "rect": [18, 238, 40, 10],
+          "reason": "selection"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [18, 218, 30, 10],
+          "reason": "selection"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [18, 198, 30, 10],
+          "reason": "selection"
+        },
+        {
+          "object": "LayoutBR BR",
+          "rect": [58, 238, 10, 10],
+          "reason": "became visible"
+        },
+        {
+          "object": "LayoutBR BR",
+          "rect": [48, 218, 10, 10],
+          "reason": "became visible"
+        },
+        {
+          "object": "LayoutBR BR",
+          "rect": [48, 198, 10, 10],
+          "reason": "became visible"
+        },
+        {
+          "object": "LayoutBR BR",
+          "rect": [18, 228, 10, 10],
+          "reason": "became visible"
+        },
+        {
+          "object": "LayoutBR BR",
+          "rect": [18, 208, 10, 10],
+          "reason": "became visible"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow HTML",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBlockFlow BODY",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'Foo'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBR BR",
+      "reason": "became visible"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "became visible"
+    },
+    {
+      "object": "LayoutBR BR",
+      "reason": "became visible"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "became visible"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'Bar'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBR BR",
+      "reason": "became visible"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "became visible"
+    },
+    {
+      "object": "LayoutBR BR",
+      "reason": "became visible"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "became visible"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "selection"
+    },
+    {
+      "object": "InlineTextBox 'Bazz'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBR BR",
+      "reason": "became visible"
+    },
+    {
+      "object": "InlineTextBox '\n'",
+      "reason": "became visible"
+    }
+  ]
+}
+

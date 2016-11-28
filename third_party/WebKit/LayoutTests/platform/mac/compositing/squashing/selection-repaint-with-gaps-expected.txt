@@ -1,0 +1,135 @@
+lorem ipsumlorem ipsumlorem ipsum
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "Squashing Containment Layer",
+      "shouldFlattenTransform": false
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='overlap'",
+      "position": [8, 8],
+      "bounds": [300, 500]
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='item')",
+      "position": [15, 35],
+      "bounds": [100, 210],
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutText #text",
+          "rect": [0, 80, 42, 36],
+          "reason": "bounds change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='item1' class='item'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBlockFlow DIV class='inline-block'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "bounds change"
+    },
+    {
+      "object": "InlineTextBox 'lorem'",
+      "reason": "bounds change"
+    },
+    {
+      "object": "InlineTextBox 'ipsum'",
+      "reason": "bounds change"
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "Squashing Containment Layer",
+      "shouldFlattenTransform": false
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='overlap'",
+      "position": [8, 8],
+      "bounds": [300, 500]
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='item')",
+      "position": [15, 35],
+      "bounds": [100, 210],
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutText #text",
+          "rect": [0, 80, 44, 36],
+          "reason": "bounds change"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [0, 160, 42, 36],
+          "reason": "bounds change"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='item1' class='item'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBlockFlow DIV class='inline-block'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "bounds change"
+    },
+    {
+      "object": "InlineTextBox 'lorem'",
+      "reason": "bounds change"
+    },
+    {
+      "object": "InlineTextBox 'ipsum'",
+      "reason": "bounds change"
+    },
+    {
+      "object": "LayoutBlockFlow (positioned) DIV id='item2' class='item'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutBlockFlow DIV class='inline-block'",
+      "reason": "selection"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "bounds change"
+    },
+    {
+      "object": "InlineTextBox 'lorem'",
+      "reason": "bounds change"
+    },
+    {
+      "object": "InlineTextBox 'ipsum'",
+      "reason": "bounds change"
+    }
+  ]
+}
+

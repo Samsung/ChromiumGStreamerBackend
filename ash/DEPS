@@ -1,0 +1,57 @@
+include_rules = [
+  "+device/bluetooth",
+  "+cc/debug",
+  "+components/quirks",
+  "+components/session_manager",
+  "+components/signin/core/account_id",
+  "+components/user_manager",
+  "+components/wallpaper",
+  "+gpu/config",
+  "+grit/ash_resources.h",
+  "+grit/ash_strings.h",
+  "+media",
+  "+mojo/public",
+  "+services/service_manager/public",
+  "+skia/ext",
+  "+third_party/cros_system_api",
+  "+third_party/skia",
+  "+net",
+  "+ui",
+  "+win8",
+  "-ash/host",
+  "-content",
+  "+content/public/common/service_names.mojom.h",
+
+  # Only allow Chrome OS services and D-Bus clients accessible to the mustash
+  # ash process.
+  "-chromeos",
+  "+chromeos/accelerometer",
+  "+chromeos/audio",
+  "+chromeos/chromeos_switches.h",
+  "+chromeos/chromeos_paths.h",
+  "+chromeos/dbus/dbus_thread_manager.h",
+  "+chromeos/dbus/fake_power_manager_client.h",
+  "+chromeos/dbus/fake_session_manager_client.h",
+  "+chromeos/dbus/power_manager",
+  "+chromeos/dbus/power_manager_client.h",
+  "+chromeos/dbus/session_manager_client.h",
+  "+chromeos/dbus/system_clock_client.h",
+  "+chromeos/login",
+  # TODO(jamescook): Eliminate this. http://crbug.com/644355
+  "+chromeos/network",
+  # TODO(jamescook): Eliminate this. http://crbug.com/644361
+  "+chromeos/settings/timezone_settings.h",
+  "+chromeos/system",
+]
+
+specific_include_rules = {
+  "root_window_controller\.*": [
+    "+ash/host"
+  ],
+  "shell.cc": [
+    "+ash/host/ash_window_tree_host_init_params.h"
+  ],
+  "touch_transformer_controller\.*": [
+    "+ash/host"
+  ],
+}

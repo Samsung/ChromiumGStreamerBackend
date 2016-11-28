@@ -1,0 +1,34 @@
+<html>
+<head>
+<script src="../../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../../http/tests/inspector/console-test.js"></script>
+
+<script>
+function newWorld()
+{
+    testRunner.evaluateScriptInIsolatedWorld(239, "console.log(42);\n//# sourceURL=239.js");
+}
+
+function test()
+{
+    InspectorTest.debuggerModel.addEventListener(SDK.DebuggerModel.Events.ParsedScriptSource, step2);
+    InspectorTest.evaluateInPage("newWorld()\n//# sourceURL=foo.js");
+
+    var expectedScriptParsed = 2;
+    function step2(event)
+    {
+        var script = event.data;
+        InspectorTest.addResult(script.sourceURL);
+        --expectedScriptParsed;
+        if (!expectedScriptParsed)
+            InspectorTest.completeTest();
+    }
+}
+</script>
+</head>
+<body onload="runTest()">
+<p>
+Tests that injected script isn't reported to frontend.
+</p>
+</body>
+</html>

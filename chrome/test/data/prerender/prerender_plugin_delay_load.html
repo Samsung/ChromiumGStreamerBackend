@@ -1,0 +1,35 @@
+<html>
+<!--
+This test checks to make sure plugins aren't loaded when a page is prerendered,
+but are loaded once the page is displayed.
+
+This test relies on the Pepper plugin (but not the placeholder) implementing
+the postMessage() function on the plugin object.
+-->
+<head>
+<title>Prerender Plugin Delay Loading</title>
+
+<script>
+// Make sure plugin was not loaded while prerendering.
+function DidPrerenderPass() {
+  // |plugin| should be the blocked plugin placeholder, rather than the
+  // test plugin.
+  var plugin = window.document['plugin'];
+  return plugin.postMessage == undefined;
+}
+
+// Make sure plugin loads once the page is displayed.
+function DidDisplayPass() {
+  var plugin = window.document['plugin'];
+  return plugin.postMessage != undefined;
+}
+</script>
+
+</head>
+<body>
+<!-- Specifically define the data attribute to be same-origin. Otherwise,
+     Plugin Power Saver will further defer the loading of the plugin. -->
+<object name='plugin' data='fake.swf' type='application/x-shockwave-flash'>
+</object>
+</body>
+</html>

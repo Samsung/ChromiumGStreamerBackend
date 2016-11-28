@@ -1,0 +1,97 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [8, 166, 100, 36],
+          "reason": "forced by layout"
+        },
+        {
+          "object": "LayoutInline SPAN id='test'",
+          "rect": [5, 163, 98, 42],
+          "reason": "forced by layout"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [8, 166, 92, 36],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [45, 183, 3, 20],
+          "reason": "invalidate paint rectangle"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [45, 183, 3, 20],
+          "reason": "invalidate paint rectangle"
+        },
+        {
+          "object": "LayoutText #text",
+          "rect": [45, 183, 3, 20],
+          "reason": "invalidate paint rectangle"
+        }
+      ]
+    }
+  ],
+  "objectPaintInvalidations": [
+    {
+      "object": "LayoutText #text",
+      "reason": "layoutObject removal"
+    },
+    {
+      "object": "Caret",
+      "reason": "invalidate paint rectangle"
+    },
+    {
+      "object": "LayoutBlockFlow DIV",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "RootInlineBox",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "Caret",
+      "reason": "invalidate paint rectangle"
+    },
+    {
+      "object": "Caret",
+      "reason": "invalidate paint rectangle"
+    },
+    {
+      "object": "LayoutInline SPAN id='test'",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "InlineFlowBox",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "InlineFlowBox",
+      "reason": "forced by layout"
+    },
+    {
+      "object": "LayoutText #text",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'Lorem ipsum'",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox ' '",
+      "reason": "full"
+    },
+    {
+      "object": "InlineTextBox 'dolor\u00A0'",
+      "reason": "full"
+    }
+  ]
+}
+

@@ -1,0 +1,10 @@
+include_rules = [
+  # The components test setup can include anything that components can.
+  "+components",
+  "+content/public",
+  "+content/shell",
+  "+jni",
+  "+media",
+  "+net",
+  "+ui",
+]

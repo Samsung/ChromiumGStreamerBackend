@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<script src=../../resources/testharness.js></script>
+<script src=../../resources/testharnessreport.js></script>
+<script>
+
+// Returns a Promise that is resolve()d if detect() is rejected. Needs an input
+// |element| (e.g. an HTMLImageElement or HTMLVideoElement) and a |url| to load.
+function detectFaceOnElementAndExpectError(element, url) {
+  return new Promise(function(resolve, reject) {
+    var tryFaceDetection = function() {
+      var faceDetector = new FaceDetector();
+      faceDetector.detect(element)
+          .then(faceDetectionResult => {
+            reject("Promise should have been rejected.");
+          })
+          .catch(error => {
+            resolve(error);
+          });
+    };
+    element.onload = tryFaceDetection;
+    element.onerror = tryFaceDetection;
+    element.src = url;
+  });
+}
+
+// This test verifies that FaceDetector will reject an undecodable image.
+promise_test(function(t) {
+  var image = new Image();
+  return detectFaceOnElementAndExpectError(image,
+                                           "../../imported/wpt/images/broken.png")
+      .then(function(error) {
+        assert_equals(error.name, "InvalidStateError");
+        assert_regexp_match(error.message, /Unable to decompress*/);
+      });
+}, "FaceDetector should reject undecodable images with an InvalidStateError.");
+
+// This test verifies that FaceDetector will reject a broken video.
+promise_test(function(t) {
+  var video = document.createElement('video');
+  return detectFaceOnElementAndExpectError(video, "content/garbage.webm")
+      .then(function(error) {
+        assert_equals(error.name, "InvalidStateError");
+      });
+}, "FaceDetector should reject undecodable videos with an InvalidStateError.");
+
+
+</script>

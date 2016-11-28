@@ -1,0 +1,114 @@
+<html>
+<head>
+<script src="../inspector-test.js"></script>
+<script src="../debugger-test.js"></script>
+<script src="../workspace-test.js"></script>
+<script src="../isolated-filesystem-test.js"></script>
+<script src="./persistence-test.js"></script>
+<script src="./resources/foo.js"></script>
+<script>
+
+function test()
+{
+    var fs = new InspectorTest.TestFileSystem("file:///var/www");
+    var fsEntry = InspectorTest.addFooJSFile(fs);
+    var networkSourceFrame, fileSystemSourceFrame;
+
+    InspectorTest.runTestSuite([
+        function addFileSystem(next)
+        {
+            fs.reportCreated(next);
+        },
+
+        function openNetworkTab(next)
+        {
+            InspectorTest.waitForUISourceCode("foo.js", Workspace.projectTypes.Network)
+                .then(code => InspectorTest.showUISourceCodePromise(code))
+                .then(onNetworkTab);
+
+            function onNetworkTab(sourceFrame)
+            {
+                networkSourceFrame = sourceFrame;
+                dumpSourceFrame(networkSourceFrame);
+                next();
+            }
+        },
+
+        function openFileSystemTab(next)
+        {
+            InspectorTest.waitForUISourceCode("foo.js", Workspace.projectTypes.FileSystem)
+                .then(onFileSystemSourceCode)
+                .then(onFileSystemTab);
+
+            function onFileSystemSourceCode(code)
+            {
+                code.setWorkingCopy("\n\nwindow.foo = ()=>'foo2';");
+                return InspectorTest.showUISourceCodePromise(code);
+            }
+
+            function onFileSystemTab(sourceFrame)
+            {
+                fileSystemSourceFrame = sourceFrame;
+                fileSystemSourceFrame.setSelection(new Common.TextRange(2, 0, 2, 5));
+                fileSystemSourceFrame.scrollToLine(2);
+                dumpSourceFrame(fileSystemSourceFrame);
+                dumpEditorTabs();
+                next();
+            }
+        },
+
+        function addFileMapping(next)
+        {
+            InspectorTest.waitForBinding("foo.js").then(onBindingCreated);
+            Workspace.fileSystemMapping.addFileMapping(fs.fileSystemPath, "http://127.0.0.1:8000", "/");
+
+            function onBindingCreated()
+            {
+                dumpEditorTabs();
+                dumpSourceFrame(networkSourceFrame);
+                next();
+            }
+        },
+
+        function removeFileMapping(next)
+        {
+            Persistence.persistence.addEventListener(Persistence.Persistence.Events.BindingRemoved, onBindingRemoved);
+            Workspace.fileSystemMapping.removeFileMapping(fs.fileSystemPath, "http://127.0.0.1:8000", "/");
+
+            function onBindingRemoved(event)
+            {
+                var binding = event.data;
+                if (binding.network.name() !== "foo.js")
+                    return
+                Persistence.persistence.removeEventListener(Persistence.Persistence.Events.BindingRemoved, onBindingRemoved);
+                dumpEditorTabs();
+                dumpSourceFrame(fileSystemSourceFrame);
+                next();
+            }
+        },
+    ]);
+
+    function dumpEditorTabs()
+    {
+        var editorContainer = UI.panels.sources._sourcesView._editorContainer;
+        var openedUISourceCodes = editorContainer._tabIds.keysArray();
+        openedUISourceCodes.sort((a, b) => a.url().compareTo(b.url()));
+        InspectorTest.addResult("Opened tabs: ");
+        for (code of openedUISourceCodes)
+            InspectorTest.addResult("    " + code.url());
+    }
+
+    function dumpSourceFrame(sourceFrame)
+    {
+        InspectorTest.addResult("SourceFrame: " + sourceFrame._url);
+        InspectorTest.addResult("    selection: " + sourceFrame.selection());
+        InspectorTest.addResult("    firstVisibleLine: " + sourceFrame.textEditor.firstVisibleLine());
+        InspectorTest.addResult("    isDirty: " + sourceFrame.uiSourceCode().isDirty());
+    }
+};
+</script>
+</head>
+<body onload="runTest()">
+<p>Verify that tabs get merged and split when binding is added and removed.</p>
+</body>
+</html>

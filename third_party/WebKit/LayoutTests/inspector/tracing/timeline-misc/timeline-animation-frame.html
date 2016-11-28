@@ -1,0 +1,43 @@
+<html>
+<head>
+<script src="../../../http/tests/inspector/inspector-test.js"></script>
+<script src="../../../http/tests/inspector/timeline-test.js"></script>
+<script>
+function performActions()
+{
+    var callback;
+    var promise = new Promise((fulfill) => callback = fulfill);
+    var requestId = window.requestAnimationFrame(animationFrameCallback);
+    function animationFrameCallback()
+    {
+        window.cancelAnimationFrame(requestId);
+        if (callback)
+            callback();
+    }
+    return promise;
+}
+
+function test()
+{
+    InspectorTest.invokeAsyncWithTimeline("performActions", finish);
+
+    function finish()
+    {
+        InspectorTest.printTimelineRecordsWithDetails("RequestAnimationFrame");
+        InspectorTest.printTimelineRecordsWithDetails("FireAnimationFrame");
+        InspectorTest.printTimelineRecordsWithDetails("CancelAnimationFrame");
+        InspectorTest.completeTest();
+    }
+}
+
+if (!window.testRunner)
+    setTimeout(performActions, 2000);
+</script>
+</head>
+
+<body onload="runTest()">
+<p>
+Tests the Timeline events for Animation Frame feature
+</p>
+</body>
+</html>

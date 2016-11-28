@@ -1,0 +1,27 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [785, 2016],
+      "contentsOpaque": true,
+      "drawsContent": true
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='main'",
+      "position": [100, 200],
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#ADD8E6"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='squahed'",
+      "position": [100, 250],
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "drawsContent": true,
+      "backgroundColor": "#90EE90"
+    }
+  ]
+}
+
