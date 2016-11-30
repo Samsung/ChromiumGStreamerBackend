@@ -13,12 +13,24 @@ GST_DEBUG_CATEGORY_STATIC (gst_gl_display_debug);
 
 G_DEFINE_TYPE (GstGLDisplayGPUProcess, gst_gl_display_gpu_process, GST_TYPE_GL_DISPLAY);
 
-static void gst_gl_display_gpu_process_finalize (GObject * object);
+static guintptr
+gst_gl_display_gpu_process_get_handle (GstGLDisplay * display)
+{
+  return 1;
+}
+
+static void
+gst_gl_display_gpu_process_finalize (GObject * object)
+{
+  G_OBJECT_CLASS (gst_gl_display_gpu_process_parent_class)->finalize (object);
+}
 
 static void
 gst_gl_display_gpu_process_class_init (GstGLDisplayGPUProcessClass * klass)
 {
-  G_OBJECT_CLASS (klass)->finalize = gst_gl_display_gpu_process_finalize;
+  GST_GL_DISPLAY_CLASS (klass)->get_handle =
+    GST_DEBUG_FUNCPTR (gst_gl_display_gpu_process_get_handle);
+  G_OBJECT_CLASS (klass)->finalize = GST_DEBUG_FUNCPTR (gst_gl_display_gpu_process_finalize);
 }
 
 static void
@@ -27,12 +39,6 @@ gst_gl_display_gpu_process_init (GstGLDisplayGPUProcess * display_gpu_process)
   GstGLDisplay *display = (GstGLDisplay *) display_gpu_process;
 
   display->type = GST_GL_DISPLAY_TYPE_EGL;
-}
-
-static void
-gst_gl_display_gpu_process_finalize (GObject * object)
-{
-  G_OBJECT_CLASS (gst_gl_display_gpu_process_parent_class)->finalize (object);
 }
 
 GstGLDisplayGPUProcess *

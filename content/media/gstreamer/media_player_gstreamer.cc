@@ -372,8 +372,7 @@ void MediaPlayerGStreamer::SetupGLContext() {
                        G_CALLBACK(gstgldisplay_create_context_cb), this);
 
       gst_gl_context_ = gst_gl_context_gpu_process_new(
-          gst_gl_display_, GST_GL_API_GLES2,
-          (GstGLProcAddrFunc)gpu_process_proc_addr);
+          gst_gl_display_, (GstGLProcAddrFunc)gpu_process_proc_addr);
     }
   }
 

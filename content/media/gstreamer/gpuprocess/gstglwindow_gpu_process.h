@@ -23,19 +23,19 @@
 
 G_BEGIN_DECLS
 
-#define GST_GL_TYPE_WINDOW_GPU_PROCESS (gst_gl_window_gpu_process_get_type())
+#define GST_TYPE_GL_WINDOW_GPU_PROCESS (gst_gl_window_gpu_process_get_type())
 #define GST_GL_WINDOW_GPU_PROCESS(o)                               \
-  (G_TYPE_CHECK_INSTANCE_CAST((o), GST_GL_TYPE_WINDOW_GPU_PROCESS, \
+  (G_TYPE_CHECK_INSTANCE_CAST((o), GST_TYPE_GL_WINDOW_GPU_PROCESS, \
                               GstGLWindowGPUProcess))
 #define GST_GL_WINDOW_GPU_PROCESS_CLASS(k)                      \
-  (G_TYPE_CHECK_CLASS_CAST((k), GST_GL_TYPE_WINDOW_GPU_PROCESS, \
+  (G_TYPE_CHECK_CLASS_CAST((k), GST_TYPE_GL_WINDOW_GPU_PROCESS, \
                            GstGLWindowGPUProcessClass))
 #define GST_GL_IS_WINDOW_GPU_PROCESS(o) \
-  (G_TYPE_CHECK_INSTANCE_TYPE((o), GST_GL_TYPE_WINDOW_GPU_PROCESS))
+  (G_TYPE_CHECK_INSTANCE_TYPE((o), GST_TYPE_GL_WINDOW_GPU_PROCESS))
 #define GST_GL_IS_WINDOW_GPU_PROCESS_CLASS(k) \
-  (G_TYPE_CHECK_CLASS_TYPE((k), GST_GL_TYPE_WINDOW_GPU_PROCESS))
+  (G_TYPE_CHECK_CLASS_TYPE((k), GST_TYPE_GL_WINDOW_GPU_PROCESS))
 #define GST_GL_WINDOW_GPU_PROCESS_GET_CLASS(o)                    \
-  (G_TYPE_INSTANCE_GET_CLASS((o), GST_GL_TYPE_WINDOW_GPU_PROCESS, \
+  (G_TYPE_INSTANCE_GET_CLASS((o), GST_TYPE_GL_WINDOW_GPU_PROCESS, \
                              GstGLWindowGPUProcessClass))
 
 typedef struct _GstGLWindowGPUProcess GstGLWindowGPUProcess;

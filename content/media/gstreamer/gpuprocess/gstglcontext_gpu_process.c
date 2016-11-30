@@ -10,18 +10,17 @@
 #include "content/media/gstreamer/gpuprocess/gstglwindow_gpu_process.h"
 
 #define GST_GL_CONTEXT_GPU_PROCESS_GET_PRIVATE(o)  \
-  (G_TYPE_INSTANCE_GET_PRIVATE((o), GST_GL_TYPE_CONTEXT_GPU_PROCESS, GstGLContextGPUProcessPrivate))
+  (G_TYPE_INSTANCE_GET_PRIVATE((o), GST_TYPE_GL_CONTEXT_GPU_PROCESS, GstGLContextGPUProcessPrivate))
 
 #define GST_CAT_DEFAULT gst_gl_context_debug
 
 #define gst_gl_context_gpu_process_parent_class parent_class
 G_DEFINE_TYPE (GstGLContextGPUProcess, gst_gl_context_gpu_process,
-    GST_GL_TYPE_CONTEXT_EGL);
+    GST_TYPE_GL_CONTEXT);
 
 struct _GstGLContextGPUProcessPrivate
 {
-  // Nothing for now;
-  gint empty;
+  const gchar *egl_exts;
 };
 
 static guintptr
@@ -33,19 +32,37 @@ gst_gl_context_gpu_process_get_gl_context (GstGLContext * context)
 static GstGLAPI
 gst_gl_context_gpu_process_get_gl_api (GstGLContext * context)
 {
-  return GST_GL_CONTEXT_EGL (context)->gl_api;
+  return GST_GL_API_GLES2;
 }
 
 static GstGLPlatform
 gst_gl_context_gpu_process_get_gl_platform (GstGLContext * context)
 {
-  return 0;
+  return GST_GL_PLATFORM_EGL;
 }
 
 static gboolean
 gst_gl_context_gpu_process_activate (GstGLContext * context, gboolean activate)
 {
   return TRUE;
+}
+
+static void
+gst_gl_context_gpu_process_get_gl_platform_version(GstGLContext *context,
+                                                   gint *major, gint *minor)
+{
+  if (major)
+    *major = 1;
+  if (minor)
+    *minor = 4;
+}
+
+static gboolean
+gst_gl_context_gpu_process_check_feature (GstGLContext * context, const gchar * feature)
+{
+  GstGLContextGPUProcess *gpu_context = GST_GL_CONTEXT_GPU_PROCESS (context);
+
+  return gst_gl_check_extension (feature, gpu_context->priv->egl_exts);
 }
 
 static void
@@ -77,6 +94,10 @@ gst_gl_context_gpu_process_class_init (GstGLContextGPUProcessClass * klass)
       GST_DEBUG_FUNCPTR (gst_gl_context_gpu_process_get_gl_platform);
   context_class->activate =
       GST_DEBUG_FUNCPTR (gst_gl_context_gpu_process_activate);
+  context_class->get_gl_platform_version =
+      GST_DEBUG_FUNCPTR (gst_gl_context_gpu_process_get_gl_platform_version);
+  context_class->check_feature =
+      GST_DEBUG_FUNCPTR (gst_gl_context_gpu_process_check_feature);
 }
 
 static void
@@ -87,38 +108,19 @@ gst_gl_context_gpu_process_init (GstGLContextGPUProcess * context)
 
 GstGLContext *
 gst_gl_context_gpu_process_new (GstGLDisplay * display,
-    GstGLAPI gl_api, GstGLProcAddrFunc proc_addr)
+                                GstGLProcAddrFunc proc_addr)
 {
-  GstGLContext *context = NULL;
-  GstGLContextEGL *egl_context = NULL;
-  GstGLContextGPUProcess *gpu_context = NULL;
-  GstGLContextClass *context_class = NULL;
+  GstGLContextGPUProcess *gpu_context = g_object_new (GST_TYPE_GL_CONTEXT_GPU_PROCESS, NULL);
+  GstGLContext *context = GST_GL_CONTEXT (gpu_context);
+  GstGLContextClass *context_class = GST_GL_CONTEXT_GET_CLASS (context);
   GstGLWindow *window = NULL;
-  g_return_val_if_fail ((gst_gl_display_get_gl_api (display) & gl_api) !=
-      GST_GL_API_NONE, NULL);
-
-  gpu_context = g_object_new (GST_GL_TYPE_CONTEXT_GPU_PROCESS, NULL);
-
-  egl_context = GST_GL_CONTEXT_EGL (gpu_context);
-  egl_context->gl_api = gl_api;
-
-  context = GST_GL_CONTEXT (gpu_context);
 
   context->display = display;
-
-  context_class = GST_GL_CONTEXT_GET_CLASS (context);
 
   context_class->get_current_context = NULL;
   context_class->get_proc_address = GST_DEBUG_FUNCPTR (proc_addr);
 
-  egl_context->egl_major = 1;
-  egl_context->egl_minor = 4;
-  egl_context->egl_exts = "EGL_EXT_image_dma_buf_import EGL_KHR_image_base";
-
-  egl_context->eglCreateImageKHR = gst_gl_context_get_proc_address (context,
-    "eglCreateImageKHR");
-  egl_context->eglDestroyImage = gst_gl_context_get_proc_address (context,
-    "eglDestroyImage");
+  gpu_context->priv->egl_exts = "EGL_EXT_image_dma_buf_import EGL_KHR_image_base";
 
   window = GST_GL_WINDOW (gst_gl_window_gpu_process_new (display));
   gst_gl_context_set_window (context, window);

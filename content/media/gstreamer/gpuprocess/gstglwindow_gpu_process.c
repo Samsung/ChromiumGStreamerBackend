@@ -11,13 +11,13 @@
 #include "content/media/gstreamer/gpuprocess/gstglwindow_gpu_process.h"
 
 #define GST_GL_WINDOW_GPU_PROCESS_GET_PRIVATE(o)  \
-  (G_TYPE_INSTANCE_GET_PRIVATE((o), GST_GL_TYPE_WINDOW_GPU_PROCESS, GstGLWindowGPUProcessPrivate))
+  (G_TYPE_INSTANCE_GET_PRIVATE((o), GST_TYPE_GL_WINDOW_GPU_PROCESS, GstGLWindowGPUProcessPrivate))
 
 #define GST_CAT_DEFAULT gst_gl_window_debug
 
 #define gst_gl_window_gpu_process_parent_class parent_class
 G_DEFINE_TYPE (GstGLWindowGPUProcess, gst_gl_window_gpu_process,
-    GST_GL_TYPE_WINDOW);
+    GST_TYPE_GL_WINDOW);
 
 struct _GstGLWindowGPUProcessPrivate
 {
@@ -80,7 +80,7 @@ GstGLWindowGPUProcess *
 gst_gl_window_gpu_process_new (GstGLDisplay * display)
 {
   GstGLWindowGPUProcess *window =
-      g_object_new (GST_GL_TYPE_WINDOW_GPU_PROCESS, NULL);
+      g_object_new (GST_TYPE_GL_WINDOW_GPU_PROCESS, NULL);
 
   GST_GL_WINDOW (window)->display = gst_object_ref (display);
 

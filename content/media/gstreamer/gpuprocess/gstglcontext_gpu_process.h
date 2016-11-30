@@ -19,23 +19,22 @@
 #define GST_GL_HAVE_GLES3 0
 
 #include <gst/gl/gl.h>
-#include <gst/gl/egl/gstglcontext_egl.h>
 
 G_BEGIN_DECLS
 
-#define GST_GL_TYPE_CONTEXT_GPU_PROCESS (gst_gl_context_gpu_process_get_type())
+#define GST_TYPE_GL_CONTEXT_GPU_PROCESS (gst_gl_context_gpu_process_get_type())
 #define GST_GL_CONTEXT_GPU_PROCESS(o)                               \
-  (G_TYPE_CHECK_INSTANCE_CAST((o), GST_GL_TYPE_CONTEXT_GPU_PROCESS, \
+  (G_TYPE_CHECK_INSTANCE_CAST((o), GST_TYPE_GL_CONTEXT_GPU_PROCESS, \
                               GstGLContextGPUProcess))
 #define GST_GL_CONTEXT_GPU_PROCESS_CLASS(k)                      \
-  (G_TYPE_CHECK_CLASS_CAST((k), GST_GL_TYPE_CONTEXT_GPU_PROCESS, \
+  (G_TYPE_CHECK_CLASS_CAST((k), GST_TYPE_GL_CONTEXT_GPU_PROCESS, \
                            GstGLContextGPUProcessClass))
 #define GST_GL_IS_CONTEXT_GPU_PROCESS(o) \
-  (G_TYPE_CHECK_INSTANCE_TYPE((o), GST_GL_TYPE_CONTEXT_GPU_PROCESS))
+  (G_TYPE_CHECK_INSTANCE_TYPE((o), GST_TYPE_GL_CONTEXT_GPU_PROCESS))
 #define GST_GL_IS_CONTEXT_GPU_PROCESS_CLASS(k) \
-  (G_TYPE_CHECK_CLASS_TYPE((k), GST_GL_TYPE_CONTEXT_GPU_PROCESS))
+  (G_TYPE_CHECK_CLASS_TYPE((k), GST_TYPE_GL_CONTEXT_GPU_PROCESS))
 #define GST_GL_CONTEXT_GPU_PROCESS_GET_CLASS(o)                    \
-  (G_TYPE_INSTANCE_GET_CLASS((o), GST_GL_TYPE_CONTEXT_GPU_PROCESS, \
+  (G_TYPE_INSTANCE_GET_CLASS((o), GST_TYPE_GL_CONTEXT_GPU_PROCESS, \
                              GstGLContextGPUProcessClass))
 
 typedef struct _GstGLContextGPUProcess GstGLContextGPUProcess;
@@ -50,7 +49,7 @@ typedef gpointer (*GstGLProcAddrFunc)(GstGLAPI gl_api, const gchar* name);
  * Opaque #GstGLContextGPUProcess object
  */
 struct _GstGLContextGPUProcess {
-  GstGLContextEGL parent;
+  GstGLContext parent;
 
   /*< private >*/
   GstGLContextGPUProcessPrivate* priv;
@@ -60,7 +59,7 @@ struct _GstGLContextGPUProcess {
 };
 
 struct _GstGLContextGPUProcessClass {
-  GstGLContextEGLClass parent;
+  GstGLContextClass parent;
 
   /*< private >*/
   gpointer _reserved[GST_PADDING];
@@ -69,7 +68,6 @@ struct _GstGLContextGPUProcessClass {
 GType gst_gl_context_gpu_process_get_type(void);
 
 GstGLContext* gst_gl_context_gpu_process_new(GstGLDisplay* display,
-                                             GstGLAPI gl_api,
                                              GstGLProcAddrFunc proc_addr);
 
 gboolean gst_gl_context_gpu_process_create(GstGLContext* context);
