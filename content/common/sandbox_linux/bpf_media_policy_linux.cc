@@ -383,8 +383,7 @@ static void splitAndAddReadOnlyPermission(
     const std::string& delimiter,
     std::vector<BrokerFilePermission>& permissions) {
   if (path) {
-    std::vector<std::string> results;
-    base::SplitStringUsingSubstr(path, delimiter, &results);
+    std::vector<std::string> results = base::SplitStringUsingSubstr(path, delimiter, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     for (auto it = results.begin(); it != results.end(); ++it) {
       if (!it->empty()) {
         if (*(it->rbegin()) != '/') {
