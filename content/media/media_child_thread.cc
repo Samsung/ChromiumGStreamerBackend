@@ -23,9 +23,8 @@
 #include "content/common/gpu/client/context_provider_command_buffer.h"
 #include "content/common/gpu_host_messages.h"
 #include "content/common/gpu_process_launch_causes.h"
-#include "gpu/ipc/common/gpu_messages.h"
+#include "content/child/child_gpu_memory_buffer_manager.h"
 #include "content/common/media/media_messages.h"
-#include "content/browser/gpu/gpu_surface_tracker.h"
 #include "content/media/gstreamer/media_player_gstreamer.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -33,12 +32,13 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "gpu/ipc/common/gpu_messages.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_sync_message_filter.h"
 #include "media/base/media.h"
 #include "mojo/common/common_type_converters.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "public/web/WebKit.h"
-#include "services/shell/public/cpp/interface_provider.h"
 
 using base::ThreadRestrictions;
 
@@ -81,6 +81,9 @@ MediaChildThread::MediaChildThread(bool dead_on_arrival,
       blink_platform_(new content::BlinkPlatformImpl) {
   g_thread_safe_sender.Get() = thread_safe_sender();
 
+  gpu_memory_buffer_manager_ =
+      base::MakeUnique<ChildGpuMemoryBufferManager>(thread_safe_sender());
+
   blink::InterfaceProvider* iface_provider = blink_interface_provider_.get();
   iface_provider->getInterface(mojo::GetProxy(&url_loader_factory_));
 
@@ -91,7 +94,6 @@ MediaChildThread::MediaChildThread(const InProcessChildThreadParams& params)
     : ChildThreadImpl(
           ChildThreadImpl::Options::Builder()
                                 .InBrowserProcess(params)
-                                .UseMojoChannel(true)
                                 .ConnectToBrowser(true)
                                 .Build()),
       dead_on_arrival_(false),
@@ -220,7 +222,7 @@ scoped_refptr<gpu::GpuChannelHost> MediaChildThread::EstablishGpuChannelSync() {
   gpu_channel_ =
       gpu::GpuChannelHost::Create(this, client_id, gpu_info, channel_handle,
                                   ChildProcess::current()->GetShutDownEvent(),
-                                  gpu_memory_buffer_manager());
+                                  gpu_memory_buffer_manager_.get());
 
   return gpu_channel_;
 }

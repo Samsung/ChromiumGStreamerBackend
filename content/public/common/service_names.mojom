@@ -14,6 +14,11 @@ const string kBrowserServiceName = "content_browser";
 // src/content/public/app/mojo/content_gpu_manifest.json.
 const string kGpuServiceName = "content_gpu";
 
+// The default service name used to identify the media process when connecting
+// it to the Service Manager. This must match the name in
+// src/content/public/app/mojo/content_media_manifest.json.
+const string kMediaServiceName = "content_media";
+
 // The default service name used to identify plugin processes when connecting
 // them to the Service Manager. This must match the name in
 // src/content/public/app/mojo/content_plugin_manifest.json.

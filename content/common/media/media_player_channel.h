@@ -39,17 +39,8 @@ class MediaPlayerChannel : public IPC::Listener, public IPC::Sender {
   MediaPlayerChannel(int, MediaPlayerChannelFilter*);
   ~MediaPlayerChannel() override;
 
-  void Init(base::SingleThreadTaskRunner* io_task_runner,
-            base::WaitableEvent* shutdown_event);
-
-  // Returns the name of the associated IPC channel.
-  std::string GetChannelName();
-
-#if defined(OS_POSIX)
-  base::ScopedFD TakeRendererFileDescriptor();
-#endif  // defined(OS_POSIX)
-
-  base::ProcessId renderer_pid() const { return channel_->GetPeerPID(); }
+  IPC::ChannelHandle Init(base::SingleThreadTaskRunner* io_task_runner,
+                          base::WaitableEvent* shutdown_event);
 
   int client_id() const { return client_id_; }
 
@@ -137,9 +128,6 @@ class MediaPlayerChannel : public IPC::Listener, public IPC::Sender {
 
   // The id of the client who is on the other side of the channel.
   int client_id_;
-
-  // Uniquely identifies the channel within this GPU process.
-  std::string channel_id_;
 
   scoped_refptr<MediaPlayerChannelFilter> channel_filter_;
 

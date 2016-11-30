@@ -14,6 +14,7 @@
 #include "content/child/child_process.h"
 #include "content/child/web_url_loader_impl.h"
 #include "content/media/media_child_thread.h"
+#include "mojo/public/cpp/bindings/associated_group.h"
 #include "url/gurl.h"
 
 #define DEFAULT_BLOCKSIZE 4 * 1024
@@ -946,7 +947,8 @@ GStreamerBufferedDataSource::GStreamerBufferedDataSource(
     // ResourceMultiBufferDataProvider will take ownership of the loader.
     url_index_->loader_ = new content::WebURLLoaderImpl(
         media_child_thread->resource_dispatcher(),
-        media_child_thread->url_loader_factory());
+        media_child_thread->url_loader_factory(),
+        media_child_thread->associated_group());
 
     data_source_ = base::MakeUnique<media::MultibufferDataSource>(
         url,

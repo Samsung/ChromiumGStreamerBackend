@@ -10,6 +10,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/rand_util.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
@@ -120,7 +121,7 @@ int MediaMain(const MainFunctionParams& parameters) {
 
   {
     TRACE_EVENT0("media", "Run Message Loop");
-    main_message_loop.Run();
+    base::RunLoop().Run();
   }
 
   return 0;

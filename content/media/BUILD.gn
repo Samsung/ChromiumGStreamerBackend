@@ -72,7 +72,6 @@ source_set("media_sources") {
     "//gpu:gpu",
     "//gpu/ipc/common:command_buffer_traits",
     "//ipc",
-    "//services/shell/public/interfaces",
     "//skia",
     "//ui/events/ipc",
     "//ui/gfx/ipc",

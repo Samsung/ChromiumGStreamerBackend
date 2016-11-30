@@ -1918,7 +1918,7 @@ MediaPlayerChannelHost* RenderThreadImpl::EstablishMediaChannelSync(
 
     // Recreate the channel if it has been lost.
     media_channel_->DestroyChannel();
-    media_channel_ = NULL;
+    media_channel_ = nullptr;
   }
 
   // Ask the browser for the channel name.
@@ -1927,10 +1927,7 @@ MediaPlayerChannelHost* RenderThreadImpl::EstablishMediaChannelSync(
 
   if (!Send(new MediaHostMsg_EstablishMediaChannel(
           cause_for_media_launch, &client_id, &channel_handle)) ||
-#if defined(OS_POSIX)
-      channel_handle.socket.fd == -1 ||
-#endif
-      channel_handle.name.empty()) {
+      !channel_handle.mojo_handle.is_valid()) {
     // Otherwise cancel the connection.
     return NULL;
   }
@@ -1943,10 +1940,10 @@ MediaPlayerChannelHost* RenderThreadImpl::EstablishMediaChannelSync(
 
 MediaPlayerChannelHost* RenderThreadImpl::GetMediaChannel() {
   if (!media_channel_.get())
-    return NULL;
+    return nullptr;
 
   if (media_channel_->IsLost())
-    return NULL;
+    return nullptr;
 
   return media_channel_.get();
 }

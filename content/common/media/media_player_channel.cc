@@ -22,44 +22,28 @@
 #include "content/common/media/media_player_messages_gstreamer.h"
 #include "content/media/gstreamer/media_player_gstreamer.h"
 
-#if defined(OS_POSIX)
-#include "ipc/ipc_channel_posix.h"
-#endif
-
 namespace content {
 
 MediaPlayerChannel::MediaPlayerChannel(int client_id, MediaPlayerChannelFilter* channel_filter)
     : client_id_(client_id), channel_filter_(channel_filter) {
   DCHECK(client_id);
-
-  channel_id_ = IPC::Channel::GenerateVerifiedChannelID("media_player_channel");
 }
 
 MediaPlayerChannel::~MediaPlayerChannel() {}
 
-void MediaPlayerChannel::Init(base::SingleThreadTaskRunner* io_task_runner,
+IPC::ChannelHandle MediaPlayerChannel::Init(base::SingleThreadTaskRunner* io_task_runner,
                         base::WaitableEvent* shutdown_event) {
   DCHECK(!channel_.get());
 
-  // Map renderer ID to a (single) channel to that process.
-  channel_ =
-      IPC::SyncChannel::Create(channel_id_, IPC::Channel::MODE_SERVER, this,
-                               io_task_runner, false, shutdown_event);
-}
+  mojo::MessagePipe pipe;
+  channel_ = IPC::SyncChannel::Create(pipe.handle0.release(),
+                                      IPC::Channel::MODE_SERVER, this,
+                                      io_task_runner, false, shutdown_event);
 
-std::string MediaPlayerChannel::GetChannelName() {
-  return channel_id_;
-}
+  //channel_->AddFilter(filter_.get());
 
-#if defined(OS_POSIX)
-base::ScopedFD MediaPlayerChannel::TakeRendererFileDescriptor() {
-  if (!channel_) {
-    NOTREACHED();
-    return base::ScopedFD();
-  }
-  return channel_->TakeClientFileDescriptor();
+  return pipe.handle1.release();
 }
-#endif  // defined(OS_POSIX)
 
 bool MediaPlayerChannel::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;

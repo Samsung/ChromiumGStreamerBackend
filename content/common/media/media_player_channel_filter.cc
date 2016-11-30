@@ -64,34 +64,18 @@ bool MediaPlayerChannelFilter::Send(IPC::Message* msg) {
 void MediaPlayerChannelFilter::OnEstablishChannel(int client_id) {
   DCHECK_NE(io_task_runner_.get(), base::ThreadTaskRunnerHandle::Get().get());
 
-  IPC::ChannelHandle channel_handle;
+  ;
 
   std::unique_ptr<MediaPlayerChannel> channel(new MediaPlayerChannel(client_id, this));
-  channel->Init(io_task_runner_.get(), shutdown_event_);
-  channel_handle.name = channel->GetChannelName();
-
-#if defined(OS_POSIX)
-  // On POSIX, pass the renderer-side FD. Also mark it as auto-close so
-  // that it gets closed after it has been sent.
-  base::ScopedFD renderer_fd = channel->TakeRendererFileDescriptor();
-  DCHECK(renderer_fd.is_valid());
-  channel_handle.socket = base::FileDescriptor(std::move(renderer_fd));
-#endif
+  IPC::ChannelHandle channel_handle = channel->Init(io_task_runner_.get(), shutdown_event_);
 
   media_channels_.set(client_id, std::move(channel));
 
   Send(new MediaHostMsg_ChannelEstablished(channel_handle));
 }
 
-void MediaPlayerChannelFilter::OnCloseChannel(
-    const IPC::ChannelHandle& channel_handle) {
-  for (MediaChannelMap::iterator iter = media_channels_.begin();
-       iter != media_channels_.end(); ++iter) {
-    if (iter->second->GetChannelName() == channel_handle.name) {
-      media_channels_.erase(iter);
-      return;
-    }
-  }
+void MediaPlayerChannelFilter::OnCloseChannel(int32_t client_id) {
+  RemoveChannel(client_id);
 }
 
 }  // namespace content

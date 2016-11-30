@@ -54,6 +54,10 @@
 #include "gpu/ipc/service/stream_texture_android.h"
 #endif
 
+#if defined(USE_GSTREAMER)
+#include "ipc/ipc_platform_file_attachment_posix.h"
+#endif
+
 namespace gpu {
 struct WaitForCommandState {
   WaitForCommandState(int32_t start, int32_t end, IPC::Message* reply)
@@ -238,7 +242,7 @@ bool GpuCommandBufferStub::OnMessageReceived(const IPC::Message& message) {
     if (iter.SkipBytes(68)) {
       for (int i = 0; i < 3; ++i) {
         if (message.ReadAttachment(&iter, &attachment))
-          dmabuf_fds_[i] = static_cast<IPC::MessageAttachment*>(attachment.get())->TakePlatformFile();
+          dmabuf_fds_[i] = static_cast<IPC::internal::PlatformFileAttachment*>(attachment.get())->TakePlatformFile();
         else
           break;
       }

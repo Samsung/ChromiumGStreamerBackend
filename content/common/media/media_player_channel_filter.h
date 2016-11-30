@@ -63,13 +63,13 @@ class CONTENT_EXPORT MediaPlayerChannelFilter : public IPC::MessageFilter {
   }
 
  private:
-  typedef base::ScopedPtrHashMap<int, std::unique_ptr<MediaPlayerChannel>> MediaChannelMap;
+  typedef base::ScopedPtrHashMap<int32_t, std::unique_ptr<MediaPlayerChannel>> MediaChannelMap;
 
   ~MediaPlayerChannelFilter() override;
 
   // Message handlers.
   void OnEstablishChannel(int client_id);
-  void OnCloseChannel(const IPC::ChannelHandle& channel_handle);
+  void OnCloseChannel(int32_t client_id);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   base::WaitableEvent* shutdown_event_;

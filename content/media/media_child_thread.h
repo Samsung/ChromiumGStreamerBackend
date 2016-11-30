@@ -21,6 +21,7 @@
 #include "content/common/url_loader_factory.mojom.h"
 #include "content/renderer/mojo/blink_interface_provider_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "mojo/public/cpp/bindings/associated_binding.h"
 
 namespace base {
 class MessageLoopProxy;
@@ -41,6 +42,7 @@ class TargetServices;
 
 namespace content {
 
+class ChildGpuMemoryBufferManager;
 class CompositorForwardingMessageFilter;
 class ContextProviderCommandBuffer;
 class GpuChannelHost;
@@ -73,6 +75,10 @@ class MediaChildThread : public ChildThreadImpl, public gpu::GpuChannelHostFacto
 
   mojom::URLLoaderFactory* url_loader_factory() {
     return url_loader_factory_.get();
+  }
+
+  mojo::AssociatedGroup* associated_group() {
+    return url_loader_factory_.associated_group();
   }
 
  private:
@@ -119,6 +125,8 @@ class MediaChildThread : public ChildThreadImpl, public gpu::GpuChannelHostFacto
   scoped_refptr<base::SingleThreadTaskRunner> gl_task_runner_;
 
   scoped_refptr<cc::ContextProvider> provider_;
+
+  std::unique_ptr<ChildGpuMemoryBufferManager> gpu_memory_buffer_manager_;
 
   std::unique_ptr<BlinkInterfaceProviderImpl> blink_interface_provider_;
 

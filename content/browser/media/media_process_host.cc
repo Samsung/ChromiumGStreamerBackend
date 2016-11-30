@@ -23,17 +23,16 @@
 #include "content/browser/loader/resource_message_filter.h"
 #include "content/browser/media/media_data_manager_impl.h"
 #include "content/browser/media/media_process_host_ui_shim.h"
-#include "content/browser/mojo/mojo_shell_context.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/service_manager/service_manager_context.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/common/child_process_messages.h"
 #include "content/common/in_process_child_thread_params.h"
-#include "content/common/resource_messages.h"
 #include "content/common/media/media_messages.h"
-#include "content/common/mojo/constants.h"
-#include "content/common/mojo/mojo_child_connection.h"
+#include "content/common/resource_messages.h"
+#include "content/common/service_manager/child_connection.h"
 #include "content/common/view_messages.h"
 #include "content/public/browser/appcache_service.h"
 #include "content/public/browser/browser_context.h"
@@ -49,11 +48,11 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/mojo_channel_switches.h"
-#include "content/public/common/mojo_shell_connection.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "content/public/common/service_manager_connection.h"
+#include "content/public/common/service_names.mojom.h"
 #include "ipc/ipc_channel_handle.h"
-#include "ipc/ipc_switches.h"
 #include "ipc/message_filter.h"
 #include "media/base/media_switches.h"
 #include "mojo/edk/embedder/embedder.h"
@@ -82,16 +81,13 @@ void SendMediaProcessMessage(MediaProcessHost::MediaProcessKind kind,
 class MediaSandboxedProcessLauncherDelegate
     : public SandboxedProcessLauncherDelegate {
  public:
-  MediaSandboxedProcessLauncherDelegate(base::CommandLine* cmd_line,
-                                        ChildProcessHost* host)
-      : ipc_fd_(host->TakeClientFileDescriptor()) {}
+  MediaSandboxedProcessLauncherDelegate() {}
 
   ~MediaSandboxedProcessLauncherDelegate() override {}
 
-  base::ScopedFD TakeIpcFd() override { return std::move(ipc_fd_); }
-
- private:
-  base::ScopedFD ipc_fd_;
+  SandboxType GetSandboxType() override {
+    return SANDBOX_TYPE_MEDIA;
+  }
 };
 
 }  // anonymous namespace
@@ -102,10 +98,10 @@ class MediaProcessHost::ConnectionFilterImpl : public ConnectionFilter {
 
  private:
   // ConnectionFilter:
-  bool OnConnect(const shell::Identity& remote_identity,
-                 shell::InterfaceRegistry* registry,
-                 shell::Connector* connector) override {
-    if (remote_identity.name() != kMediaMojoApplicationName)
+  bool OnConnect(const service_manager::Identity& remote_identity,
+                 service_manager::InterfaceRegistry* registry,
+                 service_manager::Connector* connector) override {
+    if (remote_identity.name() != mojom::kMediaServiceName)
       return false;
 
     if (!host_)
@@ -326,7 +322,7 @@ MediaProcessHost::MediaProcessHost(int host_id, MediaProcessKind kind)
       base::Bind(base::IgnoreResult(&MediaProcessHostUIShim::Create), host_id));
 
   process_.reset(new BrowserChildProcessHostImpl(
-      PROCESS_TYPE_MEDIA, this, kMediaMojoApplicationName));
+      PROCESS_TYPE_MEDIA, this, mojom::kMediaServiceName));
 }
 
 MediaProcessHost::~MediaProcessHost() {
@@ -451,7 +447,7 @@ void MediaProcessHost::CreateResourceMessageFilter(
       storage_partition->GetFileSystemContext(),
       static_cast<ServiceWorkerContextWrapper*>(
           storage_partition->GetServiceWorkerContext()),
-      storage_partition->GetHostZoomLevelContext(), get_contexts_callback);
+      get_contexts_callback);
   process_->AddFilter(resource_message_filter);
 
   BrowserThread::PostTask(
@@ -464,8 +460,8 @@ bool MediaProcessHost::Init() {
   TRACE_EVENT_INSTANT0("media", "LaunchMediaProcess", TRACE_EVENT_SCOPE_THREAD);
 
   // May be null during test execution.
-  if (MojoShellConnection::GetForProcess()) {
-    MojoShellConnection::GetForProcess()->AddConnectionFilter(
+  if (ServiceManagerConnection::GetForProcess()) {
+    ServiceManagerConnection::GetForProcess()->AddConnectionFilter(
         base::MakeUnique<ConnectionFilterImpl>(this));
   }
 
@@ -476,7 +472,7 @@ bool MediaProcessHost::Init() {
     DCHECK(g_media_main_thread_factory);
     in_process_media_thread_.reset(g_media_main_thread_factory(
         InProcessChildThreadParams(
-            std::string(), base::ThreadTaskRunnerHandle::Get(),
+            base::ThreadTaskRunnerHandle::Get(),
             process_->child_connection()->service_token())));
     base::Thread::Options options;
     in_process_media_thread_->StartWithOptions(options);
@@ -666,8 +662,7 @@ bool MediaProcessHost::LaunchMediaProcess() {
     cmd_line->PrependWrapper(media_launcher);
 
   process_->Launch(
-      new MediaSandboxedProcessLauncherDelegate(cmd_line, process_->GetHost()),
-      cmd_line, true);
+      new MediaSandboxedProcessLauncherDelegate(), cmd_line, true);
 
   process_launched_ = true;
   return true;
