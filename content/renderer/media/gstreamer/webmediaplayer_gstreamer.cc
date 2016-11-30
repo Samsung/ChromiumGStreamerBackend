@@ -42,6 +42,7 @@
 #include "media/base/key_systems.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
+#include "media/base/media_keys.h"
 #include "media/base/pipeline.h"
 #include "media/base/text_renderer.h"
 #include "media/base/video_frame.h"
@@ -378,7 +379,7 @@ WebMediaPlayerGStreamer::WebMediaPlayerGStreamer(
 
   if (initial_cdm) {
     SetCdm(base::Bind(&IgnoreCdmAttached),
-           ToWebContentDecryptionModuleImpl(initial_cdm)->GetCdmContext());
+           ToWebContentDecryptionModuleImpl(initial_cdm)->GetCdm()->GetCdmContext());
   }
 
   // Ideally we could use the existing compositor thread
@@ -541,7 +542,7 @@ void WebMediaPlayerGStreamer::OnMediaPlaybackCompleted() {
   if (seeking_ || pending_seek_)
     return;
 
-  interpolator_.SetBounds(duration_, duration_);
+  interpolator_.SetBounds(duration_, duration_, default_tick_clock_.NowTicks());
 
   ended_ = true;
   client_->timeChanged();
@@ -574,7 +575,7 @@ void WebMediaPlayerGStreamer::OnSeekCompleted(
     seek(pending_seek_time_.InSecondsF());
     return;
   }
-  interpolator_.SetBounds(current_time, current_time);
+  interpolator_.SetBounds(current_time, current_time, default_tick_clock_.NowTicks());
 
   SetReadyState(WebMediaPlayer::ReadyStateHaveEnoughData);
 
@@ -634,7 +635,7 @@ void WebMediaPlayerGStreamer::OnTimeUpdate(base::TimeDelta current_timestamp,
   // time so that the timer is always progressing.
   lower_bound =
       std::min(lower_bound, base::TimeDelta::FromSecondsD(currentTime()));
-  interpolator_.SetBounds(lower_bound, upper_bound);
+  interpolator_.SetBounds(lower_bound, upper_bound, default_tick_clock_.NowTicks());
 }
 
 void WebMediaPlayerGStreamer::OnMediaPlayerReleased() {
@@ -735,7 +736,8 @@ void WebMediaPlayerGStreamer::load(LoadType load_type,
                                    CORSMode cors_mode) {
   DCHECK(source.isURL());
   blink::WebURL url = source.getAsURL();
-  DVLOG(1) << __FUNCTION__ << "(" << load_type << ", " << url << ", "
+  GURL gurl(url);
+  DVLOG(1) << __FUNCTION__ << "(" << load_type << ", " << gurl.spec() << ", "
            << cors_mode << ")";
 
   DoLoad(load_type, url, cors_mode);
@@ -990,8 +992,7 @@ bool WebMediaPlayerGStreamer::didLoadingProgress() {
 
 void WebMediaPlayerGStreamer::paint(blink::WebCanvas* canvas,
                                     const blink::WebRect& rect,
-                                    unsigned char alpha,
-                                    SkXfermode::Mode mode) {
+                                    SkPaint& paint) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 }
 
@@ -1052,7 +1053,7 @@ void WebMediaPlayerGStreamer::setContentDecryptionModule(
 
   SetCdm(BindToCurrentLoop(base::Bind(&WebMediaPlayerGStreamer::OnCdmAttached,
                                       AsWeakPtr(), result)),
-         ToWebContentDecryptionModuleImpl(cdm)->GetCdmContext());
+         ToWebContentDecryptionModuleImpl(cdm)->GetCdm()->GetCdmContext());
 }
 
 void WebMediaPlayerGStreamer::OnEncryptedMediaInitData(
@@ -1182,7 +1183,7 @@ void WebMediaPlayerGStreamer::OnHidden() {
   pause();
 }
 
-void WebMediaPlayerGStreamer::OnSuspendRequested(bool must_suspend) {
+bool WebMediaPlayerGStreamer::OnSuspendRequested(bool must_suspend) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   // Suspend should never be requested unless required or we're already in an
   // idle state (paused or ended).
@@ -1190,6 +1191,8 @@ void WebMediaPlayerGStreamer::OnSuspendRequested(bool must_suspend) {
   // TODO: we need to add new suspend API
   if (must_suspend)
     pause();
+
+  return true;
 }
 
 void WebMediaPlayerGStreamer::OnPlay() {
