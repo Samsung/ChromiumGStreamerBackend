@@ -26,6 +26,10 @@
 #include "third_party/WebKit/public/platform/WebURLResponse.h"
 #include "third_party/WebKit/public/web/WebAssociatedURLLoader.h"
 
+#if defined(USE_GSTREAMER)
+#include "third_party/WebKit/public/platform/WebURLLoader.h"
+#endif
+
 using blink::WebAssociatedURLLoader;
 using blink::WebAssociatedURLLoaderOptions;
 using blink::WebFrame;
@@ -33,6 +37,10 @@ using blink::WebString;
 using blink::WebURLError;
 using blink::WebURLRequest;
 using blink::WebURLResponse;
+
+#if defined(USE_GSTREAMER)
+using blink::WebURLLoader;
+#endif
 
 namespace media {
 
@@ -126,7 +134,10 @@ void ResourceMultiBufferDataProvider::Start() {
     }
 
 #if defined(USE_GSTREAMER)
-    loader.reset(url_data_->loader_);
+    std::unique_ptr<WebURLLoader> url_loader(url_data_->loader_);
+    url_loader->loadAsynchronously(request, this);
+    active_loader_.reset(new ActiveLoader(std::move(url_loader)));
+    return;
 #else
     loader.reset(url_data_->frame()->createAssociatedURLLoader(options));
 #endif
@@ -479,6 +490,45 @@ void ResourceMultiBufferDataProvider::didFail(const WebURLError& error) {
     url_data_->Fail();
   }
 }
+
+#if defined(USE_GSTREAMER)
+bool ResourceMultiBufferDataProvider::willFollowRedirect(blink::WebURLLoader* loader,
+                      blink::WebURLRequest& newRequest,
+                      const blink::WebURLResponse& redirectResponse) {
+return willFollowRedirect(newRequest, redirectResponse);
+}
+void ResourceMultiBufferDataProvider::didSendData(blink::WebURLLoader* loader,
+               unsigned long long bytesSent,
+               unsigned long long totalBytesToBeSent) {
+didSendData(bytesSent, totalBytesToBeSent);
+}
+void ResourceMultiBufferDataProvider::didReceiveResponse(blink::WebURLLoader* loader, const blink::WebURLResponse& response) {
+didReceiveResponse(response);
+}
+
+void ResourceMultiBufferDataProvider::didReceiveResponse(
+    blink::WebURLLoader* loader,
+    const blink::WebURLResponse& response,
+    std::unique_ptr<blink::WebDataConsumerHandle> handle) {
+  didReceiveResponse(loader, response);
+}
+void ResourceMultiBufferDataProvider::didDownloadData(blink::WebURLLoader* loader, int data_length, int encodedDataLength) {
+didDownloadData(data_length);
+}
+void ResourceMultiBufferDataProvider::didReceiveData(blink::WebURLLoader* loader, const char* data, int data_length, int encodedDataLength,
+                  int encodedBodyLength) {
+didReceiveData(data, data_length);
+}
+void ResourceMultiBufferDataProvider::didReceiveCachedMetadata(blink::WebURLLoader* loader, const char* data, int data_length) {
+didReceiveCachedMetadata(data, data_length);
+}
+void ResourceMultiBufferDataProvider::didFinishLoading(blink::WebURLLoader* loader, double finishTime, int64_t totalEncodedDataLength) {
+didFinishLoading(finishTime);
+}
+void ResourceMultiBufferDataProvider::didFail(blink::WebURLLoader* loader, const blink::WebURLError& error, int64_t totalEncodedDataLength) {
+didFail(error);
+}
+#endif
 
 bool ResourceMultiBufferDataProvider::ParseContentRange(
     const std::string& content_range_str,

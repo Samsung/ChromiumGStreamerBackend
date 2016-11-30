@@ -21,6 +21,10 @@
 #include "third_party/WebKit/public/web/WebFrame.h"
 #include "url/gurl.h"
 
+#if defined(USE_GSTREAMER)
+#include "third_party/WebKit/public/platform/WebURLLoader.h"
+#endif
+
 namespace media {
 
 const int64_t kPositionNotSpecified = -1;

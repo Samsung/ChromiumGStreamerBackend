@@ -21,15 +21,25 @@
 #include "third_party/WebKit/public/web/WebFrame.h"
 #include "url/gurl.h"
 
+#if defined(USE_GSTREAMER)
+#include "third_party/WebKit/public/platform/WebURLLoaderClient.h"
+#endif
+
 namespace blink {
 class WebAssociatedURLLoader;
+
+#if defined(USE_GSTREAMER)
+class WebURLLoader;
+#endif
+
 }  // namespace blink
 
 namespace media {
 
 class MEDIA_BLINK_EXPORT ResourceMultiBufferDataProvider
     : NON_EXPORTED_BASE(public MultiBuffer::DataProvider),
-      NON_EXPORTED_BASE(public blink::WebAssociatedURLLoaderClient) {
+      NON_EXPORTED_BASE(public blink::WebAssociatedURLLoaderClient),
+      NON_EXPORTED_BASE(public blink::WebURLLoaderClient) {
  public:
   // NUmber of times we'll retry if the connection fails.
   enum { kMaxRetries = 30 };
@@ -59,6 +69,27 @@ class MEDIA_BLINK_EXPORT ResourceMultiBufferDataProvider
   void didReceiveCachedMetadata(const char* data, int dataLength) override;
   void didFinishLoading(double finishTime) override;
   void didFail(const blink::WebURLError&) override;
+
+#if defined(USE_GSTREAMER)
+  // blink::WebURLLoaderClient implementation.
+  bool willFollowRedirect(blink::WebURLLoader* loader,
+                          blink::WebURLRequest& newRequest,
+                          const blink::WebURLResponse& redirectResponse) override;
+  void didSendData(blink::WebURLLoader* loader,
+                   unsigned long long bytesSent,
+                   unsigned long long totalBytesToBeSent) override;
+  void didReceiveResponse(blink::WebURLLoader* loader, const blink::WebURLResponse& response) override;
+  void didReceiveResponse(
+      blink::WebURLLoader* loader,
+      const blink::WebURLResponse& response,
+      std::unique_ptr<blink::WebDataConsumerHandle> handle) override;
+  void didDownloadData(blink::WebURLLoader* loader, int data_length, int encodedDataLength) override;
+  void didReceiveData(blink::WebURLLoader* loader, const char* data, int data_length, int encodedDataLength,
+                      int encodedBodyLength) override;
+  void didReceiveCachedMetadata(blink::WebURLLoader* loader, const char* data, int data_length) override;
+  void didFinishLoading(blink::WebURLLoader* loader, double finishTime, int64_t totalEncodedDataLength) override;
+  void didFail(blink::WebURLLoader* loader, const blink::WebURLError& error, int64_t totalEncodedDataLength) override;
+#endif
 
   // Use protected instead of private for testing purposes.
  protected:
